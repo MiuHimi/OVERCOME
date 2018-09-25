@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>fd7fd37f-c2bf-4f63-87d7-e36b75291674</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>73588281-55be-445b-97d9-817670ab39f3</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{6fe654e8-b608-4a2a-a9b5-f8954032eddd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{5d862319-e4d2-459e-92f2-950ca41bf15d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\GameObject">
+      <UniqueIdentifier>{8c0fca59-065c-4fef-b5de-777ed3ab5ff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\ExclusiveGameObject">
+      <UniqueIdentifier>{d3f9a130-60db-462a-8885-880bff20490e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\GameObject\SceneObject">
+      <UniqueIdentifier>{6f8554a6-a995-423d-829b-2794a9b49d52}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="StepTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\GameFloor.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\DebugCamera.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Camera.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\MyCamera.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugCamera.h" />
+    <ClInclude Include="GameObject\GameRoad.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Player.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Collision.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneBase.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneLogo.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneManager.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneTitle.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\ScenePlay.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\KeyManager.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\InputManager.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\SingletonBase.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneResult.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneStageSelect.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\Collision.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\CollisionBox.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\DebugBox.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\Obj3D.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SkyDome.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\GameFloor.cpp">
+      <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\DebugCamera.cpp">
+      <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Camera.cpp">
+      <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\MyCamera.cpp">
+      <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugCamera.cpp" />
+    <ClCompile Include="GameObject\GameRoad.cpp">
+      <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Player.cpp">
+      <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneBase.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneLogo.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneManager.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneTitle.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\ScenePlay.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\KeyManager.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\InputManager.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneResult.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneStageSelect.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\DebugBox.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\Obj3D.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SkyDome.cpp">
+      <Filter>Game\GameObject</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="directx.ico">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest">
+      <Filter>Assets</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <MeshContentTask Include="..\FBX\floor01.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\road_curve.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\road_stop.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\road_straight.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\player.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\sky2.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+  </ItemGroup>
+</Project>
