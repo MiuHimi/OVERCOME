@@ -26,6 +26,7 @@ private:
 	std::unique_ptr<DirectX::Model> m_modelRoadStraight;   // 直線型道路
 	std::unique_ptr<DirectX::Model> m_modelRoadStop;       // 末端型道路
 	std::unique_ptr<DirectX::Model> m_modelRoadCurve;      // 曲線型道路
+	std::unique_ptr<DirectX::Model> m_modelRoadBranch;     // 分岐型道路
 	//std::unique_ptr<CollisionBox> mp_floor;              // 道路衝突判定用オブジェクト
 
 	static const int m_maxFloorWidth = 100;                // フロアの最大幅(設定[m])

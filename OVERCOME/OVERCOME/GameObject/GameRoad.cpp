@@ -36,7 +36,7 @@ GameRoad::~GameRoad()
 void GameRoad::Initialize()
 {
 	// ƒXƒe[ƒWƒ}ƒbƒv‚ÌŽæ“¾
-	std::ifstream ifs(L"Resources\\StageMap\\Stage01.csv");
+	std::ifstream ifs(L"Resources\\StageMap\\Stage02.csv");
 	std::string line;
 	if (!ifs)
 	{
@@ -112,6 +112,7 @@ void GameRoad::Create()
 	m_modelRoadStraight = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\road_straight.cmo", fx);
 	m_modelRoadStop = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\road_stop.cmo", fx);
 	m_modelRoadCurve = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\road_curve.cmo", fx);
+	m_modelRoadBranch = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\road_branch.cmo", fx);
 
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // ‹«ŠE” ‚Ì’†S
@@ -127,6 +128,7 @@ void GameRoad::Create()
 			if (m_roadObject[j][i].roadType == 1)     mp_roadCollideObject[j][i]->SetModel(m_modelRoadStraight.get());
 			else if (m_roadObject[j][i].roadType == 2)mp_roadCollideObject[j][i]->SetModel(m_modelRoadStop.get());
 			else if (m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->SetModel(m_modelRoadCurve.get());
+			else if (m_roadObject[j][i].roadType == 4)mp_roadCollideObject[j][i]->SetModel(m_modelRoadBranch.get());
 			else(mp_roadCollideObject[j][i]->SetModel(NULL));
 		}
 	}
@@ -162,6 +164,12 @@ void GameRoad::Create()
 				box.r = DirectX::SimpleMath::Vector3(2.5f, 1.0f, 2.5f);               // Še”¼ŒaÝ’è
 				//m_roadCurve->SetCollision(box);
 				//m_roadCurve->DrawDebugCollision();
+				mp_roadCollideObject[j][i]->SetCollision(box);
+			}
+			if (m_roadObject[j][i].roadType == 4)
+			{
+				box.c = DirectX::SimpleMath::Vector3(m_roadObject[j][i].pos.x, m_roadObject[j][i].pos.y, m_roadObject[j][i].pos.z);   // ” Œ^‹«ŠE‚Ì’†S
+				box.r = DirectX::SimpleMath::Vector3(2.5f, 1.0f, 2.5f);               // Še”¼ŒaÝ’è
 				mp_roadCollideObject[j][i]->SetCollision(box);
 			}
 		}
@@ -210,6 +218,7 @@ void GameRoad::Render(DirectX::SimpleMath::Matrix view)
 			case 1: m_modelRoadStraight->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection()); break;   // ’¼ü“¹˜H
 			case 2: m_modelRoadStop->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());     break;   // ––’[“¹˜H
 			case 3: m_modelRoadCurve->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // ‹Èü“¹˜H
+			case 4: m_modelRoadBranch->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // •ªŠò“¹˜H
 			}
 			// ƒfƒoƒbƒO“¹˜H•`‰æ
 			//if(m_roadObject[j][i].roadType == 1 || m_roadObject[j][i].roadType == 2 || m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->DrawDebugCollision(view);

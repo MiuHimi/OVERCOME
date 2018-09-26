@@ -199,5 +199,8 @@
     <MeshContentTask Include="..\FBX\sky2.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\road_branch.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>
