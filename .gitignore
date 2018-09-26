@@ -1,4 +1,4 @@
-﻿OVERCOME/FBX/
+OVERCOME/FBX/
 OVERCOME/OVERCOME/Resources/Models/_Program Files (x86)_Microsoft Visual Studio 14.0_Common7_IDE_Extensions_Microsoft_VsGraphics_Assets_Effects_Phong.dgsl.cso
 OVERCOME/OVERCOME/Resources/Models/_Users_s172179_Desktop_OVERCOME_FBX_floor01.fbm_floor01.png.dds
 OVERCOME/OVERCOME/Resources/Models/_Users_s172179_Documents_Visual Studio 2015_Projects_作品_OVERCOME_FBX_floor01.fbm_floor01.png.dds
@@ -260,3 +260,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+OVERCOME/OVERCOME/Resources/Models/
