@@ -1,32 +1,57 @@
-﻿//
-// Game.h
-//
+﻿//////////////////////////////////////////////////////////////
+// File.    Game.h
+// Summary. GameClass
+// Date.    2018/09/26
+// Auther.  Miu Himi
+//////////////////////////////////////////////////////////////
 
 #pragma once
 
+// インクルードディレクトリ
 #include "pch.h"
 
 #include "DeviceResources.h"
 #include "StepTimer.h"
 
-#include "DebugCamera.h"
+//#include "DebugCamera.h"
 //#include "GridFloor.h"
-
 //#include "GameObject/Camera.h"
-#include "GameObject/MyCamera.h"
-
-//#include "GameObject\SceneObject\ScenePlay.h"
+//#include "GameObject/MyCamera.h"
 
 #include "GameObject/SceneObject/SceneManager.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
 class SceneManager;
-class MyCamera;
 class Game : public DX::IDeviceNotify
 {
+// メンバー変数
 public:
 
+private:
+	std::unique_ptr<DX::DeviceResources>     m_deviceResources;     // Device resources.
+
+	DX::StepTimer                            m_timer;               // Rendering loop timer.
+
+	std::unique_ptr<DirectX::CommonStates>   m_states;              // コモンステート
+	std::unique_ptr<DirectX::SpriteBatch>    m_sprites;             // スプライトバッチ
+	DirectX::SpriteBatch*                    m_sprite;              // スプライトバッチ
+	std::unique_ptr<DirectX::SpriteFont>     m_font;                // スプライトフォント
+
+	DirectX::SimpleMath::Matrix              m_world;               // ワールド行列
+	DirectX::SimpleMath::Matrix              m_view;                // ビュー行列
+	DirectX::SimpleMath::Matrix              m_projection;          // 射影行列
+	
+	//std::unique_ptr<DebugCamera>           m_debugCamera;         // デバッグカメラ
+	//std::unique_ptr<GridFloor>             m_gridFloor;           // グリッドの床
+	//Camera                                 m_camera;              // カメラオブジェクト
+	//std::unique_ptr<MyCamera>              mp_camera;             // カメラオブジェクト
+
+	std::unique_ptr<SceneManager>            mp_sceneManager;       // シーン管理オブジェクト
+
+// メンバー関数(関数、Getter、Setter)
+public:
+	// Constructor
     Game();
 
     // Initialization and management
@@ -65,7 +90,6 @@ public:
 	//---//
 
 private:
-
     void Update(DX::StepTimer const& timer);
     void Render();
 
@@ -74,41 +98,4 @@ private:
     void CreateDeviceDependentResources();
     void CreateWindowSizeDependentResources();
 
-    // Device resources.
-    std::unique_ptr<DX::DeviceResources>    m_deviceResources;
-
-    // Rendering loop timer.
-    DX::StepTimer                           m_timer;
-
-	// コモンステート
-	std::unique_ptr<DirectX::CommonStates> m_states;
-
-	// スプライトバッチ
-	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
-	DirectX::SpriteBatch* m_sprite;
-
-	// スプライトフォント
-	std::unique_ptr<DirectX::SpriteFont> m_font;
-
-	// ワールド行列
-	DirectX::SimpleMath::Matrix m_world;
-	// ビュー行列
-	DirectX::SimpleMath::Matrix m_view;
-	// 射影行列
-	DirectX::SimpleMath::Matrix m_projection;
-
-	// デバッグカメラ
-	std::unique_ptr<DebugCamera> m_debugCamera;
-
-	// グリッドの床
-	//std::unique_ptr<GridFloor> m_gridFloor;
-	
-	// カメラオブジェクト
-	//Camera m_camera;
-	std::unique_ptr<MyCamera> mp_camera;
-
-	// シーン管理オブジェクト
-	std::unique_ptr<SceneManager> mp_sceneManager;
-
-	std::unique_ptr<DirectX::Model> m_modelLattice;   // 格子柄床モデルハンドル
 };

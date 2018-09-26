@@ -1,27 +1,34 @@
-﻿//
-// Game.cpp
-//
+﻿//////////////////////////////////////////////////////////////
+// File.    Game.cpp
+// Summary. GameClass
+// Date.    2018/09/26
+// Auther.  Miu Himi
+//////////////////////////////////////////////////////////////
 
-
+// インクルードディレクトリ
 #include "pch.h"
 #include "Game.h"
 
 #include "math.h"
 
-#include "GameObject\SceneObject\ScenePlay.h"
+#include "GameObject/SceneObject/ScenePlay.h"
 
+// デバッグ
 #if _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #endif
 
+// externディレクトリ
 extern void ExitGame();
 
+// usingディレクトリ
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 using Microsoft::WRL::ComPtr;
+
 
 Game::Game()
 {
@@ -83,12 +90,11 @@ void Game::Update(DX::StepTimer const& timer)
 	// カメラの位置の設定
 	//mp_camera.SetPositionTarget(Vector3(0.0f, 4.0f, 8.0f), Vector3(0.0f, 0.0f, 0.0f));
 
-	// アクティブなシーンを更新
-	mp_sceneManager->UpdateActiveScene(timer, this);
-
 	// カメラの更新
 	//mp_camera->Update(timer, /*mp_player->GetPlayer())*/ScenePlay::GetPlayer()->GetPlayer());
 
+	// アクティブなシーンを更新
+	mp_sceneManager->UpdateActiveScene(timer, this);
 }
 #pragma endregion
 
@@ -111,39 +117,26 @@ void Game::Render()
 	//m_view = Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), Vector3::Up);
 	//m_view = m_debugCamera->GetCameraMatrix();
 
-
 	// グリッドの床の描画
 	//m_gridFloor->Render(context, m_view, m_projection);
 
 	// ここから描画処理を記述する
 
-	Matrix world = Matrix::Identity;
-	Matrix trans = Matrix::Identity;
-	Matrix rot = Matrix::Identity;
-
-	// 回転用変数
+	/*// 回転用変数
 	static float angle = 0.0f;
 	angle += 0.3f;
 	// サイン波が変動するための値
 	static float wave;
 	wave += 0.01f;
-	float sinWave = sin(wave + (1.0f*2.0f)) * 2.0f;
+	float sinWave = sin(wave + (1.0f*2.0f)) * 2.0f;*/
 
 	// アクティブなシーンを描画
 	mp_sceneManager->RenderActiveScene(m_sprite, this);
-
-	/*SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
-	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
-	SimpleMath::Matrix rot = SimpleMath::Matrix::Identity;*/
 
 	ID3D11Device* device = m_deviceResources->GetD3DDevice();
 	// コモンステートの作成
 	m_states = std::make_unique<CommonStates>(device);
 
-	// 床の描画
-	world = SimpleMath::Matrix::Identity;
-	//m_modelLattice->Draw(context, *m_states.get(), world, m_view, m_projection);
-	
 	// ここまで
 
     m_deviceResources->PIXEndEvent();
@@ -229,8 +222,6 @@ void Game::CreateDeviceDependentResources()
     // TODO: Initialize device dependent objects here (independent of window size).
     device;
 
-	
-
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
 	m_sprite = new SpriteBatch(context);
@@ -244,11 +235,6 @@ void Game::CreateDeviceDependentResources()
 	// モデルのテクスチャの読み込み
 	EffectFactory fx(device);
 	fx.SetDirectory(L"Resources\\Models");
-
-	// モデルの読み込み
-	// モデルをロードしてモデルハンドルを取得する
-	m_modelLattice = Model::CreateFromCMO(device, L"Resources\\Models\\floor01.cmo", fx);
-
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -273,14 +259,6 @@ void Game::CreateWindowSizeDependentResources()
 
 	// デバッグカメラにウインドウのサイズ変更を伝える
 	//m_debugCamera->SetWindowSize(size.right, size.bottom);
-
-	// ゲーム床のモデル読み込み
-	//mp_gameFloor->Create();
-	// ゲーム道路のモデル読み込み
-	//mp_gameRoad->Create();
-
-	// プレイヤーのモデルの読み込み
-	//mp_player->Create();
 }
 
 void Game::OnDeviceLost()
@@ -295,12 +273,6 @@ void Game::OnDeviceLost()
 
 	// スプライトフォントの解放
 	m_font.reset();
-
-	// グリッドの床の解放
-	//m_gridFloor.reset();
-
-	// モデルハンドルの解放
-	
 }
 
 void Game::OnDeviceRestored()
