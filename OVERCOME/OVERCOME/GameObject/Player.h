@@ -23,23 +23,23 @@ class Player : public CollisionBox
 public:
 
 private:
-	DirectX::SimpleMath::Vector3 m_pos;              // 位置
-	DirectX::SimpleMath::Vector3 m_vel;              // 速度
-	float m_direction;                               // 向き(角度)
-	DirectX::SimpleMath::Quaternion m_rotation;      // 回転
-	float m_height;                                  // 高さ
-	float m_jumpForce;                               // ジャンプ力
-	float m_gravity;                                 // 重力
+	DirectX::SimpleMath::Vector3             m_pos;                   // 位置
+	DirectX::SimpleMath::Vector3             m_vel;                   // 速度
+	float                                    m_direction;             // 向き(角度)
+	DirectX::SimpleMath::Quaternion          m_rotation;              // 回転
+	float                                    m_height;                // 高さ
+	float                                    m_jumpForce;             // ジャンプ力
+	float                                    m_gravity;               // 重力
 
-	bool m_isJump = false;                           // ジャンプしたかを判定
-	bool m_isCollide = false;                        // 接触したかを判定
+	bool                                     m_isJump = false;        // ジャンプしたかを判定
+	bool                                     m_isCollide = false;     // 接触したかを判定
 
-	DirectX::SimpleMath::Matrix m_world;             // ワールド座標
+	DirectX::SimpleMath::Matrix              m_world;                 // ワールド座標
 
-	std::unique_ptr<DirectX::Model> m_modelPlayer;   // プレイヤーモデルオブジェクト
-	//std::unique_ptr<CollisionBox> mp_floor;        // 床衝突判定用オブジェクト
+	std::unique_ptr<DirectX::Model>          m_modelPlayer;           // プレイヤーモデルオブジェクト
+	//std::unique_ptr<CollisionBox>          mp_floor;                // 床衝突判定用オブジェクト
 
-	Game* mp_game;                                   // Gameファイルの情報を格納
+	Game*                                    mp_game;                 // Gameファイルの情報を格納
 
 // メンバー関数(関数、Getter、Setter)
 public:

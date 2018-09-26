@@ -160,7 +160,7 @@ void Player::Render(DirectX::SimpleMath::Matrix view)
 	//m_rotation = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), m_direction);
 	//rot = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(m_direction));
 
-	// °‚Ì•`‰æ
+	// ƒvƒŒƒCƒ„[‚Ì•`‰æ
 	m_modelPlayer->Draw(mp_game->GetContext(), *mp_game->GetState(), m_world, view, mp_game->GetProjection());
 }
 
