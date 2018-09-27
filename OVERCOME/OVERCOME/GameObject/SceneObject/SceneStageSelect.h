@@ -15,7 +15,7 @@
 
 class SceneStageSelect : public SceneBase
 {
-	// メンバー変数(構造体、enum、列挙子 etc...)
+// メンバー変数(構造体、enum、列挙子 etc...)
 public:
 
 private:
@@ -25,7 +25,7 @@ private:
 	Game* mp_game;                                // Gameファイルの情報を格納
 	std::unique_ptr<DirectX::SpriteFont> m_font;  // スプライトフォント
 
-												  // メンバー関数(関数、Getter、Setter)
+// メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
 	SceneStageSelect(SceneManager* sceneManager);

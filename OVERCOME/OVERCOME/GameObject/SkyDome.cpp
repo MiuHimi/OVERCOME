@@ -24,6 +24,7 @@ SkyDome::SkyDome(Game* game) : mp_game(game)
 /// </summary>
 SkyDome::~SkyDome()
 {
+	//SkyDome::Depose();
 }
 
 /// <summary>

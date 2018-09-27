@@ -38,6 +38,8 @@ ScenePlay::ScenePlay(Game * game, SceneManager * sceneManager)
 /// </summary>
 ScenePlay::~ScenePlay()
 {
+	/*delete mp_game;
+	mp_game = nullptr;*/
 }
 
 /// <summary>
@@ -62,7 +64,7 @@ void ScenePlay::Initialize()
 	mp_gameRoad = std::make_unique<GameRoad>(mp_game);
 	mp_gameRoad->Initialize();
 	// ゲーム道路のモデル読み込み
-	mp_gameRoad->Create();
+	mp_gameRoad->Create(mp_game);
 
 	// プレイヤーの生成
 	mp_player = std::make_unique<Player>(mp_game);
@@ -152,10 +154,10 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	
 
 	// シーン操作
-	/*if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
+	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
 	{
 		m_toResultMoveOnChecker = true;
-	}*/
+	}
 	if (m_toResultMoveOnChecker == true)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_RESULT);
@@ -167,10 +169,6 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 /// </summary>
 //void SceneLogo::Render()
 //{
-//	// デバッグ用
-//	/*DebugText* debugText = DebugText::GetInstance();
-//	debugText->AddText(Vector2(10, 10), L"SceneLogo");
-//	debugText->AddText(Vector2(10, 30), L"Count = %3d", m_count);*/
 //}
 void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
 {

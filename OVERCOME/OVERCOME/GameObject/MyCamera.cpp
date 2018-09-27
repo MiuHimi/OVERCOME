@@ -26,6 +26,14 @@ MyCamera::MyCamera():m_angle(0.0f)
 	//mp_player = Player::GetPlayer();
 	mp_player->Initialize();
 }
+/// <summary>
+/// デストラクタ
+/// </summary>
+MyCamera::~MyCamera()
+{
+	delete mp_player;
+	mp_player = nullptr;
+}
 
 /// <summary>
 /// 更新

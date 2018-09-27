@@ -29,6 +29,8 @@ private:
 public:
 	// コンストラクタ
 	MyCamera();
+	// デストラクタ
+	~MyCamera();
 
 	bool Update(DX::StepTimer const & timer, Player* player);
 

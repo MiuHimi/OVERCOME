@@ -24,6 +24,7 @@ GameFloor::GameFloor(Game* game) : mp_game(game)
 /// </summary>
 GameFloor::~GameFloor()
 {
+	//GameFloor::Depose();
 }
 
 /// <summary>

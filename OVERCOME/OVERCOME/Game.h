@@ -78,7 +78,7 @@ public:
 	//---
 	// デバイスを取得する
 	ID3D11Device* GetDevice() { return m_deviceResources->GetD3DDevice(); }
-	// コンテクストを取得する
+	// コンテキストを取得する
 	ID3D11DeviceContext* GetContext() { return m_deviceResources->GetD3DDeviceContext(); }
 	// コモンステートを取得する
 	DirectX::CommonStates* GetState()/* { return m_states.get(); }*/;

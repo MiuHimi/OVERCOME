@@ -37,6 +37,8 @@ SceneLogo::SceneLogo(Game * game, SceneManager * sceneManager)
 /// </summary>
 SceneLogo::~SceneLogo()
 {
+	/*delete mp_game;
+	mp_game = nullptr;*/
 }
 
 /// <summary>

@@ -35,6 +35,7 @@ Player::Player(Game * game) : mp_game(game),
 /// </summary>
 Player::~Player()
 {
+	//Player::Depose();
 }
 
 /// <summary>
@@ -169,6 +170,8 @@ void Player::Render(DirectX::SimpleMath::Matrix view)
 /// </summary>
 void Player::Depose()
 {
+	delete mp_game;
+	mp_game = NULL;
 }
 
 Player* Player::GetPlayer()

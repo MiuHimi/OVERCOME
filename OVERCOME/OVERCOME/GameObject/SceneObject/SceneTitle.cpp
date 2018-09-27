@@ -37,6 +37,8 @@ SceneTitle::SceneTitle(Game * game, SceneManager * sceneManager)
 /// </summary>
 SceneTitle::~SceneTitle()
 {
+	/*delete mp_game;
+	mp_game = nullptr;*/
 }
 
 /// <summary>
@@ -66,13 +68,13 @@ void SceneTitle::Update(DX::StepTimer const& timer, Game* game)
 	InputManager::GetInstance().Update();
 	// キー入力
 	//if (InputManager::GetInstance().GetTracker().leftButton == DirectX::Mouse::ButtonStateTracker::PRESSED)
-	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
+	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
 	{
 		m_toPlayMoveOnChecker = true;
 	}
 	if (m_toPlayMoveOnChecker == true)
 	{
-		m_sceneManager->RequestToChangeScene(SCENE_PLAY);
+		m_sceneManager->RequestToChangeScene(SCENE_SELECTSTAGE);
 	}
 
 }
@@ -91,6 +93,6 @@ void SceneTitle::Render(DirectX::SpriteBatch* sprites, Game* game)
 	// デバッグ用
 	sprites->Begin();
 	m_font->DrawString(sprites, L"SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 10.0f), Colors::Yellow);
-	m_font->DrawString(sprites, L"SPACEkey to ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
+	m_font->DrawString(sprites, L"SPACEkey to SceneSelectStage", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
 	sprites->End();
 }

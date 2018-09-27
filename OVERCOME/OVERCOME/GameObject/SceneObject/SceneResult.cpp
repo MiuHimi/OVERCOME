@@ -37,6 +37,8 @@ SceneResult::SceneResult(Game * game, SceneManager * sceneManager)
 /// </summary>
 SceneResult::~SceneResult()
 {
+	/*delete mp_game;
+	mp_game = nullptr;*/
 }
 
 /// <summary>

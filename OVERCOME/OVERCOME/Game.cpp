@@ -131,7 +131,10 @@ void Game::Render()
 	float sinWave = sin(wave + (1.0f*2.0f)) * 2.0f;*/
 
 	// アクティブなシーンを描画
+	m_sprite = new SpriteBatch(context);
 	mp_sceneManager->RenderActiveScene(m_sprite, this);
+	delete m_sprite;
+	
 
 	ID3D11Device* device = m_deviceResources->GetD3DDevice();
 	// コモンステートの作成
@@ -224,7 +227,7 @@ void Game::CreateDeviceDependentResources()
 
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
-	m_sprite = new SpriteBatch(context);
+	//m_sprite = new SpriteBatch(context);
 
 	// スプライトフォントの作成
 	m_font = std::make_unique<SpriteFont>(device, L"SegoeUI_18.spritefont");

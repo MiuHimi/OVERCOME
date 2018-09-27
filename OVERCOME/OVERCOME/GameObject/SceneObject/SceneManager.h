@@ -23,6 +23,7 @@ enum SceneId
 {
 	SCENE_LOGO,
 	SCENE_TITLE,
+	SCENE_SELECTSTAGE,
 	SCENE_PLAY,
 	SCENE_RESULT,
 
@@ -35,14 +36,19 @@ class Game;
 class SceneManager
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
+public :
+	static int m_stageNum;
+
 private:
 	// 他クラスへのポインタ
-	SceneBase* mp_scenes[NUM_SCENES];    // 登録されているシーンのリスト
+	//SceneBase* mp_scenes[NUM_SCENES];    // 登録されているシーンのリスト
+	SceneBase* mp_scene;                 // シーンが設定される
 
-	SceneBase* mp_activeScene;           // 更新中のシーン
-	SceneBase* mp_requestedScene;        // 要求されたシーン
+	//SceneBase* mp_activeScene;           // 更新中のシーン
+	//SceneBase* mp_requestedScene;        // 要求されたシーン
 
-	Game* mp_game;                       // Gameファイルの情報を格納
+	SceneId m_nextScene;                 // 次に更新するシーンを決定
+	bool m_requestSceneFlag;             // シーン遷移を要求されたらフラグが立つ
 
 
 // メンバー関数(関数、Getter、Setter)
@@ -61,8 +67,12 @@ public:
 	// 遷移したいシーンを要求
 	bool RequestToChangeScene(SceneId sceneId);
 
+	// ステージ番号の設定、取得
+	static void SetStageNum(int stageID) { m_stageNum = stageID; }
+	static int GetStageNum()              { return m_stageNum; }
+
 private:
 	// シーンを遷移する
-	void ChangeScene();
+	void ChangeScene(Game* game);
 
 };

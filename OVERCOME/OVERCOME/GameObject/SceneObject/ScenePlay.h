@@ -36,10 +36,10 @@ private:
 
 	std::unique_ptr<MyCamera> mp_camera;          // カメラオブジェクト
 
-	static std::unique_ptr<Player> mp_player;     // プレイヤーオブジェクト
-
 	std::unique_ptr<GameFloor> mp_gameFloor;	  // ゲーム床オブジェクト
 	std::unique_ptr<GameRoad>  mp_gameRoad;	      // ゲーム道路オブジェクト
+
+	static std::unique_ptr<Player> mp_player;     // プレイヤーオブジェクト
 
 	std::unique_ptr<SkyDome> mp_skydome;          // スカイドームオブジェクト
 

@@ -37,6 +37,8 @@ SceneStageSelect::SceneStageSelect(Game * game, SceneManager * sceneManager)
 /// </summary>
 SceneStageSelect::~SceneStageSelect()
 {
+	/*delete mp_game;
+	mp_game = nullptr;*/
 }
 
 /// <summary>
@@ -58,21 +60,30 @@ void SceneStageSelect::Finalize()
 }
 
 /// <summary>
-/// ロゴシーンの更新処理
+/// ステージ選択シーンの更新処理
 /// </summary>
 /// <param name="timer">時間情報</param>
 void SceneStageSelect::Update(DX::StepTimer const& timer, Game* game)
 {
 	// 入力情報を更新
 	InputManager::GetInstance().Update();
+
+	static int count = 0;
+	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Up))
+	{
+		count++;
+		if (count > 3)count = 0;
+		SceneManager::SetStageNum(count);
+	}
+
 	// キー入力
-	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
+	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
 	{
 		m_toPlayMoveOnChecker = true;
 	}
 	if (m_toPlayMoveOnChecker == true)
 	{
-		m_sceneManager->RequestToChangeScene(SCENE_RESULT);
+		m_sceneManager->RequestToChangeScene(SCENE_PLAY);
 	}
 }
 
@@ -81,16 +92,25 @@ void SceneStageSelect::Update(DX::StepTimer const& timer, Game* game)
 /// </summary>
 //void SceneStageSelect::Render()
 //{
-//	// デバッグ用
-//	/*DebugText* debugText = DebugText::GetInstance();
-//	debugText->AddText(Vector2(10, 10), L"SceneLogo");
-//	debugText->AddText(Vector2(10, 30), L"Count = %3d", m_count);*/
 //}
 void SceneStageSelect::Render(DirectX::SpriteBatch* sprites, Game* game)
 {
 	// デバッグ用
 	sprites->Begin();
-	m_font->DrawString(sprites, L"ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 10.0f), Colors::Yellow);
-	m_font->DrawString(sprites, L"SPACEkey to SceneResult", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
+	m_font->DrawString(sprites, L"SceneStageSelect", DirectX::SimpleMath::Vector2(20.0f, 10.0f), Colors::Yellow);
+	m_font->DrawString(sprites, L"Zkey to ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
+
+	if (SceneManager::GetStageNum() != 1 && SceneManager::GetStageNum() != 2)
+	{
+		m_font->DrawString(sprites, L"StageNone", DirectX::SimpleMath::Vector2(20.0f, 50.0f), Colors::Yellow);
+	}
+	else if (SceneManager::GetStageNum() == 1)
+	{
+		m_font->DrawString(sprites, L"Stage1", DirectX::SimpleMath::Vector2(20.0f, 50.0f), Colors::Yellow);
+	}
+	else if (SceneManager::GetStageNum() == 2)
+	{
+		m_font->DrawString(sprites, L"Stage2", DirectX::SimpleMath::Vector2(20.0f, 50.0f), Colors::Yellow);
+	}
 	sprites->End();
 }

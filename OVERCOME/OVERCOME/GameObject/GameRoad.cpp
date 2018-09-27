@@ -16,11 +16,14 @@
 // usingディレクトリ
 using namespace DirectX;
 
+int SceneManager::m_stageNum;
+
 /// <summary>
 /// コンストラクタ
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 GameRoad::GameRoad(Game* game) : mp_game(game)
+                                ,m_stageNum(0)
 {
 }
 /// <summary>
@@ -28,6 +31,7 @@ GameRoad::GameRoad(Game* game) : mp_game(game)
 /// </summary>
 GameRoad::~GameRoad()
 {
+	//GameRoad::Depose();
 }
 
 /// <summary>
@@ -35,8 +39,16 @@ GameRoad::~GameRoad()
 /// </summary>
 void GameRoad::Initialize()
 {
+	// ステージマップの読み込み
+	std::string filePath = "Resources\\StageMap\\Stage";
+	std::ostringstream os;
+	m_stageNum = SceneManager::GetStageNum();
+	os << m_stageNum;
+	filePath += os.str() + ".csv";
+
 	// ステージマップの取得
-	std::ifstream ifs(L"Resources\\StageMap\\Stage02.csv");
+	//std::ifstream ifs(L"Resources\\StageMap\\Stage02.csv");
+	std::ifstream ifs(filePath);
 	std::string line;
 	if (!ifs)
 	{
@@ -102,17 +114,17 @@ void GameRoad::Initialize()
 /// <summary>
 /// 生成処理
 /// </summary>
-void GameRoad::Create()
+void GameRoad::Create(Game* game)
 {
 	// エフェクトファクトリー
-	EffectFactory fx(mp_game->GetDevice());
+	EffectFactory fx(game->GetDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
 	// モデルをロードしてモデルハンドルを取得する
-	m_modelRoadStraight = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\road_straight.cmo", fx);
-	m_modelRoadStop = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\road_stop.cmo", fx);
-	m_modelRoadCurve = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\road_curve.cmo", fx);
-	m_modelRoadBranch = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\road_branch.cmo", fx);
+	m_modelRoadStraight = Model::CreateFromCMO(game->GetDevice(), L"Resources\\Models\\road_straight.cmo", fx);
+	m_modelRoadStop = Model::CreateFromCMO(game->GetDevice(), L"Resources\\Models\\road_stop.cmo", fx);
+	m_modelRoadCurve = Model::CreateFromCMO(game->GetDevice(), L"Resources\\Models\\road_curve.cmo", fx);
+	m_modelRoadBranch = Model::CreateFromCMO(game->GetDevice(), L"Resources\\Models\\road_branch.cmo", fx);
 
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
@@ -124,7 +136,7 @@ void GameRoad::Create()
 		for (int i = 0; i < m_maxFloorBlock; i++)
 		{
 			mp_roadCollideObject[j][i] = new CollisionBox();
-			mp_roadCollideObject[j][i]->SetGame(mp_game);
+			mp_roadCollideObject[j][i]->SetGame(game);
 			if (m_roadObject[j][i].roadType == 1)     mp_roadCollideObject[j][i]->SetModel(m_modelRoadStraight.get());
 			else if (m_roadObject[j][i].roadType == 2)mp_roadCollideObject[j][i]->SetModel(m_modelRoadStop.get());
 			else if (m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->SetModel(m_modelRoadCurve.get());

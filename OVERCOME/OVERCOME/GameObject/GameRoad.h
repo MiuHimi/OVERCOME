@@ -35,6 +35,8 @@ private:
 	static const int m_maxFloorBlock = 20;                 // ブロックごとに分けたフロアの幅(個数)
 	const int m_roadBlockSize = 5;                         // 単位ブロックの幅(設定[m])
 
+	int m_stageNum;
+
 	struct road
 	{
 		int roadType;                                      // 道路の種類
@@ -57,7 +59,7 @@ public:
 	// 初期化
 	void Initialize();
 	// 生成
-	void Create();
+	void Create(Game* game);
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
