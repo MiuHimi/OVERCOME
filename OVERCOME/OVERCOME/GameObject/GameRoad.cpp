@@ -32,6 +32,14 @@ GameRoad::GameRoad(Game* game) : mp_game(game)
 GameRoad::~GameRoad()
 {
 	//GameRoad::Depose();
+	for (int j = 0; j < m_maxFloorBlock; j++)
+	{
+		for (int i = 0; i < m_maxFloorBlock; i++)
+		{
+			delete mp_roadCollideObject[j][i];
+			mp_roadCollideObject[j][i] = nullptr;
+		}
+	}
 }
 
 /// <summary>
@@ -55,9 +63,10 @@ void GameRoad::Initialize()
 		// ファイル読み込み失敗
 		throw std::range_error("Read failure.");
 	}
+
+	int j = 0;
 	while (getline(ifs, line))
 	{
-		static int j = 0;
 		std::istringstream stream(line);
 		std::string buf;
 		int i = 0;
@@ -117,14 +126,14 @@ void GameRoad::Initialize()
 void GameRoad::Create(Game* game)
 {
 	// エフェクトファクトリー
-	EffectFactory fx(game->GetDevice());
+	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
 	// モデルをロードしてモデルハンドルを取得する
-	m_modelRoadStraight = Model::CreateFromCMO(game->GetDevice(), L"Resources\\Models\\road_straight.cmo", fx);
-	m_modelRoadStop = Model::CreateFromCMO(game->GetDevice(), L"Resources\\Models\\road_stop.cmo", fx);
-	m_modelRoadCurve = Model::CreateFromCMO(game->GetDevice(), L"Resources\\Models\\road_curve.cmo", fx);
-	m_modelRoadBranch = Model::CreateFromCMO(game->GetDevice(), L"Resources\\Models\\road_branch.cmo", fx);
+	m_modelRoadStraight = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_straight.cmo", fx);
+	m_modelRoadStop = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_stop.cmo", fx);
+	m_modelRoadCurve = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_curve.cmo", fx);
+	m_modelRoadBranch = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_branch.cmo", fx);
 
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
@@ -222,15 +231,16 @@ void GameRoad::Render(DirectX::SimpleMath::Matrix view)
 			world = SimpleMath::Matrix::Identity;
 			world *= rot * trans;
 
+			auto& res = DX::DeviceResources::SingletonGetInstance();
 			// 描画道路選択
 			int roadType = m_roadObject[j][i].roadType;
 			switch (roadType)
 			{
 			case 0: break;                                                                                                                  // 何もなし
-			case 1: m_modelRoadStraight->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection()); break;   // 直線道路
-			case 2: m_modelRoadStop->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());     break;   // 末端道路
-			case 3: m_modelRoadCurve->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // 曲線道路
-			case 4: m_modelRoadBranch->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // 分岐道路
+			case 1: m_modelRoadStraight->Draw(/*mp_game->GetContext()*/res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection()); break;   // 直線道路
+			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());     break;   // 末端道路
+			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // 曲線道路
+			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // 分岐道路
 			}
 			// デバッグ道路描画
 			//if(m_roadObject[j][i].roadType == 1 || m_roadObject[j][i].roadType == 2 || m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->DrawDebugCollision(view);

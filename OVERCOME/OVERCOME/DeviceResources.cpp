@@ -1,11 +1,15 @@
-﻿//
-// DeviceResources.cpp - A wrapper for the Direct3D 11 device and swapchain
-//                       (requires DirectX 11.1 Runtime)
-//
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// File.    DeviceResources.cpp
+// Summary. DeviceResourcesClass. A wrapper for the Direct3D 11 device and swapchain. (requires DirectX 11.1 Runtime)
+// Date.    2018/09/27
+// Auther.  Miu Himi
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// インクルードディレクトリ
 #include "pch.h"
 #include "DeviceResources.h"
 
+// usingディレクトリ
 using namespace DirectX;
 using namespace DX;
 
@@ -49,6 +53,16 @@ DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depth
     m_options(flags),
     m_deviceNotify(nullptr)
 {
+	//Initialize();
+}
+
+void DX::DeviceResources::Initialize()
+{
+	//SetWindow();
+
+	//CreateDeviceResources();
+
+	//CreateWindowSizeDependentResources();
 }
 
 // Configures the Direct3D device, and stores handles to it and the device context.

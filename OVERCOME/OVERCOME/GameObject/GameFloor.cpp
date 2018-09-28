@@ -39,11 +39,11 @@ void GameFloor::Initialize()
 void GameFloor::Create()
 {
 	// エフェクトファクトリー
-	EffectFactory fx(mp_game->GetDevice());
+	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
 	// モデルをロードしてモデルハンドルを取得する
-	m_modelLattice = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\floor01.cmo", fx);
+	m_modelLattice = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\floor01.cmo", fx);
 
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
@@ -75,7 +75,7 @@ void GameFloor::Render(Game* game, DirectX::SimpleMath::Matrix view)
 
 	// 床の描画
 	world = SimpleMath::Matrix::Identity;
-	m_modelLattice->Draw(game->GetContext(), *game->GetState(), world, view, game->GetProjection());
+	m_modelLattice->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *game->GetState(), world, view, game->GetProjection());
 }
 
 /// <summary>

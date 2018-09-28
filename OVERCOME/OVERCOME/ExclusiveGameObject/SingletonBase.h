@@ -6,26 +6,33 @@
 //////////////////////////////////////////////////////////////
 
 #pragma once
+#include <memory>
 
 template<class T> class SingletonBase
 {
-protected:
-
-	SingletonBase() {}
-	virtual ~SingletonBase() {}
+// 改良後のメンバー変数、関数
+private:
+	typedef std::unique_ptr<T> singleton_pointer_type;
 
 public:
-
-	// インスタンス呼び出し
-	static inline T& GetInstance()
+	static T& SingletonGetInstance()
 	{
-		static T ins;
-		return ins;
+		static typename T::singleton_pointer_type s_singleton(T::CreateInstance());
+
+		return GetReference(s_singleton);
 	}
 
 private:
+	inline static T *CreateInstance() { return new T(); }
 
-	void operator=(const SingletonBase& obj) {}
+	inline static T &GetReference(const singleton_pointer_type &ptr) { return *ptr; }
 
-	SingletonBase(const SingletonBase &obj) {}
+protected:
+	SingletonBase(){}
+
+private:
+	SingletonBase(const SingletonBase &) = delete;
+	SingletonBase& operator=(const SingletonBase &) = delete;
+	SingletonBase(SingletonBase &&) = delete;
+	SingletonBase& operator=(SingletonBase &&) = delete;
 };

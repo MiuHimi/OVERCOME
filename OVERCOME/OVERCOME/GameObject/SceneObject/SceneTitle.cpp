@@ -48,8 +48,11 @@ void SceneTitle::Initialize()
 {
 	m_toPlayMoveOnChecker = false;
 
+	/*std::unique_ptr<DX::DeviceResources> dr;
+	dr = std::make_unique<DX::DeviceResources>();
+	dr->GetD3DDevice();*/
 	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(/*device*/mp_game->GetDevice(), L"SegoeUI_18.spritefont");
+	m_font = std::make_unique<SpriteFont>(/*mp_game->GetDevice()*/DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 }
 /// <summary>
 /// タイトルシーンの終了処理
@@ -64,11 +67,12 @@ void SceneTitle::Finalize()
 /// <param name="timer">時間情報</param>
 void SceneTitle::Update(DX::StepTimer const& timer, Game* game)
 {
+	InputManager::SingletonGetInstance().Update();
 	// 入力情報を更新
-	InputManager::GetInstance().Update();
+	//InputManager::GetInstance().Update();
 	// キー入力
 	//if (InputManager::GetInstance().GetTracker().leftButton == DirectX::Mouse::ButtonStateTracker::PRESSED)
-	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
+	if (/*InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space)*/InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
 	{
 		m_toPlayMoveOnChecker = true;
 	}

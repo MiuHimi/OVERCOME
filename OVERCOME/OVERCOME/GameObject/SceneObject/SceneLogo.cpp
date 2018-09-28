@@ -51,7 +51,7 @@ void SceneLogo::Initialize()
 	m_count = 0;
 
 	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(/*device*/mp_game->GetDevice(), L"SegoeUI_18.spritefont");
+	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 }
 
 /// <summary>
@@ -85,10 +85,6 @@ void SceneLogo::Update(DX::StepTimer const& timer, Game* game)
 /// </summary>
 //void SceneLogo::Render()
 //{
-//	// デバッグ用
-//	/*DebugText* debugText = DebugText::GetInstance();
-//	debugText->AddText(Vector2(10, 10), L"SceneLogo");
-//	debugText->AddText(Vector2(10, 30), L"Count = %3d", m_count);*/
 //}
 void SceneLogo::Render(DirectX::SpriteBatch* sprites, Game* game)
 {

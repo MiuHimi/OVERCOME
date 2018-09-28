@@ -47,7 +47,7 @@ bool MyCamera::Update(DX::StepTimer const & timer, Player* player)
 	/*Vector3 target(player->GetPos());
 	target.y += player->GetHeight();
 	RunPlayerCamera(target, player->GetDirection());*/
-	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
 	{
 		if (cameraFlag == true)
 		{

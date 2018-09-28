@@ -28,12 +28,13 @@ private:
 
 // メンバー関数(関数、Getter、Setter)
 private:
+	// フレンド関数
+	friend class SingletonBase<InputManager>;
+
 	// コンストラクタ
 	InputManager();
 
 public:
-	// フレンド関数
-	friend SingletonBase<InputManager>;
 
 	// 更新
 	void Update();

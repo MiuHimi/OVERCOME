@@ -49,7 +49,7 @@ void SceneStageSelect::Initialize()
 	m_toPlayMoveOnChecker = false;
 
 	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(/*device*/mp_game->GetDevice(), L"SegoeUI_18.spritefont");
+	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 }
 
 /// <summary>
@@ -66,10 +66,10 @@ void SceneStageSelect::Finalize()
 void SceneStageSelect::Update(DX::StepTimer const& timer, Game* game)
 {
 	// 入力情報を更新
-	InputManager::GetInstance().Update();
+	InputManager::SingletonGetInstance().Update();
 
 	static int count = 0;
-	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Up))
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Up))
 	{
 		count++;
 		if (count > 3)count = 0;
@@ -77,7 +77,7 @@ void SceneStageSelect::Update(DX::StepTimer const& timer, Game* game)
 	}
 
 	// キー入力
-	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
 	{
 		m_toPlayMoveOnChecker = true;
 	}

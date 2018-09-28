@@ -49,7 +49,7 @@ void SceneResult::Initialize()
 	m_toTitleMoveOnChecker = false;
 
 	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(/*device*/mp_game->GetDevice(), L"SegoeUI_18.spritefont");
+	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 }
 
 /// <summary>
@@ -66,9 +66,9 @@ void SceneResult::Finalize()
 void SceneResult::Update(DX::StepTimer const& timer, Game* game)
 {
 	// 入力情報を更新
-	InputManager::GetInstance().Update();
+	InputManager::SingletonGetInstance().Update();
 	// キー入力
-	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
 	{
 		m_toTitleMoveOnChecker = true;
 	}

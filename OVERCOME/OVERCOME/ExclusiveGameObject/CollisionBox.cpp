@@ -20,7 +20,7 @@ void CollisionBox::SetCollision(Collision::Box box)
 	if (mp_game)
 	{
 		// デバッグ用モデルの作成
-		m_dbgObj = std::make_unique<DebugBox>(mp_game->GetDevice(), m_collision.c, m_collision.r);
+		m_dbgObj = std::make_unique<DebugBox>(/*mp_game->GetDevice()*/DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), m_collision.c, m_collision.r);
 	}
 }
 
@@ -49,7 +49,7 @@ void CollisionBox::DrawDebugCollision(DirectX::SimpleMath::Matrix view)
 	{
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
 		// デバッグ用オブジェクトの表示
-		m_dbgObj->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
+		m_dbgObj->Draw(/*mp_game->GetContext()*/DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
 	}
 }
 void CollisionBox::DrawDebugCollision(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view)
@@ -58,6 +58,6 @@ void CollisionBox::DrawDebugCollision(DirectX::SimpleMath::Matrix world, DirectX
 	{
 		//DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
 		// デバッグ用オブジェクトの表示
-		m_dbgObj->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
+		m_dbgObj->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
 	}
 }

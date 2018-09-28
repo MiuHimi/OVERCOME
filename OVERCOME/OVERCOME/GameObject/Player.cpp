@@ -58,11 +58,11 @@ void Player::Initialize()
 void Player::Create()
 {
 	// エフェクトファクトリー
-	EffectFactory fx(mp_game->GetDevice());
+	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
 	// モデルをロードしてモデルハンドルを取得する
-	m_modelPlayer = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\player.cmo", fx);
+	m_modelPlayer = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\player.cmo", fx);
 
 	// プレイヤーの作成
 	SetGame(mp_game);
@@ -81,25 +81,25 @@ bool Player::Update(DX::StepTimer const & timer)
 	m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	
 	// プレイヤー操作
-	if (InputManager::GetInstance().GetKeyState().Up)
+	if (InputManager::SingletonGetInstance().GetKeyState().Up)
 	{
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.2f);
 	}
-	if (InputManager::GetInstance().GetKeyState().Down)
+	if (InputManager::SingletonGetInstance().GetKeyState().Down)
 	{
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.2f);
 	}
-	if (InputManager::GetInstance().GetKeyState().Left)
+	if (InputManager::SingletonGetInstance().GetKeyState().Left)
 	{
 		m_direction += XMConvertToRadians(2.0f);
 	}
-	if (InputManager::GetInstance().GetKeyState().Right)
+	if (InputManager::SingletonGetInstance().GetKeyState().Right)
 	{
 		m_direction += XMConvertToRadians(-2.0f);
 	}
 
-	if (InputManager::GetInstance().GetKeyState().Space && m_isJump == false ||
-		InputManager::GetInstance().GetKeyState().Space && m_isCollide == true && m_pos.y >= 0.95f)
+	if (InputManager::SingletonGetInstance().GetKeyState().Space && m_isJump == false ||
+		InputManager::SingletonGetInstance().GetKeyState().Space && m_isCollide == true && m_pos.y >= 0.95f)
 	{
 		m_isJump = true;
 		m_vel.y = 0.0f;
@@ -162,7 +162,7 @@ void Player::Render(DirectX::SimpleMath::Matrix view)
 	//rot = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(m_direction));
 
 	// プレイヤーの描画
-	m_modelPlayer->Draw(mp_game->GetContext(), *mp_game->GetState(), m_world, view, mp_game->GetProjection());
+	m_modelPlayer->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), m_world, view, mp_game->GetProjection());
 }
 
 /// <summary>

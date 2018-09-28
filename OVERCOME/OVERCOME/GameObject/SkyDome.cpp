@@ -39,11 +39,11 @@ void SkyDome::Initialize()
 void SkyDome::Create()
 {
 	// エフェクトファクトリー
-	EffectFactory fx(mp_game->GetDevice());
+	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
 	// モデルをロードしてモデルハンドルを取得する
-	m_modelSky = Model::CreateFromCMO(mp_game->GetDevice(), L"Resources\\Models\\sky2.cmo", fx);
+	m_modelSky = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\sky2.cmo", fx);
 }
 
 /// <summary>
@@ -66,7 +66,7 @@ void SkyDome::Render(DirectX::SimpleMath::Matrix view)
 
 	// 床の描画
 	world = SimpleMath::Matrix::Identity;
-	m_modelSky->Draw(mp_game->GetContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
+	m_modelSky->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
 }
 
 /// <summary>

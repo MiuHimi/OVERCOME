@@ -50,7 +50,7 @@ void ScenePlay::Initialize()
 	m_toResultMoveOnChecker = false;
 
 	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(/*device*/mp_game->GetDevice(), L"SegoeUI_18.spritefont");
+	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 
 	// カメラオブジェクトの作成
 	mp_camera = std::make_unique<MyCamera>();
@@ -93,7 +93,7 @@ void ScenePlay::Finalize()
 void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 {
 	// 入力情報を更新
-	InputManager::GetInstance().Update();
+	InputManager::SingletonGetInstance().Update();
 
 	// 床とプレイヤーの衝突判定
 	m_hitPlayerToFloorFlag = false;
@@ -154,7 +154,7 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	
 
 	// シーン操作
-	if (InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
 	{
 		m_toResultMoveOnChecker = true;
 	}
