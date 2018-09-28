@@ -72,10 +72,7 @@ namespace DX
                         D3D_FEATURE_LEVEL minFeatureLevel = D3D_FEATURE_LEVEL_10_0,
                         unsigned int flags = 0);
 
-		// Initializer
-		void Initialize();
-
-		// フレンド関数
+		// friend Function
 		//friend SingletonBase<DeviceResources>;
 
 		// Create,Set Config Function
@@ -88,7 +85,7 @@ namespace DX
         void Present();
 
         // Device Accessors.
-        RECT GetOutputSize() const { return m_outputSize; }
+        RECT                    GetOutputSize() const                   { return m_outputSize; }
 
         // Direct3D Accessors.
         ID3D11Device1*          GetD3DDevice() const                    { return m_d3dDevice.Get(); }

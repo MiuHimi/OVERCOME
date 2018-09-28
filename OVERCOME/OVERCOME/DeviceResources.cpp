@@ -53,16 +53,6 @@ DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depth
     m_options(flags),
     m_deviceNotify(nullptr)
 {
-	//Initialize();
-}
-
-void DX::DeviceResources::Initialize()
-{
-	//SetWindow();
-
-	//CreateDeviceResources();
-
-	//CreateWindowSizeDependentResources();
 }
 
 // Configures the Direct3D device, and stores handles to it and the device context.

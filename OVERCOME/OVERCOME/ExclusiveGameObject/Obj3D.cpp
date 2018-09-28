@@ -47,6 +47,6 @@ void Obj3D::Render()
 	if (mp_model && mp_game) // ポインタがnullでない場合(nullの場合if文に入らない)
 	{
 		// モデルの描画
-		mp_model->Draw(mp_game->GetContext(), *mp_game->GetState(), m_world, mp_game->GetView(), mp_game->GetProjection());
+		mp_model->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), m_world, mp_game->GetView(), mp_game->GetProjection());
 	}
 }

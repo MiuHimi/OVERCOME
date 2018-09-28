@@ -60,7 +60,7 @@ void GameFloor::Create()
 /// </summary>
 /// <param name="timer">‹N“®Œo‰ßŠÔ</param>
 /// <returns>I—¹ó‘Ô</returns>
-bool GameFloor::Update(DX::StepTimer const & timer, Game* game)
+bool GameFloor::Update(DX::StepTimer const & timer)
 {
 	return true;
 }

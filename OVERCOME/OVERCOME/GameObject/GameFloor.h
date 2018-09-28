@@ -40,7 +40,7 @@ public:
 	// ¶¬
 	void Create();
 	// XV
-	bool Update(DX::StepTimer const& timer, Game* game);
+	bool Update(DX::StepTimer const& timer);
 	// •`‰æ
 	void Render(Game* game, DirectX::SimpleMath::Matrix view);
 	// ”pŠüˆ—

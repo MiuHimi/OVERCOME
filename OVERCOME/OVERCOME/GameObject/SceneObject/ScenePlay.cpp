@@ -141,7 +141,7 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	}
 
 	// ƒQ[ƒ€°‚ÌXV
-	mp_gameFloor->Update(timer, game);
+	mp_gameFloor->Update(timer);
 	// ƒQ[ƒ€“¹˜H‚ÌXV
 	mp_gameRoad->Update(timer);
 

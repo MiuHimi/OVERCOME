@@ -237,7 +237,7 @@ void GameRoad::Render(DirectX::SimpleMath::Matrix view)
 			switch (roadType)
 			{
 			case 0: break;                                                                                                                  // ‰½‚à‚È‚µ
-			case 1: m_modelRoadStraight->Draw(/*mp_game->GetContext()*/res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection()); break;   // ’¼ü“¹˜H
+			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection()); break;   // ’¼ü“¹˜H
 			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());     break;   // ––’[“¹˜H
 			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // ‹Èü“¹˜H
 			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // •ªŠò“¹˜H

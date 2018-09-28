@@ -153,14 +153,6 @@ bool Player::Update(DX::StepTimer const & timer)
 /// </summary>
 void Player::Render(DirectX::SimpleMath::Matrix view)
 {
-	/*SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
-	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
-	SimpleMath::Matrix rot = SimpleMath::Matrix::Identity;
-
-	trans = SimpleMath::Matrix::CreateTranslation(m_pos.x, m_pos.y, m_pos.z);*/
-	//m_rotation = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), m_direction);
-	//rot = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(m_direction));
-
 	// ƒvƒŒƒCƒ„[‚Ì•`‰æ
 	m_modelPlayer->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), m_world, view, mp_game->GetProjection());
 }

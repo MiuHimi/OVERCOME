@@ -140,7 +140,6 @@ void Game::Render()
 	m_sprite = new SpriteBatch(context);
 	mp_sceneManager->RenderActiveScene(m_sprite, this);
 	delete m_sprite;
-	
 
 	//ID3D11Device* device = m_deviceResources->GetD3DDevice();
 	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();

@@ -29,7 +29,7 @@ class Game : public DX::IDeviceNotify
 public:
 
 private:
-	std::unique_ptr<DX::DeviceResources>     m_deviceResources;     // Device resources.
+	//std::unique_ptr<DX::DeviceResources>   m_deviceResources;     // Device resources.
 
 	DX::StepTimer                            m_timer;               // Rendering loop timer.
 
@@ -77,9 +77,9 @@ public:
 	// Getter
 	//---
 	// デバイスを取得する
-	ID3D11Device* GetDevice() { return m_deviceResources->GetD3DDevice(); }
+	//ID3D11Device* GetDevice() { return m_deviceResources->GetD3DDevice(); }
 	// コンテキストを取得する
-	ID3D11DeviceContext* GetContext() { return m_deviceResources->GetD3DDeviceContext(); }
+	//ID3D11DeviceContext* GetContext() { return m_deviceResources->GetD3DDeviceContext(); }
 	// コモンステートを取得する
 	DirectX::CommonStates* GetState()/* { return m_states.get(); }*/;
 
