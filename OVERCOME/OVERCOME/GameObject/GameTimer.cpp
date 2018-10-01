@@ -62,6 +62,8 @@ bool GameTimer::Update(DX::StepTimer const& timer)
 {
 	static int countTime = 0;
 	countTime++;
+
+	// 60フレームで１秒経過
 	if (countTime > 60)
 	{
 		m_remainingTime--;
@@ -74,11 +76,11 @@ bool GameTimer::Update(DX::StepTimer const& timer)
 	m_queueDigit.push((m_remainingTime % 60) / 10);
 	m_queueDigit.push((m_remainingTime % 60) % 10);
 
+	// 制限時間が0になったらフラグを立てる
 	if (m_remainingTime == 0)
 	{
 		m_timeUpFlag = true;
 	}
-
 
 	return true;
 }
@@ -95,11 +97,11 @@ void GameTimer::Render()
 	m_posCountDigit[e_secondLowerDigit] = DirectX::SimpleMath::Vector2(m_posBackground.x + 155, m_posBackground.y + 8);
 
 	// スプライトの描画
-	//DirectX::SpriteBatch::SingletonGetInstance().Begin();
 	m_sprites->Begin(DirectX::SpriteSortMode_Deferred, m_states->NonPremultiplied());
-	//DirectX::SpriteBatch::SingletonGetInstance().Draw(m_textureBackground.Get(), m_posBackground);
-	m_sprites->Draw(m_textureBackground.Get(), m_posBackground);
 
+	// 制限時間背景の描画
+	m_sprites->Draw(m_textureBackground.Get(), m_posBackground);
+	// 制限時間数列の描画
 	for (int i = 0; i < e_numDigit; ++i)
 	{
 		int num = m_queueDigit.front();
@@ -107,6 +109,5 @@ void GameTimer::Render()
 		m_queueDigit.pop();
 	}
 
-	//DirectX::SpriteBatch::SingletonGetInstance().End();
 	m_sprites->End();
 }

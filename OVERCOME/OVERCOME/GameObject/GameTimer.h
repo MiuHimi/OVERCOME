@@ -24,11 +24,11 @@ class GameTimer
 public:
 
 private:
-	int m_remainingTime;   // 残り時間
+	int                                                  m_remainingTime;               // 残り時間
 
-	bool m_timeUpFlag;   // タイムアップになっているかどうか
+	bool                                                 m_timeUpFlag;                  // タイムアップになっているかどうか
 
-	std::queue<int> m_queueDigit;
+	std::queue<int>                                      m_queueDigit;                  // 時間設定用
 	
 	enum CountDigit
 	{
@@ -39,13 +39,13 @@ private:
 
 		e_numDigit
 	};
-	DirectX::SimpleMath::Vector2 m_posBackground;               // タイマー背景位置
-	DirectX::SimpleMath::Vector2 m_posCountDigit[e_numDigit];   // タイマー数列位置
+	DirectX::SimpleMath::Vector2                         m_posBackground;               // タイマー背景位置
+	DirectX::SimpleMath::Vector2                         m_posCountDigit[e_numDigit];   // タイマー数列位置
 
-	std::unique_ptr<DirectX::SpriteBatch> m_sprites;   // スプライトバッチ
-	std::unique_ptr<DirectX::CommonStates> m_states;   // コモンステート
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureBackground;   // テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureNum[10];      // テクスチャハンドル
+	std::unique_ptr<DirectX::SpriteBatch>                m_sprites;                     // スプライトバッチ
+	std::unique_ptr<DirectX::CommonStates>               m_states;                      // コモンステート
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;           // テクスチャハンドル
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureNum[10];              // テクスチャハンドル
 
 // メンバー関数
 public:
@@ -61,11 +61,12 @@ public:
 	// 描画
 	void Render();
 
-	// Getter,Setter(時間取得、時間設定)
-	int GetTime() { return m_remainingTime; }
-	void SetTime(int time) { m_remainingTime = time; }
-
-	bool GetTimeUpFlag() { return m_timeUpFlag; }
+	// Getter,Setter
+	// 時間取得、時間設定
+	int GetTime()               { return m_remainingTime; }
+	void SetTime(int time)      { m_remainingTime = time; }
+	// 制限時間内(false)or制限時間到達(true)
+	bool GetTimeUpFlag()        { return m_timeUpFlag; }
 
 private:
 

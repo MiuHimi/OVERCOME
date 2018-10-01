@@ -154,6 +154,11 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 
 	// 制限時間の更新
 	mp_gameTimer->Update(timer);
+	if (mp_gameTimer->GetTimeUpFlag() == true)
+	{
+		// 制限時間がきたらゲームオーバー
+		m_toResultMoveOnChecker = true;
+	}
 
 	// カメラの更新
 	mp_camera->Update(timer, mp_player->GetPlayer());
