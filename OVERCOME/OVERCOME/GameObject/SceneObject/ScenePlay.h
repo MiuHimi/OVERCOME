@@ -22,6 +22,8 @@
 
 #include "../SkyDome.h"
 
+#include "../GameTimer.h"
+
 class ScenePlay : public SceneBase
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -42,6 +44,8 @@ private:
 	static std::unique_ptr<Player> mp_player;     // プレイヤーオブジェクト
 
 	std::unique_ptr<SkyDome> mp_skydome;          // スカイドームオブジェクト
+
+	std::unique_ptr<GameTimer> mp_gameTimer;      // 制限時間オブジェクト
 
 	bool m_hitPlayerToFloorFlag = false;
 	bool m_hitPlayerToRoadFlag = false;

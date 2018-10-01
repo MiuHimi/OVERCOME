@@ -77,6 +77,10 @@ void ScenePlay::Initialize()
 	mp_skydome->Initialize();
 	// スカイドームのモデルの読み込み
 	mp_skydome->Create();
+
+	// 制限時間の生成
+	mp_gameTimer = std::make_unique<GameTimer>();
+	mp_gameTimer->Create();
 }
 
 /// <summary>
@@ -148,6 +152,9 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	// プレイヤーの更新
 	mp_player->Update(timer);
 
+	// 制限時間の更新
+	mp_gameTimer->Update(timer);
+
 	// カメラの更新
 	mp_camera->Update(timer, mp_player->GetPlayer());
 
@@ -186,6 +193,9 @@ void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
 	// プレイヤーの描画
 	mp_player->Render(m_view);
 	//mp_player->DrawDebugCollision(m_view);
+
+	// 制限時間の描画
+	mp_gameTimer->Render();
 
 	// デバッグ用
 	/*sprites->Begin();

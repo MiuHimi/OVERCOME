@@ -45,7 +45,6 @@
     <ClInclude Include="GameObject\MyCamera.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="DebugCamera.h" />
     <ClInclude Include="GameObject\GameRoad.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
@@ -100,6 +99,9 @@
     <ClInclude Include="GameObject\SkyDome.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\GameTimer.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -120,7 +122,6 @@
     <ClCompile Include="GameObject\MyCamera.cpp">
       <Filter>Game\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="DebugCamera.cpp" />
     <ClCompile Include="GameObject\GameRoad.cpp">
       <Filter>Game\GameObject</Filter>
     </ClCompile>
@@ -164,6 +165,9 @@
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
     <ClCompile Include="GameObject\SkyDome.cpp">
+      <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\GameTimer.cpp">
       <Filter>Game\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
