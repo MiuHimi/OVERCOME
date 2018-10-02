@@ -47,8 +47,8 @@ private:
 
 	std::unique_ptr<GameTimer> mp_gameTimer;      // 制限時間オブジェクト
 
-	bool m_hitPlayerToFloorFlag = false;
-	bool m_hitPlayerToRoadFlag = false;
+	//bool m_hitPlayerToFloorFlag = false;
+	//bool m_hitPlayerToRoadFlag = false;
 
 // メンバー関数(関数、Getter、Setter)
 public:

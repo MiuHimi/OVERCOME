@@ -100,11 +100,21 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	InputManager::SingletonGetInstance().Update();
 
 	// 床とプレイヤーの衝突判定
-	m_hitPlayerToFloorFlag = false;
+	//m_hitPlayerToFloorFlag = false;
+	mp_player->SetFloorCollideState(false);
 	if (Collision::HitCheck_Box2Box(mp_gameFloor->GetCollision(), mp_player->GetCollision()) == true)
 	{
-		m_hitPlayerToFloorFlag = true;
+		// 当たったら床との衝突フラグを立てる
+		//m_hitPlayerToFloorFlag = true;
+
+		// ジャンプモーションを終了させる(ためのフラグを立てる)
 		mp_player->SetJumpState(false);
+		// 床との衝突フラグを立てる
+		mp_player->SetFloorCollideState(true);
+		// オブジェクトに接触したためフラグを伏せる
+		mp_player->SetNotTouchState(false);
+
+		// 地面にめり込まないようにする
 		if (mp_player->GetPos().y < 0.0f)
 		{
 			mp_player->SetHeightPos(0.0f);
@@ -112,28 +122,30 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	}
 
 	// 道路とプレイヤーの衝突判定
-	m_hitPlayerToRoadFlag = false;
-	mp_player->SetCollideState(false);
+	//m_hitPlayerToRoadFlag = false;
+	mp_player->SetRoadCollideState(false);
 	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
 	{
 		for (int i = 0; i < mp_gameRoad->GetMaxFloorBlock(); i++)
 		{
-			if (mp_gameRoad->GetRoadObject(j, i).roadType == 1 || mp_gameRoad->GetRoadObject(j, i).roadType == 2 || mp_gameRoad->GetRoadObject(j, i).roadType == 3)
+			if (mp_gameRoad->GetRoadObject(j, i).roadType != 0)
 			{
 				if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollisionObject(j, i)->GetCollision(), mp_player->GetCollision()) == true)
 				{
-					m_hitPlayerToRoadFlag = true;
+					//m_hitPlayerToRoadFlag = true;
 
-					if (mp_player->GetPos().y <= 0.0f)
+					// ジャンプモーションを終了させる(ためのフラグを立てる)
+					mp_player->SetJumpState(false);
+					// 道路との衝突フラグを立てる
+					mp_player->SetRoadCollideState(true);
+					// オブジェクトに接触したためフラグを伏せる
+					mp_player->SetNotTouchState(false);
+
+					// 道路にめり込まないようにする
+					if (mp_player->GetPos().y > 0.5f && mp_player->GetPos().y <= 1.0f)
 					{
-						mp_player->SetHeightVel(0.0f);
+						mp_player->SetHeightPos(1.0f);
 					}
-					if (mp_player->GetPos().y >= 0.5f && mp_player->GetPos().y <= 1.0f)
-					{
-						mp_player->SetJumpState(false);
-						mp_player->SetHeightVel(1.0f);
-					}
-					mp_player->SetCollideState(true);
 
 					if (i == 5 && j == 7)
 					{

@@ -23,23 +23,27 @@ class Player : public CollisionBox
 public:
 
 private:
-	DirectX::SimpleMath::Vector3             m_pos;                   // 位置
-	DirectX::SimpleMath::Vector3             m_vel;                   // 速度
-	float                                    m_direction;             // 向き(角度)
-	DirectX::SimpleMath::Quaternion          m_rotation;              // 回転
-	float                                    m_height;                // 高さ
-	float                                    m_jumpForce;             // ジャンプ力
-	float                                    m_gravity;               // 重力
+	DirectX::SimpleMath::Vector3             m_pos;                       // 位置
+	DirectX::SimpleMath::Vector3             m_vel;                       // 速度
+	float                                    m_direction;                 // 向き(角度)
+	DirectX::SimpleMath::Quaternion          m_rotation;                  // 回転
+	float                                    m_height;                    // 高さ
+	float                                    m_jumpForce;                 // ジャンプ力
+	float                                    m_gravity;                   // 重力
+	float                                    m_fallingPower;              // そのまま落ちるときの力
 
-	bool                                     m_isJump = false;        // ジャンプしたかを判定
-	bool                                     m_isCollide = false;     // 接触したかを判定
+	bool                                     m_isJump = false;            // ジャンプしたかを判定
+	bool                                     m_collideToFloor = false;    // 床と接触したかを判定
+	bool                                     m_collideToRoad = false;     // 道路と接触したかを判定
 
-	DirectX::SimpleMath::Matrix              m_world;                 // ワールド座標
+	bool                                     m_noTouchObectFlag = false;  // 何にも触れずジャンプもしていない時にフラグが立つ
 
-	std::unique_ptr<DirectX::Model>          m_modelPlayer;           // プレイヤーモデルオブジェクト
-	//std::unique_ptr<CollisionBox>          mp_floor;                // 床衝突判定用オブジェクト
+	DirectX::SimpleMath::Matrix              m_world;                     // ワールド座標
 
-	Game*                                    mp_game;                 // Gameファイルの情報を格納
+	std::unique_ptr<DirectX::Model>          m_modelPlayer;               // プレイヤーモデルオブジェクト
+	//std::unique_ptr<CollisionBox>          mp_floor;                    // 床衝突判定用オブジェクト
+
+	Game*                                    mp_game;                     // Gameファイルの情報を格納
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -66,13 +70,21 @@ public:
 	float GetDirection() { return m_direction; }
 	// プレイヤーの高さを取得
 	float GetHeight() { return m_height; }
+	// プレイヤー情報の取得
 	Player* GetPlayer();
 
-	void SetJumpState(bool flag) { m_isJump = flag; }
-	//void SetCollideToRoad(bool flag) { m_isJump = flag; }
 	void SetHeightPos(float pos)      { m_pos.y = pos; }
 	void SetHeightVel(float vel)      { m_vel.y = vel; }
-	void SetCollideState(bool flag)   { m_isCollide = flag; }
+
+	// ジャンプモーションを終了させる(ためのフラグ設定)
+	void SetJumpState(bool flag) { m_isJump = flag; }
+	// 床、道路との衝突判定のフラグ設定
+	void SetFloorCollideState(bool flag)  { m_collideToFloor = flag; }
+	void SetRoadCollideState(bool flag)   { m_collideToRoad = flag; }
+	// 何にも触れずジャンプもしていない時にフラグが立つ
+	void SetNotTouchState(bool flag)      { m_noTouchObectFlag = flag; }
+
+	void SetFallingPower(float power)     { m_fallingPower = power; }
 
 private:
 

@@ -77,16 +77,19 @@ void Player::Create()
 /// <returns>終了状態</returns>
 bool Player::Update(DX::StepTimer const & timer)
 {
-	// 速度初期化
-	m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-	
-	// プレイヤー操作
+	m_vel = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+
+	// プレイヤー移動(ベクトル)
 	if (InputManager::SingletonGetInstance().GetKeyState().Up)
 	{
+		// 速度初期化
+		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.2f);
 	}
 	if (InputManager::SingletonGetInstance().GetKeyState().Down)
 	{
+		// 速度初期化
+		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.2f);
 	}
 	if (InputManager::SingletonGetInstance().GetKeyState().Left)
@@ -98,41 +101,46 @@ bool Player::Update(DX::StepTimer const & timer)
 		m_direction += XMConvertToRadians(-2.0f);
 	}
 
+	// ジャンプ
 	if (InputManager::SingletonGetInstance().GetKeyState().Space && m_isJump == false ||
-		InputManager::SingletonGetInstance().GetKeyState().Space && m_isCollide == true && m_pos.y >= 0.95f)
+		InputManager::SingletonGetInstance().GetKeyState().Space && m_collideToRoad == true && m_pos.y >= 0.95f)
 	{
 		m_isJump = true;
 		m_vel.y = 0.0f;
 		m_jumpForce = 0.5f;
 	}
 
-	if (m_isJump == true)
+	// ジャンプ力調整
+	if (m_isJump == true && m_collideToRoad == false || m_isJump == true && m_collideToRoad == true && m_pos.y >= 0.85f)
 	{
 		m_vel.y += m_jumpForce;
 		if (m_vel.y < -1.0f) m_vel.y = -1.0f;
 		m_jumpForce -= m_gravity;
 	}
-	else if (m_isJump == false && m_isCollide == false)
-	{
-		m_vel.y -= m_gravity;
-	}
-	else if (m_isJump == true && m_isCollide == true)
+	else if (m_isJump == true && m_collideToRoad == true)
 	{
 		m_vel.y = 0.0f;
 	}
 
-	/*if (m_isJump == false)
+	// 何のオブジェクトにも触れず、かつジャンプもしていないときの処理
+	if (m_isJump == false && m_collideToRoad == false && m_collideToFloor == false && m_noTouchObectFlag == false)
 	{
-		if (m_pos.y > 0.0f)
-		{
-			m_vel.y += m_jumpForce;
-			m_jumpForce -= m_gravity;
-		}
-	}*/
+		m_fallingPower = 0;
+		m_noTouchObectFlag = true;
+	}
+	if (m_noTouchObectFlag == true)
+	{
+		m_fallingPower -= m_gravity;
+		m_vel.y += m_fallingPower;
+	}
 
-	if (m_pos.y <= 0.0f)m_pos.y = 0.0f;
+	// 速度上限
+	if (m_vel.y < -0.3f)
+	{
+		m_vel.y = -0.3f;
+	}
 
-	// プレイヤーを移動
+	// プレイヤー移動(座標)
 	m_rotation = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), m_direction);
 	m_vel = SimpleMath::Vector3::Transform(m_vel, m_rotation);
 	m_pos += m_vel;
@@ -140,6 +148,7 @@ bool Player::Update(DX::StepTimer const & timer)
 	// ワールド行列の作成
 	m_world = SimpleMath::Matrix::CreateFromQuaternion(m_rotation) * SimpleMath::Matrix::CreateTranslation(m_pos);
 
+	// 衝突判定用の仮想オブジェクト生成
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
 	box.r = DirectX::SimpleMath::Vector3(0.5f, m_height / 2.0f, 0.5f);                        // 各半径0.5
