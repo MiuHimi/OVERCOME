@@ -42,7 +42,7 @@ public:
 	// XV
 	bool Update(DX::StepTimer const& timer);
 	// •`‰æ
-	void Render(Game* game, DirectX::SimpleMath::Matrix view);
+	void Render(DirectX::SimpleMath::Matrix view);
 	// ”pŠüˆ—
 	void Depose();
 

@@ -147,7 +147,10 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 						mp_player->SetHeightPos(1.0f);
 					}
 
-					if (i == 5 && j == 7)
+					// ƒS[ƒ‹‚É“ž’B‚µ‚½‚ç
+					if (SceneManager::GetStageNum() == 1 && i == 5 && j == 7   ||     // ƒXƒe[ƒW‚P‚ÌƒS[ƒ‹
+						SceneManager::GetStageNum() == 2 && i == 11 && j == 13 ||     // ƒXƒe[ƒW‚Q‚ÌƒS[ƒ‹(•ªŠò‚P)
+						SceneManager::GetStageNum() == 2 && i == 13 && j == 15)       // ƒXƒe[ƒW‚Q‚ÌƒS[ƒ‹(•ªŠò‚Q)
 					{
 						m_toResultMoveOnChecker = true;
 					}
@@ -200,7 +203,7 @@ void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
 	DirectX::SimpleMath::Matrix m_view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
 
 	// ƒQ[ƒ€°‚Ì•`‰æ
-	mp_gameFloor->Render(game, m_view);
+	mp_gameFloor->Render(m_view);
 	// ƒQ[ƒ€“¹˜H‚Ì•`‰æ
 	mp_gameRoad->Render(m_view);
 

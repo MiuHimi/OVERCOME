@@ -67,7 +67,7 @@ bool GameFloor::Update(DX::StepTimer const & timer)
 /// <summary>
 /// •`‰æˆ—
 /// </summary>
-void GameFloor::Render(Game* game, DirectX::SimpleMath::Matrix view)
+void GameFloor::Render(DirectX::SimpleMath::Matrix view)
 {
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
@@ -75,7 +75,7 @@ void GameFloor::Render(Game* game, DirectX::SimpleMath::Matrix view)
 
 	// °‚Ì•`‰æ
 	world = SimpleMath::Matrix::Identity;
-	m_modelLattice->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *game->GetState(), world, view, game->GetProjection());
+	m_modelLattice->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
 }
 
 /// <summary>
