@@ -81,6 +81,10 @@ void ScenePlay::Initialize()
 	// 制限時間の生成
 	mp_gameTimer = std::make_unique<GameTimer>();
 	mp_gameTimer->Create();
+
+	// スコアの生成
+	mp_gameScore = std::make_unique<GameScore>();
+	mp_gameScore->Create();
 }
 
 /// <summary>
@@ -175,6 +179,9 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 		m_toResultMoveOnChecker = true;
 	}
 
+	// スコアの更新
+	mp_gameScore->Update(timer);
+
 	// カメラの更新
 	mp_camera->Update(timer, mp_player->GetPlayer());
 
@@ -216,6 +223,9 @@ void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
 
 	// 制限時間の描画
 	mp_gameTimer->Render();
+
+	// スコアの描画
+	mp_gameScore->Render();
 
 	// デバッグ用
 	/*sprites->Begin();

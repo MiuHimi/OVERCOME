@@ -23,6 +23,7 @@
 #include "../SkyDome.h"
 
 #include "../GameTimer.h"
+#include "../GameScore.h"
 
 class ScenePlay : public SceneBase
 {
@@ -46,6 +47,7 @@ private:
 	std::unique_ptr<SkyDome> mp_skydome;          // スカイドームオブジェクト
 
 	std::unique_ptr<GameTimer> mp_gameTimer;      // 制限時間オブジェクト
+	std::unique_ptr<GameScore> mp_gameScore;      // スコアオブジェクト
 
 	//bool m_hitPlayerToFloorFlag = false;
 	//bool m_hitPlayerToRoadFlag = false;

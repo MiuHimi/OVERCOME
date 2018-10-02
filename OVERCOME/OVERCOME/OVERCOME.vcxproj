@@ -172,6 +172,7 @@
     <ClInclude Include="GameObject\DebugCamera.h" />
     <ClInclude Include="GameObject\GameFloor.h" />
     <ClInclude Include="GameObject\GameRoad.h" />
+    <ClInclude Include="GameObject\GameScore.h" />
     <ClInclude Include="GameObject\GameTimer.h" />
     <ClInclude Include="GameObject\MyCamera.h" />
     <ClInclude Include="GameObject\Player.h" />
@@ -198,6 +199,7 @@
     <ClCompile Include="GameObject\DebugCamera.cpp" />
     <ClCompile Include="GameObject\GameFloor.cpp" />
     <ClCompile Include="GameObject\GameRoad.cpp" />
+    <ClCompile Include="GameObject\GameScore.cpp" />
     <ClCompile Include="GameObject\GameTimer.cpp" />
     <ClCompile Include="GameObject\MyCamera.cpp" />
     <ClCompile Include="GameObject\Player.cpp" />
