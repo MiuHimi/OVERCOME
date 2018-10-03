@@ -19,11 +19,12 @@ class SceneResult : public SceneBase
 public:
 
 private:
-	bool m_toTitleMoveOnChecker;                 // タイトルシーンに進めるかどうかのチェック
-	bool m_returnToPlayChecker;                  // プレイシーンに戻れるかどうかのチェック
+	bool                                   m_toTitleMoveOnChecker;                 // タイトルシーンに進めるかどうかのチェック
+	bool                                   m_returnToPlayChecker;                  // プレイシーンに戻れるかどうかのチェック
+	bool                                   m_resultState;                          // リザルトシーンの状態
 
-	Game* mp_game;                                // Gameファイルの情報を格納
-	std::unique_ptr<DirectX::SpriteFont> m_font;  // スプライトフォント
+	Game*                                  mp_game;                                // Gameファイルの情報を格納
+	std::unique_ptr<DirectX::SpriteFont>   m_font;                                 // スプライトフォント
 
 // メンバー関数(関数、Getter、Setter)
 public:

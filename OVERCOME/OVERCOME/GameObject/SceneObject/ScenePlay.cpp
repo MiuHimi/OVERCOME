@@ -14,6 +14,7 @@ using namespace DirectX;
 //using Microsoft::WRL::ComPtr;
 
 std::unique_ptr<Player> ScenePlay::mp_player;
+bool SceneManager::m_clearSceneState;
 
 /// <summary>
 /// コンストラクタ
@@ -176,6 +177,7 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 						SceneManager::GetStageNum() == 2 && i == 13 && j == 15)       // ステージ２のゴール(分岐２)
 					{
 						m_toResultMoveOnChecker = true;
+						SceneManager::SetResultSceneState(true);
 					}
 				}
 			}
@@ -198,6 +200,7 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	{
 		// 制限時間がきたらゲームオーバー
 		m_toResultMoveOnChecker = true;
+		SceneManager::SetResultSceneState(false);
 	}
 
 	// スコアの更新
@@ -212,6 +215,11 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 		mp_gameScore->SetDeductFlag(false);
 	}
 	mp_gameScore->Update(timer);
+	if (mp_gameScore->GetScore() == 0)
+	{
+		// スコアが0だったらゲームオーバー
+		SceneManager::SetResultSceneState(false);
+	}
 
 	// カメラの更新
 	mp_camera->Update(timer, mp_player->GetPlayer());

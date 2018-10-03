@@ -52,6 +52,8 @@ SceneManager::SceneManager(Game* game, SceneId startSceneId)
 	: /*mp_activeScene(nullptr)
 	, mp_requestedScene(nullptr)
 	, */mp_scene(nullptr)
+	, m_nextScene(SceneId::SCENE_LOGO)
+	, m_requestSceneFlag(false)
 {
 	// シーンリストの初期化
 	/*for (int i = 0; i < NUM_SCENES; i++)

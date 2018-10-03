@@ -67,6 +67,10 @@ void SceneResult::Update(DX::StepTimer const& timer, Game* game)
 {
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
+
+	// リザルトシーンの状態を設定
+	m_resultState = SceneManager::GetResultSceneState();
+
 	// キー入力
 	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
 	{
@@ -89,6 +93,8 @@ void SceneResult::Render(DirectX::SpriteBatch* sprites, Game* game)
 	// デバッグ用
 	sprites->Begin();
 	m_font->DrawString(sprites, L"SceneResult", DirectX::SimpleMath::Vector2(20.0f, 10.0f), Colors::Yellow);
-	m_font->DrawString(sprites, L"SPACEkey to SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
+	if (m_resultState == true)m_font->DrawString(sprites, L"Clear", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
+	if (m_resultState == false)m_font->DrawString(sprites, L"GameOver", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
+	m_font->DrawString(sprites, L"SPACEkey to SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 50.0f), Colors::Yellow);
 	sprites->End();
 }
