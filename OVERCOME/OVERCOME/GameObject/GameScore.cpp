@@ -13,12 +13,13 @@
 /// コンストラクタ
 /// </summary>
 GameScore::GameScore()
-	: m_score(100)
-	, m_addScore(0)
-	, m_timeCount(0)
-	, m_deductTimeCount(0)
-{
-	// スプライトバッチの作成
+	                 : m_score(100)
+	                 , m_timeCount(0)
+	                 , m_deductTimeCount(0)
+	                 , m_compareColum(0)
+	                 , m_compareLine(0)
+{	  
+    // スプライトバッチの作成
 	m_sprites = std::make_unique<DirectX::SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
 	// コモンステートの作成 
 	m_states = std::make_unique<DirectX::CommonStates>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
@@ -83,7 +84,6 @@ bool GameScore::Update(DX::StepTimer const& timer)
 		GameScore::SetScore(0);
 	}
 	
-
 	return true;
 }
 
@@ -104,4 +104,21 @@ void GameScore::Render()
 	m_sprites->Draw(m_textureNum[oneDigit].Get()    , DirectX::SimpleMath::Vector2(750.0f, 530.0f));
 
 	m_sprites->End();
+}
+
+/// <summary>
+/// ジャンプで乗り越えられたら加点
+/// </summary>
+/// <param name="j">行座標</param>
+/// <param name="i">列座標</param>
+void GameScore::AddPointChance(int j, int i)
+{
+	// 以前にいた座標と違えば
+	if (j != m_compareColum || i != m_compareLine)
+	{
+		// 加点
+		GameScore::FluctuationScore(10);
+		// 座標再設定
+		GameScore::SetAddPointChance(j, i);
+	}
 }

@@ -146,6 +146,22 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 					// オブジェクトに接触したためフラグを伏せる
 					mp_player->SetNotTouchState(false);
 
+					// プレイヤーに加点のチャンス、飛ぶ時のために道路座標を取得
+					if (mp_gameScore->GetPointChance() == false && mp_gameRoad->GetRoadObject(j, i).roadType == 2)
+					{
+						mp_gameScore->SetAddPointChance(j, i);
+						mp_gameScore->SetPointChance(true);
+					}
+					if (mp_gameScore->GetPointChance() == true && mp_gameRoad->GetRoadObject(j, i).roadType == 2)
+					{
+						mp_gameScore->AddPointChance(j, i);
+					}
+					if (mp_gameScore->GetPointChance() == true && mp_gameRoad->GetRoadObject(j, i).roadType != 2)
+					{
+						mp_gameScore->SetAddPointChance(0, 0);
+						mp_gameScore->SetPointChance(false);
+					}
+
 					// 道路にめり込まないようにする
 					if (mp_player->GetPos().y > 0.5f && mp_player->GetPos().y <= 1.0f)
 					{
@@ -185,12 +201,12 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	}
 
 	// スコアの更新
-	if (hitObject == false || mp_player->GetJumpState() == false)
+	if (hitObject == false && mp_player->GetJumpState() == false)
 	{
 		// 道路に乗ってないorジャンプしていなかったらフラグを立てる
 		mp_gameScore->SetDeductFlag(true);
 	}
-	else if (hitObject == true || mp_player->GetJumpState() == true)
+	if (hitObject == true || mp_player->GetJumpState() == true)
 	{
 		// 道路に乗っているか、ジャンプしていたらフラグを伏せる
 		mp_gameScore->SetDeductFlag(false);
