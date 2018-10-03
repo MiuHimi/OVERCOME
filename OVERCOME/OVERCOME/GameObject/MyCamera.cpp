@@ -117,17 +117,23 @@ void MyCamera::GameSceneCamera(DirectX::SimpleMath::Vector3 target, float direct
 /// <summary>
 /// 走っているときのプレイヤー目線カメラ
 /// </summary>
+/// <param name="target">注視点</param>
+/// <param name="direction">プレイヤーの向いている方向</param>
 void MyCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction)
 {
+	// サイン波が変動するための値
+	static float wave;
+	wave += 0.01f;
+	float sinWave = sin(wave + (0.5f));
+
 	Vector3 eye(0.0f, 0.0f, -0.1f);
 
-	//m_count += 0.01f;
-
-	//Vector3 targetPos(target);
-	//targetPos.x = /*sin(2 * XM_PI * 2)*/30 + sin(XM_PI * 2 / 30 * m_count);
-	/*if (m_count > 0.1f || m_count < -0.1f) m_count *= -1;
+	/*m_count += 0.01f;
+	Vector3 targetPos(target);
+	targetPos.x = sin(2 * XM_PI * 2)30 + sin(XM_PI * 2 / 30 * m_count);
+	if (m_count > 0.1f || m_count < -0.1f) m_count *= -1;
 	targetPos.x += m_count;*/
-
+	
 	Matrix rotY = Matrix::CreateRotationY(direction);
 	eye = Vector3::Transform(eye, rotY);
 	eye += target;
@@ -139,9 +145,12 @@ void MyCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direct
 	m_eyePt = eye;
 	m_targetPt = target;
 }
+
 /// <summary>
-/// 走っているとき以外用カメラ
+/// 後ろから追いかけるカメラ
 /// </summary>
+/// <param name="target">注視点</param>
+/// <param name="direction">プレイヤーの向いている方向</param>
 void MyCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction)
 {
 	Vector3 eye(0.0f, 0.3f, -4.0f);
