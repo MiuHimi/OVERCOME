@@ -25,7 +25,9 @@ public:
 private:
 	int m_score;
 	int m_addScore;
-	int m_count;
+	int m_timeCount;
+	int m_deductTimeCount;
+	bool m_deductOccurrence;
 
 	std::unique_ptr<DirectX::SpriteBatch>                m_sprites;                     // スプライトバッチ
 	std::unique_ptr<DirectX::CommonStates>               m_states;                      // コモンステート
@@ -50,6 +52,7 @@ public:
 	int GetScore() { return m_score; }
 	void SetScore(int score) { m_score = score; }
 	void FluctuationScore(int addscore) { m_score += addscore; }
+	void SetDeductFlag(bool flag) { m_deductOccurrence = flag; }
 
 private:
 

@@ -15,7 +15,8 @@
 GameScore::GameScore()
 	: m_score(100)
 	, m_addScore(0)
-	, m_count(0)
+	, m_timeCount(0)
+	, m_deductTimeCount(0)
 {
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<DirectX::SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
@@ -53,17 +54,35 @@ void GameScore::Create()
 /// <param name="timer">起動経過時間</param>
 bool GameScore::Update(DX::StepTimer const& timer)
 {
-	m_count++;
-	if (m_count > 180)
+	// 時間経過による減点
+	m_timeCount++;
+	if (m_timeCount > 180)
 	{
-		m_count = 0;
+		m_timeCount = 0;
 		GameScore::FluctuationScore(-10);
 	}
+	
+	// コースアウトによる減点
+	if (m_deductOccurrence == true)
+	{
+		m_deductTimeCount++;
+		if (m_deductTimeCount > 60)
+		{
+			GameScore::FluctuationScore(-5);
+			m_deductTimeCount = 0;
+		}
+	}
+	if (m_deductOccurrence == false)
+	{
+		m_deductTimeCount = 0;
+	}
 
+	// スコアの下限
 	if (GameScore::GetScore() <= 0)
 	{
 		GameScore::SetScore(0);
 	}
+	
 
 	return true;
 }

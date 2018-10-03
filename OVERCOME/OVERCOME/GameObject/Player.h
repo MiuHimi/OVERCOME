@@ -70,11 +70,12 @@ public:
 	float GetDirection() { return m_direction; }
 	// プレイヤーの高さを取得
 	float GetHeight() { return m_height; }
+	// プレイヤーがジャンプ中であるかを取得
+	bool GetJumpState() { return m_isJump; }
 	// プレイヤー情報の取得
 	Player* GetPlayer();
 
 	void SetHeightPos(float pos)      { m_pos.y = pos; }
-	void SetHeightVel(float vel)      { m_vel.y = vel; }
 
 	// ジャンプモーションを終了させる(ためのフラグ設定)
 	void SetJumpState(bool flag) { m_isJump = flag; }

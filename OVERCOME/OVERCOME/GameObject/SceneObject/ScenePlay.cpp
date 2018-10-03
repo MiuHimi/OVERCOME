@@ -128,6 +128,7 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	// 道路とプレイヤーの衝突判定
 	//m_hitPlayerToRoadFlag = false;
 	mp_player->SetRoadCollideState(false);
+	bool hitObject = false;
 	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
 	{
 		for (int i = 0; i < mp_gameRoad->GetMaxFloorBlock(); i++)
@@ -151,8 +152,10 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 						mp_player->SetHeightPos(1.0f);
 					}
 
+					hitObject = true;
+
 					// ゴールに到達したら
-					if (SceneManager::GetStageNum() == 1 && i == 5 && j == 7   ||     // ステージ１のゴール
+					if (SceneManager::GetStageNum() == 1 && i == 5 && j == 7 ||       // ステージ１のゴール
 						SceneManager::GetStageNum() == 2 && i == 11 && j == 13 ||     // ステージ２のゴール(分岐１)
 						SceneManager::GetStageNum() == 2 && i == 13 && j == 15)       // ステージ２のゴール(分岐２)
 					{
@@ -160,7 +163,9 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 					}
 				}
 			}
+			if (hitObject == true) break;
 		}
+		if (hitObject == true) break;
 	}
 
 	// ゲーム床の更新
@@ -180,6 +185,16 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 	}
 
 	// スコアの更新
+	if (hitObject == false || mp_player->GetJumpState() == false)
+	{
+		// 道路に乗ってないorジャンプしていなかったらフラグを立てる
+		mp_gameScore->SetDeductFlag(true);
+	}
+	else if (hitObject == true || mp_player->GetJumpState() == true)
+	{
+		// 道路に乗っているか、ジャンプしていたらフラグを伏せる
+		mp_gameScore->SetDeductFlag(false);
+	}
 	mp_gameScore->Update(timer);
 
 	// カメラの更新
