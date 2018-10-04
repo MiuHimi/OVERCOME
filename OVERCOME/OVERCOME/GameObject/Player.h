@@ -65,27 +65,28 @@ public:
 	void Depose();
 
 	// プレイヤーの位置を取得
-	DirectX::SimpleMath::Vector3 GetPos() { return m_pos; }
+	DirectX::SimpleMath::Vector3 GetPos()           { return m_pos; }
 	// プレイヤーの向きを取得
-	float GetDirection() { return m_direction; }
+	float GetDirection()                            { return m_direction; }
 	// プレイヤーの高さを取得
-	float GetHeight() { return m_height; }
+	float GetHeight()                               { return m_height; }
 	// プレイヤーがジャンプ中であるかを取得
-	bool GetJumpState() { return m_isJump; }
+	bool GetJumpState()                             { return m_isJump; }
 	// プレイヤー情報の取得
 	Player* GetPlayer();
 
-	void SetHeightPos(float pos)      { m_pos.y = pos; }
+	// プレイヤーの高さのみの位置を設定
+	void SetHeightPos(float pos)                    { m_pos.y = pos; }
+	// 道路からそのまま落ちていく速度を設定
+	void SetFallingPower(float power)               { m_fallingPower = power; }
 
 	// ジャンプモーションを終了させる(ためのフラグ設定)
-	void SetJumpState(bool flag) { m_isJump = flag; }
+	void SetJumpState(bool flag)                    { m_isJump = flag; }
 	// 床、道路との衝突判定のフラグ設定
-	void SetFloorCollideState(bool flag)  { m_collideToFloor = flag; }
-	void SetRoadCollideState(bool flag)   { m_collideToRoad = flag; }
+	void SetFloorCollideState(bool flag)            { m_collideToFloor = flag; }
+	void SetRoadCollideState(bool flag)             { m_collideToRoad = flag; }
 	// 何にも触れずジャンプもしていない時にフラグが立つ
-	void SetNotTouchState(bool flag)      { m_noTouchObectFlag = flag; }
-
-	void SetFallingPower(float power)     { m_fallingPower = power; }
+	void SetNotTouchState(bool flag)                { m_noTouchObectFlag = flag; }
 
 private:
 
