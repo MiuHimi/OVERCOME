@@ -13,9 +13,8 @@
 
 #include "../../Game.h"
 
-#include "../MyCamera.h"
-
 #include "../Player.h"
+#include "../GameCamera.h"
 
 #include "../GameFloor.h"
 #include "../GameRoad.h"
@@ -37,7 +36,7 @@ private:
 	Game* mp_game;                                // Gameファイルの情報を格納
 	std::unique_ptr<DirectX::SpriteFont> m_font;  // スプライトフォント
 
-	std::unique_ptr<MyCamera> mp_camera;          // カメラオブジェクト
+	std::unique_ptr<GameCamera> mp_camera;          // カメラオブジェクト
 
 	std::unique_ptr<GameFloor> mp_gameFloor;	  // ゲーム床オブジェクト
 	std::unique_ptr<GameRoad>  mp_gameRoad;	      // ゲーム道路オブジェクト

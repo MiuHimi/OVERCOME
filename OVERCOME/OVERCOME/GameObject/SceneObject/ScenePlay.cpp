@@ -54,7 +54,7 @@ void ScenePlay::Initialize()
 	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 
 	// カメラオブジェクトの作成
-	mp_camera = std::make_unique<MyCamera>();
+	mp_camera = std::make_unique<GameCamera>();
 
 	// ゲーム床の生成
 	mp_gameFloor = std::make_unique<GameFloor>(mp_game);

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
-// File.    MyCamera.h
-// Summary. MyCameraClass
-// Date.    2018/07/27
+// File.    GameCamera.h
+// Summary. GameCameraClass
+// Date.    2018/10/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -15,7 +15,7 @@
 #include "Player.h"
 
 class Player;
-class MyCamera : public Camera
+class GameCamera : public Camera
 {
 // メンバー変数
 public:
@@ -26,9 +26,9 @@ private:
 // メンバー関数
 public:
 	// コンストラクタ
-	MyCamera();
+	GameCamera();
 	// デストラクタ
-	~MyCamera();
+	~GameCamera();
 
 	// 更新(主にカメラの切り替えを行う)
 	bool Update(DX::StepTimer const & timer, Player* player);

@@ -1,32 +1,34 @@
 //////////////////////////////////////////////////////////////
-// File.    MyCamera.cpp
-// Summary. MyCameraClass
-// Date.    2018/07/27
+// File.    GameCamera.cpp
+// Summary. GameCameraClass
+// Date.    2018/10/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
-// ヘッダをインクルード
-#include "../pch.h"
-#include "MyCamera.h"
-
-#include "../ExclusiveGameObject/InputManager.h"
-
+// インクルードディレクトリ
 #include <math.h>
 #include <cmath>
 
+#include "../pch.h"
+#include "GameCamera.h"
+
+#include "../ExclusiveGameObject/InputManager.h"
+
+// usingディレクトリ
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
+
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-MyCamera::MyCamera():m_angle(0.0f)
+GameCamera::GameCamera() :m_angle(0.0f)
 {
 }
 /// <summary>
 /// デストラクタ
 /// </summary>
-MyCamera::~MyCamera()
+GameCamera::~GameCamera()
 {
 }
 
@@ -36,11 +38,11 @@ MyCamera::~MyCamera()
 /// <param name="timer">経過時間</param>
 /// <param name="player">プレイヤー情報</param>
 /// <returns>終了状態</returns>
-bool MyCamera::Update(DX::StepTimer const & timer, Player* player)
+bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 {
 	// カメラの切り替えを決めるフラグ
 	static bool cameraFlag = true;
-	
+
 	// Bキーでカメラ切り替え(仮)
 	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
 	{
@@ -55,6 +57,8 @@ bool MyCamera::Update(DX::StepTimer const & timer, Player* player)
 			ResetCamera();
 		}
 	}
+
+	// フラグに応じたカメラ管理
 	if (cameraFlag)
 	{
 		Vector3 target(player->GetPos());
@@ -74,7 +78,7 @@ bool MyCamera::Update(DX::StepTimer const & timer, Player* player)
 /// <summary>
 /// 原点を注視点にし、周りを周回するカメラ
 /// </summary>
-void MyCamera::OriginPointAroundCamera()
+void GameCamera::OriginPointAroundCamera()
 {
 	// カメラの位置設定(スタート位置)
 	Vector3 eye(20.0f, 8.0f, 0.0f);
@@ -91,7 +95,7 @@ void MyCamera::OriginPointAroundCamera()
 /// </summary>
 /// <param name="target">注視点</param>
 /// <param name="direction">プレイヤーの向いている方向</param>
-void MyCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction)
+void GameCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction)
 {
 	// サイン波が変動するための値
 	static float wave;
@@ -99,8 +103,9 @@ void MyCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direct
 	// 水平方向のカメラの揺れ
 	float horizontalAxis = sin(wave) *2.0f / 300.0f;
 
+	// 視点設定
 	Vector3 eye(horizontalAxis/*0.0f*/, 0.0f, -0.1f);
-	
+
 	Matrix rotY = Matrix::CreateRotationY(direction);
 	eye = Vector3::Transform(eye, rotY);
 	eye += target;
@@ -118,8 +123,9 @@ void MyCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direct
 /// </summary>
 /// <param name="target">注視点</param>
 /// <param name="direction">プレイヤーの向いている方向</param>
-void MyCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction)
+void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction)
 {
+	// 視点設定
 	Vector3 eye(0.0f, 0.3f, -4.0f);
 
 	Matrix rotY = Matrix::CreateRotationY(direction);
