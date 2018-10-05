@@ -123,11 +123,11 @@ void MyCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direct
 {
 	// サイン波が変動するための値
 	static float wave;
-	wave += 0.01f;
-	float sinWave = sin(wave + (0.5f));
-	// // sin波の値 = sin(一フレームで変動する値+(複数いる場合、個数×nでそれぞれをずらすことができる)) * ふり幅(どれほどの幅で上下or左右移動するか)
+	wave += 0.1f;
+	// 水平方向のカメラの揺れ
+	float horizontalAxis = sin(wave) / 100.0f;
 
-	Vector3 eye(0.0f, 0.0f, -0.1f);
+	Vector3 eye(horizontalAxis, 0.0f, -0.1f);
 
 	/*m_count += 0.01f;
 	Vector3 targetPos(target);

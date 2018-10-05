@@ -128,15 +128,6 @@ void Game::Render()
 
 	// ここから描画処理を記述する
 
-	/*// 回転用変数
-	static float angle = 0.0f;
-	angle += 0.3f;
-	// サイン波が変動するための値
-	static float wave;
-	wave += 0.01f;
-	float sinWave = sin(wave + (1.0f*2.0f)) * 2.0f;*/
-	// sin波の値 = sin(一フレームで変動する値+(複数いる場合、個数×nでそれぞれをずらすことができる)) * ふり幅(どれほどの幅で上下or左右移動するか)
-
 	// アクティブなシーンを描画
 	m_sprite = new SpriteBatch(context);
 	mp_sceneManager->RenderActiveScene(m_sprite, this);
