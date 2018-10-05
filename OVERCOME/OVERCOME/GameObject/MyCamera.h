@@ -7,6 +7,9 @@
 
 #pragma once
 
+// インクルードディレクトリ
+#include "../pch.h"
+
 #include "Camera.h"
 
 #include "Player.h"
@@ -18,12 +21,7 @@ class MyCamera : public Camera
 public:
 
 private:
-	// 回転角
-	float m_angle;
-
-	float m_count = 0.0f;
-
-	Player* mp_player;
+	float          m_angle;          // 回転角
 
 // メンバー関数
 public:
@@ -32,12 +30,11 @@ public:
 	// デストラクタ
 	~MyCamera();
 
+	// 更新(主にカメラの切り替えを行う)
 	bool Update(DX::StepTimer const & timer, Player* player);
 
-	// タイトルシーン用カメラ
-	void TitleSceneCamera();
-	// ゲームシーン用カメラ
-	void GameSceneCamera(DirectX::SimpleMath::Vector3 target, float direction);
+	// 原点を注視点にし、周りを周回するカメラ
+	void OriginPointAroundCamera();
 
 	// 走っているとき用カメラ
 	void RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);

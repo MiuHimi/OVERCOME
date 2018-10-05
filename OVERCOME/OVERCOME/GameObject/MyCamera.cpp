@@ -22,31 +22,26 @@ using namespace DirectX::SimpleMath;
 /// </summary>
 MyCamera::MyCamera():m_angle(0.0f)
 {
-	mp_player = new Player();
-	//mp_player = Player::GetPlayer();
-	mp_player->Initialize();
 }
 /// <summary>
 /// デストラクタ
 /// </summary>
 MyCamera::~MyCamera()
 {
-	delete mp_player;
-	mp_player = nullptr;
 }
 
 /// <summary>
-/// 更新
+/// 更新(主にカメラの切り替えを行う)
 /// </summary>
+/// <param name="timer">経過時間</param>
+/// <param name="player">プレイヤー情報</param>
+/// <returns>終了状態</returns>
 bool MyCamera::Update(DX::StepTimer const & timer, Player* player)
 {
-	// プレイヤー情報を更新
-	//mp_player->Update(timer);
-
+	// カメラの切り替えを決めるフラグ
 	static bool cameraFlag = true;
-	/*Vector3 target(player->GetPos());
-	target.y += player->GetHeight();
-	RunPlayerCamera(target, player->GetDirection());*/
+	
+	// Bキーでカメラ切り替え(仮)
 	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
 	{
 		if (cameraFlag == true)
@@ -77,9 +72,9 @@ bool MyCamera::Update(DX::StepTimer const & timer, Player* player)
 }
 
 /// <summary>
-/// タイトルシーン用カメラ
+/// 原点を注視点にし、周りを周回するカメラ
 /// </summary>
-void MyCamera::TitleSceneCamera()
+void MyCamera::OriginPointAroundCamera()
 {
 	// カメラの位置設定(スタート位置)
 	Vector3 eye(20.0f, 8.0f, 0.0f);
@@ -89,29 +84,6 @@ void MyCamera::TitleSceneCamera()
 	Matrix rotY = Matrix::CreateRotationY(XMConvertToRadians(m_angle));
 	eye = Vector3::Transform(eye, rotY);
 	SetPositionTarget(eye, Vector3(0.0f, 0.0f, 0.0f));
-}
-
-/// <summary>
-/// ゲームシーン用カメラ
-/// </summary>
-void MyCamera::GameSceneCamera(DirectX::SimpleMath::Vector3 target, float direction)
-{
-	Vector3 eye(0.0f, 3.0f, -5.0f);
-
-	Matrix rotY = Matrix::CreateRotationY(direction);
-	eye = Vector3::Transform(eye, rotY);
-	eye += target;
-
-	// 補間する場合
-	SetPositionTarget(eye, target);
-
-	// 補間しない場合
-	//m_eyePt = eye;
-	//m_targetPt = target;
-
-	/*Matrix rotY = Matrix::CreateRotationY(XMConvertToRadians(m_angle));
-	eye = Vector3::Transform(eye, rotY);
-	SetPositionTarget(eye, Vector3(0.0f, 0.0f, 0.0f));*/
 }
 
 /// <summary>
@@ -125,15 +97,9 @@ void MyCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direct
 	static float wave;
 	wave += 0.1f;
 	// 水平方向のカメラの揺れ
-	float horizontalAxis = sin(wave) / 100.0f;
+	float horizontalAxis = sin(wave) *2.0f / 300.0f;
 
-	Vector3 eye(horizontalAxis, 0.0f, -0.1f);
-
-	/*m_count += 0.01f;
-	Vector3 targetPos(target);
-	targetPos.x = sin(2 * XM_PI * 2)30 + sin(XM_PI * 2 / 30 * m_count);
-	if (m_count > 0.1f || m_count < -0.1f) m_count *= -1;
-	targetPos.x += m_count;*/
+	Vector3 eye(horizontalAxis/*0.0f*/, 0.0f, -0.1f);
 	
 	Matrix rotY = Matrix::CreateRotationY(direction);
 	eye = Vector3::Transform(eye, rotY);
