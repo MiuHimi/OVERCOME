@@ -125,6 +125,7 @@ void MyCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direct
 	static float wave;
 	wave += 0.01f;
 	float sinWave = sin(wave + (0.5f));
+	// // sin波の値 = sin(一フレームで変動する値+(複数いる場合、個数×nでそれぞれをずらすことができる)) * ふり幅(どれほどの幅で上下or左右移動するか)
 
 	Vector3 eye(0.0f, 0.0f, -0.1f);
 
