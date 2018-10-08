@@ -100,11 +100,14 @@ void GameCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float dire
 	// サイン波が変動するための値
 	static float wave;
 	wave += 0.1f;
+	static float waveV;
+	waveV += 0.1f;
 	// 水平方向のカメラの揺れ
-	float horizontalAxis = sin(wave) *2.0f / 300.0f;
+	float horizontalAxis = sin(wave) * 2.0f / 500.0f;
+	float verticalAxis = (sin(wave) + 1.0f) / 500.0f;
 
 	// 視点設定
-	Vector3 eye(horizontalAxis/*0.0f*/, 0.0f, -0.1f);
+	Vector3 eye(horizontalAxis/*0.0f*/, /*verticalAxis*/0.0f, -0.1f);
 
 	Matrix rotY = Matrix::CreateRotationY(direction);
 	eye = Vector3::Transform(eye, rotY);

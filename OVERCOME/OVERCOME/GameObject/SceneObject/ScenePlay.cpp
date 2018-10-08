@@ -257,7 +257,7 @@ void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
 	mp_skydome->Render(m_view);
 
 	// ƒvƒŒƒCƒ„[‚Ì•`‰æ
-	mp_player->Render(m_view);
+	//mp_player->Render(m_view);
 	//mp_player->DrawDebugCollision(m_view);
 
 	// §ŒÀŠÔ‚Ì•`‰æ
