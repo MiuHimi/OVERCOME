@@ -52,6 +52,8 @@ void GameTimer::Create()
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_7_image.png", nullptr, m_textureNum[7].GetAddressOf());
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_8_image.png", nullptr, m_textureNum[8].GetAddressOf());
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_9_image.png", nullptr, m_textureNum[9].GetAddressOf());
+
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\himi_logo.png", nullptr, m_textureTest.GetAddressOf());
 }
 
 /// <summary>
@@ -107,6 +109,12 @@ void GameTimer::Render()
 		int num = m_queueDigit.front();
 		m_sprites->Draw(m_textureNum[num].Get(), m_posCountDigit[i]);
 		m_queueDigit.pop();
+		RECT rect;
+		rect.bottom = 160.0f;
+		rect.left = 0.0f;
+		rect.right = 160.0f;
+		rect.top = 0.0f;
+		m_sprites->Draw(m_textureTest.Get(), DirectX::SimpleMath::Vector2(300.0f, 400.0f), &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f),1, DirectX::SpriteEffects_None, 0.0f);
 	}
 
 	m_sprites->End();

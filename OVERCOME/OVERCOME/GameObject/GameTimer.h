@@ -45,6 +45,7 @@ private:
 	std::unique_ptr<DirectX::SpriteBatch>                m_sprites;                     // スプライトバッチ
 	std::unique_ptr<DirectX::CommonStates>               m_states;                      // コモンステート
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;           // テクスチャハンドル
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureTest;           // テクスチャハンドル
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureNum[10];              // テクスチャハンドル
 
 // メンバー関数
