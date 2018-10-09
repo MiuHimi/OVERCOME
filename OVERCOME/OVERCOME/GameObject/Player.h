@@ -24,24 +24,23 @@ public:
 
 private:
 	DirectX::SimpleMath::Vector3             m_pos;                       // 位置
-	DirectX::SimpleMath::Vector3             m_vel;                       // 速度
+	DirectX::SimpleMath::Vector3             m_vel;                       // 速度(ベクトル)
+	float                                    m_accel;                     // 加速度
 	float                                    m_direction;                 // 向き(角度)
 	DirectX::SimpleMath::Quaternion          m_rotation;                  // 回転
-	float                                    m_height;                    // 高さ
+	float                                    m_height;                    // プレイヤー自身の高さ
 	float                                    m_jumpForce;                 // ジャンプ力
 	float                                    m_gravity;                   // 重力
 	float                                    m_fallingPower;              // そのまま落ちるときの力
 
-	bool                                     m_isJump = false;            // ジャンプしたかを判定
-	bool                                     m_collideToFloor = false;    // 床と接触したかを判定
-	bool                                     m_collideToRoad = false;     // 道路と接触したかを判定
-
+	bool                                     m_isJump           = false;  // ジャンプしたかを判定
+	bool                                     m_collideToFloor   = false;  // 床と接触したかを判定
+	bool                                     m_collideToRoad    = false;  // 道路と接触したかを判定
 	bool                                     m_noTouchObectFlag = false;  // 何にも触れずジャンプもしていない時にフラグが立つ
 
 	DirectX::SimpleMath::Matrix              m_world;                     // ワールド座標
 
 	std::unique_ptr<DirectX::Model>          m_modelPlayer;               // プレイヤーモデルオブジェクト
-	//std::unique_ptr<CollisionBox>          mp_floor;                    // 床衝突判定用オブジェクト
 
 	Game*                                    mp_game;                     // Gameファイルの情報を格納
 

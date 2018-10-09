@@ -261,10 +261,10 @@ void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
 	//mp_player->DrawDebugCollision(m_view);
 
 	// 制限時間の描画
-	mp_gameTimer->Render();
+	//mp_gameTimer->Render();
 
 	// スコアの描画
-	mp_gameScore->Render();
+	//mp_gameScore->Render();
 
 	// デバッグ用
 	/*sprites->Begin();

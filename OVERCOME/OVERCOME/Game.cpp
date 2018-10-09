@@ -57,7 +57,7 @@ void Game::Initialize(HWND window, int width, int height)
 	DX::DeviceResources::SingletonGetInstance().CreateWindowSizeDependentResources();
     CreateWindowSizeDependentResources();
 
-	mp_sceneManager = std::make_unique<SceneManager>(this, SceneId::SCENE_TITLE);
+	mp_sceneManager = std::make_unique<SceneManager>(this, SceneId::SCENE_SELECTSTAGE);
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:

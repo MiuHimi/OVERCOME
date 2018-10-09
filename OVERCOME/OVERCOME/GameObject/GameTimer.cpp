@@ -109,12 +109,12 @@ void GameTimer::Render()
 		int num = m_queueDigit.front();
 		m_sprites->Draw(m_textureNum[num].Get(), m_posCountDigit[i]);
 		m_queueDigit.pop();
-		RECT rect;
+		/*RECT rect;
 		rect.bottom = 160.0f;
 		rect.left = 0.0f;
 		rect.right = 160.0f;
 		rect.top = 0.0f;
-		m_sprites->Draw(m_textureTest.Get(), DirectX::SimpleMath::Vector2(300.0f, 400.0f), &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f),1, DirectX::SpriteEffects_None, 0.0f);
+		m_sprites->Draw(m_textureTest.Get(), DirectX::SimpleMath::Vector2(300.0f, 400.0f), &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f),1, DirectX::SpriteEffects_None, 0.0f);*/
 	}
 
 	m_sprites->End();

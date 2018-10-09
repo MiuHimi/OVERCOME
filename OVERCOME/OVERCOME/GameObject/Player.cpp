@@ -43,14 +43,16 @@ Player::~Player()
 /// </summary>
 void Player::Initialize()
 {
-	//m_direction = 0.0f;
-	m_direction = XMConvertToRadians(180.0f);
-	m_height = 1.75f;
+	// 各変数初期化
+	m_accel        = 0.0f;                                        // 加速度
+	m_direction    = XMConvertToRadians(180.0f);                  // 向き(角度)
+	m_rotation     = DirectX::SimpleMath::Quaternion::Identity;   // 回転
+	m_height       = 1.75f;                                       // プレイヤー自身の高さ
+	m_jumpForce    = 0.0f;                                        // ジャンプ力
+	m_gravity      = 0.03f;                                       // 重力
+	m_fallingPower = 0.0f;                                        // そのまま落ちる時の力
 
-	m_jumpForce = 0.0f;
-	m_gravity = 0.03f;
-
-	m_world = SimpleMath::Matrix::Identity;
+	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
 }
 /// <summary>
 /// 生成処理
@@ -77,20 +79,32 @@ void Player::Create()
 /// <returns>終了状態</returns>
 bool Player::Update(DX::StepTimer const & timer)
 {
-	m_vel = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	m_vel = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_accel);
 
 	// プレイヤー移動(ベクトル)
 	if (InputManager::SingletonGetInstance().GetKeyState().Up)
 	{
+		// 加速度設定
+		m_accel += 0.01f;
+		if (m_accel > 1.0f)
+		{
+			m_accel = 1.0f;
+		}
 		// 速度初期化
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.2f);
+		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.2f + m_accel);
 	}
 	if (InputManager::SingletonGetInstance().GetKeyState().Down)
 	{
+		// 加速度設定
+		m_accel -= 0.01f;
+		if (m_accel < -1.0f)
+		{
+			m_accel = -1.0f;
+		}
 		// 速度初期化
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.2f);
+		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.2f + m_accel);
 	}
 	if (InputManager::SingletonGetInstance().GetKeyState().Left)
 	{
@@ -151,7 +165,7 @@ bool Player::Update(DX::StepTimer const & timer)
 	// 衝突判定用の仮想オブジェクト生成
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
-	box.r = DirectX::SimpleMath::Vector3(0.5f, m_height / 2.0f, 0.5f);                        // 各半径0.5
+	box.r = DirectX::SimpleMath::Vector3(0.5f, m_height / 2.0f, 0.5f);                        // 各半径
 	SetCollision(box);
 
 	return true;
@@ -175,6 +189,10 @@ void Player::Depose()
 	mp_game = NULL;
 }
 
+/// <summary>
+/// プレイヤーの情報を返す
+/// </summary>
+/// <returns>プレイヤー情報</returns>
 Player* Player::GetPlayer()
 {
 	return this;
