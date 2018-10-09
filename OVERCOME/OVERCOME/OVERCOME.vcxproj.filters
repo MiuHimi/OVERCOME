@@ -105,6 +105,9 @@
     <ClInclude Include="GameObject\GameCamera.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\MatrixManager.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -175,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="GameObject\GameCamera.cpp">
       <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\MatrixManager.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -13,6 +13,8 @@
 
 #include "GameObject/SceneObject/ScenePlay.h"
 
+#include "ExclusiveGameObject\MatrixManager.h"
+
 // デバッグ
 #if _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -32,9 +34,7 @@ using Microsoft::WRL::ComPtr;
 
 Game::Game()
 {
-    //m_deviceResources = std::make_unique<DX::DeviceResources>();
 	DX::DeviceResources::SingletonGetInstance().RegisterDeviceNotify(this);
-    //m_deviceResources->RegisterDeviceNotify(this);
 }
 
 // Initialize the Direct3D resources required to run.
@@ -46,14 +46,11 @@ void Game::Initialize(HWND window, int width, int height)
 	// デバッグカメラの作成
 	//m_debugCamera = std::make_unique<DebugCamera>(width, height);
 
-    //m_deviceResources->SetWindow(window, width, height);
 	DX::DeviceResources::SingletonGetInstance().SetWindow(window, width, height);
 
-    //m_deviceResources->CreateDeviceResources();
 	DX::DeviceResources::SingletonGetInstance().CreateDeviceResources();
     CreateDeviceDependentResources();
 
-    //m_deviceResources->CreateWindowSizeDependentResources();
 	DX::DeviceResources::SingletonGetInstance().CreateWindowSizeDependentResources();
     CreateWindowSizeDependentResources();
 
@@ -114,9 +111,7 @@ void Game::Render()
 
 	Clear();
 
-	//m_deviceResources->PIXBeginEvent(L"Render");
 	DX::DeviceResources::SingletonGetInstance().PIXBeginEvent(L"Render");
-	//auto context = m_deviceResources->GetD3DDeviceContext();
 	auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
 
 	// ビュー行列の作成
@@ -133,33 +128,26 @@ void Game::Render()
 	mp_sceneManager->RenderActiveScene(m_sprite, this);
 	delete m_sprite;
 
-	//ID3D11Device* device = m_deviceResources->GetD3DDevice();
 	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
 	// コモンステートの作成
 	m_states = std::make_unique<CommonStates>(device);
 
 	// ここまで
 
-    //m_deviceResources->PIXEndEvent();
 	DX::DeviceResources::SingletonGetInstance().PIXEndEvent();
 
     // Show the new frame.
-    //m_deviceResources->Present();
 	DX::DeviceResources::SingletonGetInstance().Present();
 }
 
 // Helper method to clear the back buffers.
 void Game::Clear()
 {
-    //m_deviceResources->PIXBeginEvent(L"Clear");
 	DX::DeviceResources::SingletonGetInstance().PIXBeginEvent(L"Clear");
 
     // Clear the views.
-    //auto context = m_deviceResources->GetD3DDeviceContext();
 	auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
-    //auto renderTarget = m_deviceResources->GetRenderTargetView();
 	auto renderTarget = DX::DeviceResources::SingletonGetInstance().GetRenderTargetView();
-    //auto depthStencil = m_deviceResources->GetDepthStencilView();
 	auto depthStencil = DX::DeviceResources::SingletonGetInstance().GetDepthStencilView();
 
     context->ClearRenderTargetView(renderTarget, Colors::DarkBlue);
@@ -167,13 +155,11 @@ void Game::Clear()
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
 
     // Set the viewport.
-    //auto viewport = m_deviceResources->GetScreenViewport();
 	auto viewport = DX::DeviceResources::SingletonGetInstance().GetScreenViewport();
     context->RSSetViewports(1, &viewport);
 
 	OnDeviceLost();
 
-    //m_deviceResources->PIXEndEvent();
 	DX::DeviceResources::SingletonGetInstance().PIXEndEvent();
 }
 #pragma endregion
@@ -204,7 +190,7 @@ void Game::OnResuming()
 
 void Game::OnWindowSizeChanged(int width, int height)
 {
-    if (/*!m_deviceResources->WindowSizeChanged(width, height)*/!DX::DeviceResources::SingletonGetInstance().WindowSizeChanged(width, height))
+    if (!DX::DeviceResources::SingletonGetInstance().WindowSizeChanged(width, height))
         return;
 
     CreateWindowSizeDependentResources();
@@ -225,9 +211,7 @@ void Game::GetDefaultSize(int& width, int& height) const
 // These are the resources that depend on the device.
 void Game::CreateDeviceDependentResources()
 {
-    //ID3D11Device* device = m_deviceResources->GetD3DDevice();
 	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
-	//ID3D11DeviceContext* context =  m_deviceResources->GetD3DDeviceContext();
 	ID3D11DeviceContext* context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
 
     // TODO: Initialize device dependent objects here (independent of window size).
@@ -254,7 +238,6 @@ void Game::CreateWindowSizeDependentResources()
     // TODO: Initialize windows-size dependent objects here.
 
 	// ウインドウサイズからアスペクト比を算出する
-	//RECT size = m_deviceResources->GetOutputSize();
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 	float aspectRatio = float(size.right) / float(size.bottom);
 
@@ -268,6 +251,8 @@ void Game::CreateWindowSizeDependentResources()
 		0.01f,
 		200.0f
 	);
+
+	MatrixManager::SetProjectionMatrix(m_projection);
 
 	// デバッグカメラにウインドウのサイズ変更を伝える
 	//m_debugCamera->SetWindowSize(size.right, size.bottom);
@@ -296,7 +281,6 @@ void Game::OnDeviceRestored()
 
 DirectX::CommonStates* Game::GetState()
 {
-	//ID3D11Device* device = m_deviceResources->GetD3DDevice();
 	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
 	// コモンステートの作成
 	m_states = std::make_unique<CommonStates>(device);

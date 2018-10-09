@@ -29,8 +29,6 @@ class Game : public DX::IDeviceNotify
 public:
 
 private:
-	//std::unique_ptr<DX::DeviceResources>   m_deviceResources;     // Device resources.
-
 	DX::StepTimer                            m_timer;               // Rendering loop timer.
 
 	std::unique_ptr<DirectX::CommonStates>   m_states;              // コモンステート
