@@ -13,8 +13,6 @@
 #include "../pch.h"
 #include "GameRoad.h"
 
-#include "../ExclusiveGameObject/MatrixManager.h"
-
 // usingƒfƒBƒŒƒNƒgƒŠ
 using namespace DirectX;
 
@@ -234,16 +232,15 @@ void GameRoad::Render(DirectX::SimpleMath::Matrix view)
 			world *= rot * trans;
 
 			auto& res = DX::DeviceResources::SingletonGetInstance();
-			DirectX::SimpleMath::Matrix& projection = MatrixManager::GetProjectionMatrix();
 			// •`‰æ“¹˜H‘I‘ð
 			int roadType = m_roadObject[j][i].roadType;
 			switch (roadType)
 			{
 			case 0: break;                                                                                                                  // ‰½‚à‚È‚µ
-			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, /*mp_game->GetProjection()*/projection); break;   // ’¼ü“¹˜H
-			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, /*mp_game->GetProjection()*/projection);     break;   // ––’[“¹˜H
-			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, /*mp_game->GetProjection()*/projection);    break;   // ‹Èü“¹˜H
-			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, /*mp_game->GetProjection()*/projection);    break;   // •ªŠò“¹˜H
+			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection()); break;   // ’¼ü“¹˜H
+			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());     break;   // ––’[“¹˜H
+			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // ‹Èü“¹˜H
+			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // •ªŠò“¹˜H
 			}
 			// ƒfƒoƒbƒO“¹˜H•`‰æ
 			//if(m_roadObject[j][i].roadType == 1 || m_roadObject[j][i].roadType == 2 || m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->DrawDebugCollision(view);

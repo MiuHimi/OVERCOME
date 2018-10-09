@@ -164,7 +164,6 @@
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
     <ClInclude Include="ExclusiveGameObject\InputManager.h" />
     <ClInclude Include="ExclusiveGameObject\KeyManager.h" />
-    <ClInclude Include="ExclusiveGameObject\MatrixManager.h" />
     <ClInclude Include="ExclusiveGameObject\Obj3D.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
@@ -194,7 +193,6 @@
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\InputManager.cpp" />
     <ClCompile Include="ExclusiveGameObject\KeyManager.cpp" />
-    <ClCompile Include="ExclusiveGameObject\MatrixManager.cpp" />
     <ClCompile Include="ExclusiveGameObject\Obj3D.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject\Camera.cpp" />
