@@ -115,6 +115,16 @@ bool Player::Update(DX::StepTimer const & timer)
 		m_direction += XMConvertToRadians(-2.0f);
 	}
 
+	if (InputManager::SingletonGetInstance().GetKeyState().Up == false &&
+		InputManager::SingletonGetInstance().GetKeyState().Down == false &&
+		InputManager::SingletonGetInstance().GetKeyState().Left == false &&
+		InputManager::SingletonGetInstance().GetKeyState().Right == false &&
+		m_vel.z < 0.1f && m_vel.z > -0.1f)
+	{
+		// ˆÚ“®‚ª’x‚·‚¬‚éê‡‚Í’âŽ~‚·‚é
+		m_vel.z = 0.0f;
+	}
+
 	// ƒWƒƒƒ“ƒv
 	if (InputManager::SingletonGetInstance().GetKeyState().Space && m_isJump == false ||
 		InputManager::SingletonGetInstance().GetKeyState().Space && m_collideToRoad == true && m_pos.y >= 0.95f)
