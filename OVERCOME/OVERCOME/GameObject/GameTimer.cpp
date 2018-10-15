@@ -14,6 +14,8 @@
 /// </summary>
 GameTimer::GameTimer()
 	: m_remainingTime(180)
+	, m_timeNumWidth(40)
+	, m_timeNumHeight(60)
 	, m_timeUpFlag(false)
 	, m_posBackground(DirectX::SimpleMath::Vector2(20.0f, 20.0f))
 {
@@ -41,19 +43,8 @@ void GameTimer::Create()
 {
 	// テクスチャのロード
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_background_image.png", nullptr, m_textureBackground.GetAddressOf());
-	
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_0_image.png", nullptr, m_textureNum[0].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_1_image.png", nullptr, m_textureNum[1].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_2_image.png", nullptr, m_textureNum[2].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_3_image.png", nullptr, m_textureNum[3].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_4_image.png", nullptr, m_textureNum[4].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_5_image.png", nullptr, m_textureNum[5].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_6_image.png", nullptr, m_textureNum[6].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_7_image.png", nullptr, m_textureNum[7].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_8_image.png", nullptr, m_textureNum[8].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_9_image.png", nullptr, m_textureNum[9].GetAddressOf());
 
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\himi_logo.png", nullptr, m_textureTest.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_len_image.png", nullptr, m_textureNum.GetAddressOf());
 }
 
 /// <summary>
@@ -106,15 +97,16 @@ void GameTimer::Render()
 	// 制限時間数列の描画
 	for (int i = 0; i < e_numDigit; ++i)
 	{
-		int num = m_queueDigit.front();
-		m_sprites->Draw(m_textureNum[num].Get(), m_posCountDigit[i]);
+		// 切り取る位置を設定
+		float u = m_timeNumWidth * m_queueDigit.front();
 		m_queueDigit.pop();
-		/*RECT rect;
-		rect.bottom = 160.0f;
-		rect.left = 0.0f;
-		rect.right = 160.0f;
-		rect.top = 0.0f;
-		m_sprites->Draw(m_textureTest.Get(), DirectX::SimpleMath::Vector2(300.0f, 400.0f), &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f),1, DirectX::SpriteEffects_None, 0.0f);*/
+		RECT rect;
+		rect.top = LONG(0.0f);
+		rect.left = LONG(u);
+		rect.right = LONG(u + m_timeNumWidth);
+		rect.bottom = LONG(m_timeNumHeight);
+		
+		m_sprites->Draw(m_textureNum.Get(), m_posCountDigit[i], &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f),1, DirectX::SpriteEffects_None, 0.0f);
 	}
 
 	m_sprites->End();

@@ -26,6 +26,9 @@ public:
 private:
 	int                                                  m_remainingTime;               // 残り時間
 
+	float                                                m_timeNumWidth;                // 数字の幅
+	float                                                m_timeNumHeight;               // 数字の高さ
+
 	bool                                                 m_timeUpFlag;                  // タイムアップになっているかどうか
 
 	std::queue<int>                                      m_queueDigit;                  // 時間設定用
@@ -44,9 +47,8 @@ private:
 
 	std::unique_ptr<DirectX::SpriteBatch>                m_sprites;                     // スプライトバッチ
 	std::unique_ptr<DirectX::CommonStates>               m_states;                      // コモンステート
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;           // テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureTest;           // テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureNum[10];              // テクスチャハンドル
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;           // テクスチャハンドル(背景)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureNum;                  // テクスチャハンドル(数字)
 
 // メンバー関数
 public:

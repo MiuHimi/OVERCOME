@@ -261,7 +261,7 @@ void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
 	//mp_player->DrawDebugCollision(m_view);
 
 	// §ŒÀŠÔ‚Ì•`‰æ
-	//mp_gameTimer->Render();
+	mp_gameTimer->Render();
 
 	// ƒXƒRƒA‚Ì•`‰æ
 	//mp_gameScore->Render();
