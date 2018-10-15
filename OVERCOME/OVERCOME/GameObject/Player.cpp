@@ -119,7 +119,7 @@ bool Player::Update(DX::StepTimer const & timer)
 		InputManager::SingletonGetInstance().GetKeyState().Down == false &&
 		InputManager::SingletonGetInstance().GetKeyState().Left == false &&
 		InputManager::SingletonGetInstance().GetKeyState().Right == false &&
-		m_vel.z < 0.1f && m_vel.z > -0.1f)
+		m_vel.z < 0.2f && m_vel.z > -0.2f)
 	{
 		// ˆÚ“®‚ª’x‚·‚¬‚éê‡‚Í’â~‚·‚é
 		m_vel.z = 0.0f;
