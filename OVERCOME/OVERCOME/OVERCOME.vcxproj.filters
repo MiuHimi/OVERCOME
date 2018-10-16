@@ -33,9 +33,6 @@
     <ClInclude Include="StepTimer.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="DeviceResources.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\GameFloor.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
@@ -111,14 +108,14 @@
     <ClInclude Include="Utility\GameDebug.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\DeviceResources.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="DeviceResources.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject\GameFloor.cpp">
       <Filter>Game\GameObject</Filter>
     </ClCompile>
@@ -183,6 +180,9 @@
       <Filter>Game\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Utility\GameDebug.cpp">
+      <Filter>Game\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\DeviceResources.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
   </ItemGroup>

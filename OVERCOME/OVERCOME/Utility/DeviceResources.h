@@ -8,7 +8,7 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "ExclusiveGameObject/SingletonBase.h"
+#include "../ExclusiveGameObject/SingletonBase.h"
 
 // namespaceディレクトリ
 namespace DX

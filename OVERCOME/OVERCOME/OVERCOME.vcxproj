@@ -158,7 +158,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionBox.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
@@ -186,10 +185,10 @@
     <ClInclude Include="GameObject\SkyDome.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="StepTimer.h" />
+    <ClInclude Include="Utility\DeviceResources.h" />
     <ClInclude Include="Utility\GameDebug.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\InputManager.cpp" />
@@ -219,6 +218,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Utility\DeviceResources.cpp" />
     <ClCompile Include="Utility\GameDebug.cpp" />
   </ItemGroup>
   <ItemGroup>

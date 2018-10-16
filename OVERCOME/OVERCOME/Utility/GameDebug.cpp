@@ -7,7 +7,7 @@
 
 // インクルードディレクトリ
 #include "GameDebug.h"
-#include "../DeviceResources.h"
+#include "DeviceResources.h"
 
 // usingディレクトリ
 using namespace DirectX;

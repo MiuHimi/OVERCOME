@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../DeviceResources.h"
+#include "../Utility/DeviceResources.h"
 #include "../StepTimer.h"
 
 #include "../pch.h"

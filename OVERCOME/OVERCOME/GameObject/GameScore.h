@@ -12,7 +12,7 @@
 #include <CommonStates.h>
 
 #include "../pch.h"
-#include "../DeviceResources.h"
+#include "../Utility/DeviceResources.h"
 #include "../StepTimer.h"
 
 #include "../Game.h"
