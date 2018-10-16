@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    GameTimer.h
 // Summary. GameTimerClass
-// Date.    2018/10/01
+// Date.    2018/10/16
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -35,10 +35,10 @@ private:
 	
 	enum CountDigit
 	{
-		e_minuteUpperDigit,
-		e_minuteLowerDigit,
-		e_secondUpperDigit,
-		e_secondLowerDigit,
+		e_minuteUpperDigit,   // •ª(ã‚ÌŒ…)
+		e_minuteLowerDigit,   // •ª(‰º‚ÌŒ…)
+		e_secondUpperDigit,   // •b(ã‚ÌŒ…)
+		e_secondLowerDigit,   // •b(‰º‚ÌŒ…)
 
 		e_numDigit
 	};

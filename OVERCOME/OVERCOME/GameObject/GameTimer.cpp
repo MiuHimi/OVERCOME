@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    GameTimer.cpp
 // Summary. GameTimerClass
-// Date.    2018/10/01
+// Date.    2018/10/16
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -19,6 +19,7 @@ GameTimer::GameTimer()
 	, m_timeUpFlag(false)
 	, m_posBackground(DirectX::SimpleMath::Vector2(20.0f, 20.0f))
 {
+	// ”š‚ÌêŠ‚à”wŒi‚Æ“¯‚¶‚Æ‚±‚ë‚Å‰Šú‰»‚µ‚Ä‚¨‚­
 	for (int i = 0; i < e_numDigit; ++i)
 	{
 		m_posCountDigit[i] = DirectX::SimpleMath::Vector2(m_posBackground);
@@ -97,16 +98,17 @@ void GameTimer::Render()
 	// §ŒÀŠÔ”—ñ‚Ì•`‰æ
 	for (int i = 0; i < e_numDigit; ++i)
 	{
-		// Ø‚èæ‚éˆÊ’u‚ğİ’è
+		// Ø‚èæ‚é”š‚ğİ’è
 		float u = m_timeNumWidth * m_queueDigit.front();
 		m_queueDigit.pop();
+		// Ø‚èæ‚éêŠ‚ğİ’è
 		RECT rect;
-		rect.top = LONG(0.0f);
-		rect.left = LONG(u);
-		rect.right = LONG(u + m_timeNumWidth);
+		rect.top    = LONG(0.0f);
+		rect.left   = LONG(u);
+		rect.right  = LONG(u + m_timeNumWidth);
 		rect.bottom = LONG(m_timeNumHeight);
 		
-		m_sprites->Draw(m_textureNum.Get(), m_posCountDigit[i], &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f),1, DirectX::SpriteEffects_None, 0.0f);
+		m_sprites->Draw(m_textureNum.Get(), m_posCountDigit[i], &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f, DirectX::SpriteEffects_None, 0.0f);
 	}
 
 	m_sprites->End();
