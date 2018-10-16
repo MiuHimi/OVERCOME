@@ -41,7 +41,7 @@ public:
 	virtual void Update(DX::StepTimer const& timer, Game* game) = 0;
 	// ï`âÊ
 	//virtual void Render() = 0;
-	virtual void Render(DirectX::SpriteBatch* sprite, Game* game) = 0;
+	virtual void Render(Game* game) = 0;
 	// èIóπ
 	virtual void Finalize() = 0;
 };

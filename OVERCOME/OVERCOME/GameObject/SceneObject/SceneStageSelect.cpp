@@ -9,6 +9,8 @@
 #include "SceneManager.h"
 #include "SceneStageSelect.h"
 
+#include "../../Utility/GameDebug.h"
+
 // usingディレクトリ
 using namespace DirectX;
 //using Microsoft::WRL::ComPtr;
@@ -47,9 +49,6 @@ SceneStageSelect::~SceneStageSelect()
 void SceneStageSelect::Initialize()
 {
 	m_toPlayMoveOnChecker = false;
-
-	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 }
 
 /// <summary>
@@ -93,24 +92,22 @@ void SceneStageSelect::Update(DX::StepTimer const& timer, Game* game)
 //void SceneStageSelect::Render()
 //{
 //}
-void SceneStageSelect::Render(DirectX::SpriteBatch* sprites, Game* game)
+void SceneStageSelect::Render(Game* game)
 {
 	// デバッグ用
-	sprites->Begin();
-	m_font->DrawString(sprites, L"SceneStageSelect", DirectX::SimpleMath::Vector2(20.0f, 10.0f), Colors::Yellow);
-	m_font->DrawString(sprites, L"Zkey to ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
+	GameDebug::SingletonGetInstance().DebugRender("SceneStageSelect", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
+	GameDebug::SingletonGetInstance().DebugIntRender("Test : ", 70, DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 
 	if (SceneManager::GetStageNum() != 1 && SceneManager::GetStageNum() != 2)
 	{
-		m_font->DrawString(sprites, L"StageNone", DirectX::SimpleMath::Vector2(20.0f, 50.0f), Colors::Yellow);
+		GameDebug::SingletonGetInstance().DebugRender("StageNone", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
 	}
 	else if (SceneManager::GetStageNum() == 1)
 	{
-		m_font->DrawString(sprites, L"Stage1", DirectX::SimpleMath::Vector2(20.0f, 50.0f), Colors::Yellow);
+		GameDebug::SingletonGetInstance().DebugRender("Stage1", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
 	}
 	else if (SceneManager::GetStageNum() == 2)
 	{
-		m_font->DrawString(sprites, L"Stage2", DirectX::SimpleMath::Vector2(20.0f, 50.0f), Colors::Yellow);
+		GameDebug::SingletonGetInstance().DebugRender("Stage2", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
 	}
-	sprites->End();
 }

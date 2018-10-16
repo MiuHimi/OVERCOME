@@ -147,7 +147,7 @@ void SceneManager::UpdateActiveScene(DX::StepTimer const& timer, Game* game)
 /// <summary>
 /// 活動中のシーンの描画処理
 /// </summary>
-void SceneManager::RenderActiveScene(DirectX::SpriteBatch* sprites, Game* game)
+void SceneManager::RenderActiveScene(Game* game)
 {
 	// 更新中のシーンがあったら
 	/*if (mp_activeScene != nullptr)
@@ -160,7 +160,7 @@ void SceneManager::RenderActiveScene(DirectX::SpriteBatch* sprites, Game* game)
 	if (mp_scene != nullptr)
 	{
 		// シーンの描画
-		mp_scene->Render(sprites, game);
+		mp_scene->Render(game);
 	}
 	else if (mp_scene == nullptr)
 	{

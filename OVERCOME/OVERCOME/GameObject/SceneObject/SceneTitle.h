@@ -22,7 +22,6 @@ private:
 	bool m_toPlayMoveOnChecker;   // ロゴシーンに進めるかどうかのチェック
 
 	Game* mp_game;                                // Gameファイルの情報を格納
-	std::unique_ptr<DirectX::SpriteFont> m_font;  // スプライトフォント
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -39,7 +38,7 @@ public:
 	virtual void Update(DX::StepTimer const& timer, Game* game) override;
 	// 描画
 	//virtual void Render() override;
-	virtual void Render(DirectX::SpriteBatch* sprites, Game* game) override;
+	virtual void Render(Game* game) override;
 	// 描画
 	virtual void Finalize() override;
 };

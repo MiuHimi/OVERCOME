@@ -9,6 +9,8 @@
 #include "SceneManager.h"
 #include "ScenePlay.h"
 
+#include "../../Utility/GameDebug.h"
+
 // usingディレクトリ
 using namespace DirectX;
 //using Microsoft::WRL::ComPtr;
@@ -49,9 +51,6 @@ ScenePlay::~ScenePlay()
 void ScenePlay::Initialize()
 {
 	m_toResultMoveOnChecker = false;
-
-	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 
 	// カメラオブジェクトの作成
 	mp_camera = std::make_unique<GameCamera>();
@@ -243,7 +242,7 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 //void SceneLogo::Render()
 //{
 //}
-void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
+void ScenePlay::Render(Game* game)
 {
 	// ビュー行列の作成
 	DirectX::SimpleMath::Matrix m_view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
@@ -267,17 +266,8 @@ void ScenePlay::Render(DirectX::SpriteBatch* sprites, Game* game)
 	//mp_gameScore->Render();
 
 	// デバッグ用
-	/*sprites->Begin();
-	m_font->DrawString(sprites, L"ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 10.0f), Colors::Yellow);
-	m_font->DrawString(sprites, L"Zkey to SceneResult", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
-
-	if (m_hitPlayerToFloorFlag == true)
-	{
-		m_font->DrawString(sprites, L"FloorHIT", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
-	}
-	if (m_hitPlayerToRoadFlag == true)
-	{
-		m_font->DrawString(sprites, L"RoadHIT", DirectX::SimpleMath::Vector2(20.0f, 70.0f));
-	}
-	sprites->End();*/
+	GameDebug::SingletonGetInstance().DebugRender("ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
+	GameDebug::SingletonGetInstance().DebugIntRender("Test : ", mp_gameTimer->GetTime(), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
+	GameDebug::SingletonGetInstance().DebugFloatRender("Test : ", mp_player->GetPos().x, DirectX::SimpleMath::Vector2(20.0f, 50.0f));
+	GameDebug::SingletonGetInstance().DebugBoolRender("Test : ", mp_player->GetJumpState(), DirectX::SimpleMath::Vector2(20.0f, 70.0f));
 }

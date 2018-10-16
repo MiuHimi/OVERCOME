@@ -9,6 +9,8 @@
 #include "SceneManager.h"
 #include "SceneTitle.h"
 
+#include "../../Utility/GameDebug.h"
+
 // usingディレクトリ
 using namespace DirectX;
 //using Microsoft::WRL::ComPtr;
@@ -51,8 +53,6 @@ void SceneTitle::Initialize()
 	/*std::unique_ptr<DX::DeviceResources> dr;
 	dr = std::make_unique<DX::DeviceResources>();
 	dr->GetD3DDevice();*/
-	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(/*mp_game->GetDevice()*/DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 }
 /// <summary>
 /// タイトルシーンの終了処理
@@ -92,11 +92,9 @@ void SceneTitle::Update(DX::StepTimer const& timer, Game* game)
 //	debugText->AddText(Vector2(10, 10), L"SceneTitle");
 //	debugText->AddText(Vector2(10, 30), L"SPACEkey to SceneLogo");*/
 //}
-void SceneTitle::Render(DirectX::SpriteBatch* sprites, Game* game)
+void SceneTitle::Render(Game* game)
 {
 	// デバッグ用
-	sprites->Begin();
-	m_font->DrawString(sprites, L"SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 10.0f), Colors::Yellow);
-	m_font->DrawString(sprites, L"SPACEkey to SceneSelectStage", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
-	sprites->End();
+	GameDebug::SingletonGetInstance().DebugRender("SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
+	GameDebug::SingletonGetInstance().DebugRender("SPACEkey to SceneSelectStage", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 }

@@ -64,7 +64,7 @@ public:
 	void UpdateActiveScene(DX::StepTimer const& timer);
 	void UpdateActiveScene(DX::StepTimer const& timer, Game* game);
 	// 更新中のシーンの描画処理
-	void RenderActiveScene(DirectX::SpriteBatch* sprite, Game* game);
+	void RenderActiveScene(Game* game);
 	// 遷移したいシーンを要求
 	bool RequestToChangeScene(SceneId sceneId);
 

@@ -9,6 +9,8 @@
 #include "SceneManager.h"
 #include "SceneResult.h"
 
+#include "../../Utility/GameDebug.h"
+
 // usingディレクトリ
 using namespace DirectX;
 //using Microsoft::WRL::ComPtr;
@@ -47,9 +49,6 @@ SceneResult::~SceneResult()
 void SceneResult::Initialize()
 {
 	m_toTitleMoveOnChecker = false;
-
-	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 }
 
 /// <summary>
@@ -88,13 +87,11 @@ void SceneResult::Update(DX::StepTimer const& timer, Game* game)
 //void SceneLogo::Render()
 //{
 //}
-void SceneResult::Render(DirectX::SpriteBatch* sprites, Game* game)
+void SceneResult::Render(Game* game)
 {
 	// デバッグ用
-	sprites->Begin();
-	m_font->DrawString(sprites, L"SceneResult", DirectX::SimpleMath::Vector2(20.0f, 10.0f), Colors::Yellow);
-	if (m_resultState == true)m_font->DrawString(sprites, L"Clear", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
-	if (m_resultState == false)m_font->DrawString(sprites, L"GameOver", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
-	m_font->DrawString(sprites, L"SPACEkey to SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 50.0f), Colors::Yellow);
-	sprites->End();
+	GameDebug::SingletonGetInstance().DebugRender("SceneResult", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
+	if (m_resultState == true) GameDebug::SingletonGetInstance().DebugRender("Clear", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
+	if (m_resultState == false)GameDebug::SingletonGetInstance().DebugRender("GameOver", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
+	GameDebug::SingletonGetInstance().DebugRender("SPACEkey to SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
 }

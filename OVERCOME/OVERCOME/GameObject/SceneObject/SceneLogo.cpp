@@ -9,6 +9,8 @@
 #include "SceneManager.h"
 #include "SceneLogo.h"
 
+#include "../../Utility/GameDebug.h"
+
 // usingディレクトリ
 using namespace DirectX;
 //using Microsoft::WRL::ComPtr;
@@ -49,9 +51,6 @@ void SceneLogo::Initialize()
 	m_toTitleMoveOnChecker = false;
 
 	m_count = 0;
-
-	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"SegoeUI_18.spritefont");
 }
 
 /// <summary>
@@ -86,10 +85,8 @@ void SceneLogo::Update(DX::StepTimer const& timer, Game* game)
 //void SceneLogo::Render()
 //{
 //}
-void SceneLogo::Render(DirectX::SpriteBatch* sprites, Game* game)
+void SceneLogo::Render(Game* game)
 {
 	// デバッグ用
-	sprites->Begin();
-	m_font->DrawString(sprites, L"SceneLogo", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
-	sprites->End();
+	GameDebug::SingletonGetInstance().DebugRender("SceneLogo", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 }

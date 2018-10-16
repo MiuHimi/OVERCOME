@@ -34,7 +34,6 @@ private:
 	bool m_returnToTitleChecker;                  // タイトルシーンに戻れるかどうかのチェック
 
 	Game* mp_game;                                // Gameファイルの情報を格納
-	std::unique_ptr<DirectX::SpriteFont> m_font;  // スプライトフォント
 
 	std::unique_ptr<GameCamera> mp_camera;          // カメラオブジェクト
 
@@ -66,7 +65,7 @@ public:
 	virtual void Update(DX::StepTimer const& timer, Game* game) override;
 	// 描画
 	//virtual void Render() override;
-	virtual void Render(DirectX::SpriteBatch* sprites, Game* game) override;
+	virtual void Render(Game* game) override;
 	// 終了
 	virtual void Finalize() override;
 

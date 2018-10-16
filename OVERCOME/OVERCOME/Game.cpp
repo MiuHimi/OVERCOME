@@ -130,7 +130,7 @@ void Game::Render()
 
 	// アクティブなシーンを描画
 	m_sprite = new SpriteBatch(context);
-	mp_sceneManager->RenderActiveScene(m_sprite, this);
+	mp_sceneManager->RenderActiveScene(this);
 	delete m_sprite;
 
 	//ID3D11Device* device = m_deviceResources->GetD3DDevice();
