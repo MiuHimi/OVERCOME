@@ -13,7 +13,7 @@
 #include <sstream>
 
 #include "../pch.h"
-#include "../ExclusiveGameObject/SingletonBase.h"
+#include "SingletonBase.h"
 
 class GameDebug : public SingletonBase<GameDebug>
 {

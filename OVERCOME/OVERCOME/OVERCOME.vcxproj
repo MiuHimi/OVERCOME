@@ -161,7 +161,6 @@
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionBox.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
-    <ClInclude Include="ExclusiveGameObject\InputManager.h" />
     <ClInclude Include="ExclusiveGameObject\KeyManager.h" />
     <ClInclude Include="ExclusiveGameObject\Obj3D.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
@@ -187,11 +186,11 @@
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Utility\DeviceResources.h" />
     <ClInclude Include="Utility\GameDebug.h" />
+    <ClInclude Include="Utility\InputManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
-    <ClCompile Include="ExclusiveGameObject\InputManager.cpp" />
     <ClCompile Include="ExclusiveGameObject\KeyManager.cpp" />
     <ClCompile Include="ExclusiveGameObject\Obj3D.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -220,6 +219,7 @@
     </ClCompile>
     <ClCompile Include="Utility\DeviceResources.cpp" />
     <ClCompile Include="Utility\GameDebug.cpp" />
+    <ClCompile Include="Utility\InputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

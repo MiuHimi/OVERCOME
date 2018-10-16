@@ -9,7 +9,7 @@
 #include "../pch.h"
 #include "Player.h"
 
-#include "../ExclusiveGameObject/InputManager.h"
+#include "../Utility/InputManager.h"
 
 // usingディレクトリ
 using namespace DirectX;

@@ -12,7 +12,7 @@
 #include "../pch.h"
 #include "GameCamera.h"
 
-#include "../ExclusiveGameObject/InputManager.h"
+#include "../Utility/InputManager.h"
 
 // usingディレクトリ
 using namespace DirectX;

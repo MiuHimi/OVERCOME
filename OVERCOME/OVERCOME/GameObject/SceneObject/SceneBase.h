@@ -14,7 +14,7 @@
 
 #include "../../Game.h"
 
-#include "../../ExclusiveGameObject/InputManager.h"
+#include "../../Utility/InputManager.h"
 
 class SceneManager;
 class SceneBase

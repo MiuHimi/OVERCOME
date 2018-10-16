@@ -69,12 +69,6 @@
     <ClInclude Include="ExclusiveGameObject\KeyManager.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
-    <ClInclude Include="ExclusiveGameObject\InputManager.h">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="ExclusiveGameObject\SingletonBase.h">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\SceneObject\SceneResult.h">
       <Filter>Game\GameObject\SceneObject</Filter>
     </ClInclude>
@@ -109,6 +103,12 @@
       <Filter>Game\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Utility\DeviceResources.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\SingletonBase.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\InputManager.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -149,9 +149,6 @@
     <ClCompile Include="ExclusiveGameObject\KeyManager.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
-    <ClCompile Include="ExclusiveGameObject\InputManager.cpp">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject\SceneObject\SceneResult.cpp">
       <Filter>Game\GameObject\SceneObject</Filter>
     </ClCompile>
@@ -183,6 +180,9 @@
       <Filter>Game\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Utility\DeviceResources.cpp">
+      <Filter>Game\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\InputManager.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
   </ItemGroup>
