@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Common">
-      <UniqueIdentifier>fd7fd37f-c2bf-4f63-87d7-e36b75291674</UniqueIdentifier>
-    </Filter>
     <Filter Include="Assets">
       <UniqueIdentifier>73588281-55be-445b-97d9-817670ab39f3</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -30,9 +27,6 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="StepTimer.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\GameFloor.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
@@ -109,6 +103,9 @@
       <Filter>Game\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Utility\InputManager.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="StepTimer.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
   </ItemGroup>

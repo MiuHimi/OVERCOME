@@ -10,7 +10,7 @@
 // インクルードディレクトリ
 #include "../pch.h"
 #include "../Utility/DeviceResources.h"
-#include "../StepTimer.h"
+#include "../Utility/StepTimer.h"
 
 #include "../Game.h"
 
