@@ -11,8 +11,6 @@
 #include <SpriteFont.h>
 #include "SceneBase.h"
 
-#include "../../Game.h"
-
 class SceneTitle : public SceneBase
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -27,18 +25,15 @@ private:
 public:
 	// コンストラクタ
 	SceneTitle(SceneManager* sceneManager);
-	SceneTitle(Game* game, SceneManager* sceneManager);
 	// デストラクタ
 	~SceneTitle();
 
 	// 初期化
 	virtual void Initialize() override;
 	// 更新
-	//virtual void Update(DX::StepTimer const& timer) override;
-	virtual void Update(DX::StepTimer const& timer, Game* game) override;
+	virtual void Update(DX::StepTimer const& timer) override;
 	// 描画
-	//virtual void Render() override;
-	virtual void Render(Game* game) override;
+	virtual void Render() override;
 	// 描画
 	virtual void Finalize() override;
 };

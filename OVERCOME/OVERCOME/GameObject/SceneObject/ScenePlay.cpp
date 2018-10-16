@@ -98,7 +98,7 @@ void ScenePlay::Finalize()
 /// ロゴシーンの更新処理
 /// </summary>
 /// <param name="timer">時間情報</param>
-void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
+void ScenePlay::Update(DX::StepTimer const& timer)
 {
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
@@ -239,10 +239,7 @@ void ScenePlay::Update(DX::StepTimer const& timer, Game* game)
 /// <summary>
 /// ロゴシーンの描画処理
 /// </summary>
-//void SceneLogo::Render()
-//{
-//}
-void ScenePlay::Render(Game* game)
+void ScenePlay::Render()
 {
 	// ビュー行列の作成
 	DirectX::SimpleMath::Matrix m_view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);

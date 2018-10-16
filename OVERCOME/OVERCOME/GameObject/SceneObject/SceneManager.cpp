@@ -73,11 +73,11 @@ SceneManager::SceneManager(Game* game, SceneId startSceneId)
 
 	switch (startSceneId)
 	{
-	case SCENE_LOGO:          mp_scene = new SceneLogo(game, this);          break;
-	case SCENE_TITLE:         mp_scene = new SceneTitle(game, this);         break;
-	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(game, this);   break;
+	case SCENE_LOGO:          mp_scene = new SceneLogo(this);          break;
+	case SCENE_TITLE:         mp_scene = new SceneTitle(this);         break;
+	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(this);   break;
 	case SCENE_PLAY:          mp_scene = new ScenePlay(game, this);          break;
-	case SCENE_RESULT:        mp_scene = new SceneResult(game, this);        break;
+	case SCENE_RESULT:        mp_scene = new SceneResult(this);        break;
 	}
 }
 /// <summary>
@@ -133,7 +133,7 @@ void SceneManager::UpdateActiveScene(DX::StepTimer const& timer, Game* game)
 	if (mp_scene != nullptr && m_requestSceneFlag == false)
 	{
 		// シーンの更新
-		mp_scene->Update(timer, game);
+		mp_scene->Update(timer);
 	}
 
 	// シーンの情報がわからなかったら
@@ -147,7 +147,7 @@ void SceneManager::UpdateActiveScene(DX::StepTimer const& timer, Game* game)
 /// <summary>
 /// 活動中のシーンの描画処理
 /// </summary>
-void SceneManager::RenderActiveScene(Game* game)
+void SceneManager::RenderActiveScene()
 {
 	// 更新中のシーンがあったら
 	/*if (mp_activeScene != nullptr)
@@ -160,7 +160,7 @@ void SceneManager::RenderActiveScene(Game* game)
 	if (mp_scene != nullptr)
 	{
 		// シーンの描画
-		mp_scene->Render(game);
+		mp_scene->Render();
 	}
 	else if (mp_scene == nullptr)
 	{
@@ -227,11 +227,11 @@ void SceneManager::ChangeScene(Game* game)
 
 	switch (m_nextScene)
 	{
-	case SCENE_LOGO:          mp_scene = new SceneLogo(game, this);          break;
-	case SCENE_TITLE:         mp_scene = new SceneTitle(game, this);         break;
-	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(game, this);   break;
+	case SCENE_LOGO:          mp_scene = new SceneLogo(this);          break;
+	case SCENE_TITLE:         mp_scene = new SceneTitle(this);         break;
+	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(this);   break;
 	case SCENE_PLAY:          mp_scene = new ScenePlay(game, this);          break;
-	case SCENE_RESULT:        mp_scene = new SceneResult(game, this);        break;
+	case SCENE_RESULT:        mp_scene = new SceneResult(this);        break;
 	}
 	
 	// 新たに活動中になったシーンを初期化する

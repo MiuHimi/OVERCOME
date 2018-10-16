@@ -19,19 +19,10 @@ using namespace DirectX;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-/// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneStageSelect::SceneStageSelect(SceneManager* sceneManager)
-	: SceneBase(sceneManager)
-{
-}
-/// <summary>
-/// コンストラクタ
-/// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneStageSelect::SceneStageSelect(Game * game, SceneManager * sceneManager)
-	: mp_game(game)
-	, SceneBase(sceneManager)
+SceneStageSelect::SceneStageSelect(SceneManager * sceneManager)
+	: SceneBase(sceneManager)
 {
 }
 /// <summary>
@@ -39,8 +30,6 @@ SceneStageSelect::SceneStageSelect(Game * game, SceneManager * sceneManager)
 /// </summary>
 SceneStageSelect::~SceneStageSelect()
 {
-	/*delete mp_game;
-	mp_game = nullptr;*/
 }
 
 /// <summary>
@@ -62,7 +51,7 @@ void SceneStageSelect::Finalize()
 /// ステージ選択シーンの更新処理
 /// </summary>
 /// <param name="timer">時間情報</param>
-void SceneStageSelect::Update(DX::StepTimer const& timer, Game* game)
+void SceneStageSelect::Update(DX::StepTimer const& timer)
 {
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
@@ -89,14 +78,10 @@ void SceneStageSelect::Update(DX::StepTimer const& timer, Game* game)
 /// <summary>
 /// ロゴシーンの描画処理
 /// </summary>
-//void SceneStageSelect::Render()
-//{
-//}
-void SceneStageSelect::Render(Game* game)
+void SceneStageSelect::Render()
 {
 	// デバッグ用
 	GameDebug::SingletonGetInstance().DebugRender("SceneStageSelect", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
-	GameDebug::SingletonGetInstance().DebugIntRender("Test : ", 70, DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 
 	if (SceneManager::GetStageNum() != 1 && SceneManager::GetStageNum() != 2)
 	{

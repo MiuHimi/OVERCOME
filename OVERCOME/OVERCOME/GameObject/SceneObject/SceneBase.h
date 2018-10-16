@@ -12,8 +12,6 @@
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
 
-#include "../../Game.h"
-
 #include "../../Utility/InputManager.h"
 
 class SceneManager;
@@ -37,11 +35,9 @@ public:
 	// ‰Šú‰»
 	virtual void Initialize() = 0;
 	// XV
-	//virtual void Update(DX::StepTimer const& timer) = 0;
-	virtual void Update(DX::StepTimer const& timer, Game* game) = 0;
+	virtual void Update(DX::StepTimer const& timer) = 0;
 	// •`‰æ
-	//virtual void Render() = 0;
-	virtual void Render(Game* game) = 0;
+	virtual void Render() = 0;
 	// I—¹
 	virtual void Finalize() = 0;
 };

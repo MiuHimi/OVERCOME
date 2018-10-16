@@ -62,10 +62,10 @@ public:
 	virtual void Initialize() override;
 	// XV
 	//virtual void Update(DX::StepTimer const& timer) override;
-	virtual void Update(DX::StepTimer const& timer, Game* game) override;
+	virtual void Update(DX::StepTimer const& timer) override;
 	// •`‰æ
 	//virtual void Render() override;
-	virtual void Render(Game* game) override;
+	virtual void Render() override;
 	// I—¹
 	virtual void Finalize() override;
 

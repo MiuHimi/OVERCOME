@@ -19,19 +19,10 @@ using namespace DirectX;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-/// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneLogo::SceneLogo(SceneManager* sceneManager) 
-	               : SceneBase(sceneManager)
-{
-}
-/// <summary>
-/// コンストラクタ
-/// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneLogo::SceneLogo(Game * game, SceneManager * sceneManager)
-	               : mp_game(game)
-	               , SceneBase(sceneManager)
+SceneLogo::SceneLogo(SceneManager * sceneManager)
+	               : SceneBase(sceneManager)
 {
 }
 /// <summary>
@@ -39,8 +30,6 @@ SceneLogo::SceneLogo(Game * game, SceneManager * sceneManager)
 /// </summary>
 SceneLogo::~SceneLogo()
 {
-	/*delete mp_game;
-	mp_game = nullptr;*/
 }
 
 /// <summary>
@@ -50,7 +39,7 @@ void SceneLogo::Initialize()
 {
 	m_toTitleMoveOnChecker = false;
 
-	m_count = 0;
+	m_changeSceneNeedTime = 2;
 }
 
 /// <summary>
@@ -64,13 +53,16 @@ void SceneLogo::Finalize()
 /// ロゴシーンの更新処理
 /// </summary>
 /// <param name="timer">時間情報</param>
-void SceneLogo::Update(DX::StepTimer const& timer, Game* game)
+void SceneLogo::Update(DX::StepTimer const& timer)
 {
-	m_count++;
+	// フレームをカウント
+	static int count = 0;
+	count++;
 
-	if (m_count == 120)
+	if (count / 60 >= m_changeSceneNeedTime)
 	{
 		m_toTitleMoveOnChecker = true;
+		count = 0;
 	}
 
 	if (m_toTitleMoveOnChecker == true)
@@ -82,10 +74,7 @@ void SceneLogo::Update(DX::StepTimer const& timer, Game* game)
 /// <summary>
 /// ロゴシーンの描画処理
 /// </summary>
-//void SceneLogo::Render()
-//{
-//}
-void SceneLogo::Render(Game* game)
+void SceneLogo::Render()
 {
 	// デバッグ用
 	GameDebug::SingletonGetInstance().DebugRender("SceneLogo", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
