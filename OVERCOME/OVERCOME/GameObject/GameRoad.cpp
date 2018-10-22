@@ -12,6 +12,7 @@
 
 #include "../pch.h"
 #include "GameRoad.h"
+#include "../Utility/CommonStateManager.h"
 
 // usingƒfƒBƒŒƒNƒgƒŠ
 using namespace DirectX;
@@ -55,7 +56,6 @@ void GameRoad::Initialize()
 	filePath += os.str() + ".csv";
 
 	// ƒXƒe[ƒWƒ}ƒbƒv‚ÌŽæ“¾
-	//std::ifstream ifs(L"Resources\\StageMap\\Stage02.csv");
 	std::ifstream ifs(filePath);
 	std::string line;
 	if (!ifs)
@@ -237,10 +237,10 @@ void GameRoad::Render(DirectX::SimpleMath::Matrix view)
 			switch (roadType)
 			{
 			case 0: break;                                                                                                                  // ‰½‚à‚È‚µ
-			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection()); break;   // ’¼ü“¹˜H
-			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());     break;   // ––’[“¹˜H
-			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // ‹Èü“¹˜H
-			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());    break;   // •ªŠò“¹˜H
+			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, view, mp_game->GetProjection()); break;   // ’¼ü“¹˜H
+			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, view, mp_game->GetProjection());     break;   // ––’[“¹˜H
+			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, view, mp_game->GetProjection());    break;   // ‹Èü“¹˜H
+			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, view, mp_game->GetProjection());    break;   // •ªŠò“¹˜H
 			}
 			// ƒfƒoƒbƒO“¹˜H•`‰æ
 			//if(m_roadObject[j][i].roadType == 1 || m_roadObject[j][i].roadType == 2 || m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->DrawDebugCollision(view);

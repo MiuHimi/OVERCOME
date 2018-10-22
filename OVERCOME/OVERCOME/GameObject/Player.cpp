@@ -10,6 +10,7 @@
 #include "Player.h"
 
 #include "../Utility/InputManager.h"
+#include "../Utility/CommonStateManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -187,7 +188,8 @@ bool Player::Update(DX::StepTimer const & timer)
 void Player::Render(DirectX::SimpleMath::Matrix view)
 {
 	// プレイヤーの描画
-	m_modelPlayer->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), m_world, view, mp_game->GetProjection());
+	m_modelPlayer->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
+		           m_world, view, mp_game->GetProjection());
 }
 
 /// <summary>

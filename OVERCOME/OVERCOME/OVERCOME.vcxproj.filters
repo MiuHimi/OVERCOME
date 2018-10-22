@@ -108,6 +108,9 @@
     <ClInclude Include="StepTimer.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\CommonStateManager.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -180,6 +183,9 @@
       <Filter>Game\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Utility\InputManager.cpp">
+      <Filter>Game\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\CommonStateManager.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
   </ItemGroup>

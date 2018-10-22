@@ -8,6 +8,7 @@
 // インクルードディレクトリ
 #include "../pch.h"
 #include "SkyDome.h"
+#include "../Utility/CommonStateManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -66,7 +67,8 @@ void SkyDome::Render(DirectX::SimpleMath::Matrix view)
 
 	// 床の描画
 	world = SimpleMath::Matrix::Identity;
-	m_modelSky->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
+	m_modelSky->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
+		             world, view, mp_game->GetProjection());
 }
 
 /// <summary>
