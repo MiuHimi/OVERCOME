@@ -6,6 +6,7 @@
 // ヘッダをインクルード
 #include "../pch.h"
 #include "../Game.h"
+#include "../Utility/CommonStateManager.h"
 #include "CollisionBox.h"
 
 /// <summary>
@@ -49,7 +50,8 @@ void CollisionBox::DrawDebugCollision(DirectX::SimpleMath::Matrix view)
 	{
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
 		// デバッグ用オブジェクトの表示
-		m_dbgObj->Draw(/*mp_game->GetContext()*/DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
+		m_dbgObj->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
+			           world, view, mp_game->GetProjection());
 	}
 }
 void CollisionBox::DrawDebugCollision(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view)
@@ -58,6 +60,7 @@ void CollisionBox::DrawDebugCollision(DirectX::SimpleMath::Matrix world, DirectX
 	{
 		//DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
 		// デバッグ用オブジェクトの表示
-		m_dbgObj->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *mp_game->GetState(), world, view, mp_game->GetProjection());
+		m_dbgObj->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
+			           world, view, mp_game->GetProjection());
 	}
 }

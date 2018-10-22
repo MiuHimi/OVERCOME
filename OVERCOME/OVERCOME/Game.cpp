@@ -127,8 +127,6 @@ void Game::Render()
 	delete m_sprite;
 
 	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
-	// コモンステートの作成
-	m_states = std::make_unique<CommonStates>(device);
 
 	// ここまで
 
@@ -256,10 +254,7 @@ void Game::CreateWindowSizeDependentResources()
 
 void Game::OnDeviceLost()
 {
-    // TODO: Add Direct3D resource cleanup here.
-
-	// コモンステートの解放
-	m_states.reset();
+    // TODO: Add Direct3D resource cleanup here
 
 	// スプライトバッチの解放
 	m_sprites.reset();
@@ -275,12 +270,4 @@ void Game::OnDeviceRestored()
     CreateWindowSizeDependentResources();
 }
 
-DirectX::CommonStates* Game::GetState()
-{
-	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
-	// コモンステートの作成
-	m_states = std::make_unique<CommonStates>(device);
-
-	return m_states.get();
-}
 #pragma endregion

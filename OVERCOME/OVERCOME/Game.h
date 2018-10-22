@@ -29,11 +29,8 @@ class Game : public DX::IDeviceNotify
 public:
 
 private:
-	//std::unique_ptr<DX::DeviceResources>   m_deviceResources;     // Device resources.
-
 	DX::StepTimer                            m_timer;               // Rendering loop timer.
 
-	std::unique_ptr<DirectX::CommonStates>   m_states;              // コモンステート
 	std::unique_ptr<DirectX::SpriteBatch>    m_sprites;             // スプライトバッチ
 	DirectX::SpriteBatch*                    m_sprite;              // スプライトバッチ
 	std::unique_ptr<DirectX::SpriteFont>     m_font;                // スプライトフォント
@@ -75,15 +72,10 @@ public:
     void GetDefaultSize( int& width, int& height ) const;
 
 	// Getter
-	//---
-	// コモンステートを取得する
-	DirectX::CommonStates* GetState()/* { return m_states.get(); }*/;
-
 	// ビュー行列を取得する
 	const DirectX::SimpleMath::Matrix& GetView() { return m_view; }
 	// 射影行列を取得する
 	const DirectX::SimpleMath::Matrix& GetProjection() { return m_projection; }
-	//---//
 
 private:
     void Update(DX::StepTimer const& timer);

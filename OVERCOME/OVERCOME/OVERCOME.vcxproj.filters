@@ -111,6 +111,9 @@
     <ClInclude Include="Utility\CommonStateManager.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\MatrixManager.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -186,6 +189,9 @@
       <Filter>Game\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Utility\CommonStateManager.cpp">
+      <Filter>Game\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\MatrixManager.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
   </ItemGroup>

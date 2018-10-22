@@ -189,6 +189,7 @@
     <ClInclude Include="Utility\DeviceResources.h" />
     <ClInclude Include="Utility\GameDebug.h" />
     <ClInclude Include="Utility\InputManager.h" />
+    <ClInclude Include="Utility\MatrixManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Utility\DeviceResources.cpp" />
     <ClCompile Include="Utility\GameDebug.cpp" />
     <ClCompile Include="Utility\InputManager.cpp" />
+    <ClCompile Include="Utility\MatrixManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
