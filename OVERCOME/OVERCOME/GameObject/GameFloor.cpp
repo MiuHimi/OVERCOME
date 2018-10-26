@@ -9,6 +9,7 @@
 #include "../pch.h"
 #include "GameFloor.h"
 #include "../Utility/CommonStateManager.h"
+#include "../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -77,7 +78,7 @@ void GameFloor::Render(DirectX::SimpleMath::Matrix view)
 	// 床の描画
 	world = SimpleMath::Matrix::Identity;
 	m_modelLattice->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-		                 world, view, mp_game->GetProjection());
+		                 world, /*MatrixManager::SingletonGetInstance().GetView()*/view, /*MatrixManager::SingletonGetInstance().GetProjection()*/mp_game->GetProjection());
 }
 
 /// <summary>

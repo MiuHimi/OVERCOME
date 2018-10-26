@@ -32,7 +32,6 @@ private:
 	DX::StepTimer                            m_timer;               // Rendering loop timer.
 
 	std::unique_ptr<DirectX::SpriteBatch>    m_sprites;             // スプライトバッチ
-	DirectX::SpriteBatch*                    m_sprite;              // スプライトバッチ
 	std::unique_ptr<DirectX::SpriteFont>     m_font;                // スプライトフォント
 
 	DirectX::SimpleMath::Matrix              m_world;               // ワールド行列

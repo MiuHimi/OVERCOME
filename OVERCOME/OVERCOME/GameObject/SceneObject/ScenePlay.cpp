@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "ScenePlay.h"
 
+#include "../../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"
 
 // usingディレクトリ
@@ -17,6 +18,8 @@ using namespace DirectX;
 
 std::unique_ptr<Player> ScenePlay::mp_player;
 bool SceneManager::m_clearSceneState;
+
+//DirectX::SimpleMath::Matrix MatrixManager::m_view;
 
 /// <summary>
 /// コンストラクタ
@@ -244,6 +247,9 @@ void ScenePlay::Render()
 	// ビュー行列の作成
 	DirectX::SimpleMath::Matrix m_view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
 
+	// 射影行列を設定
+	MatrixManager::SingletonGetInstance().SetView(m_view);
+
 	// ゲーム床の描画
 	mp_gameFloor->Render(m_view);
 	// ゲーム道路の描画
@@ -263,8 +269,8 @@ void ScenePlay::Render()
 	//mp_gameScore->Render();
 
 	// デバッグ用
-	GameDebug::SingletonGetInstance().DebugRender("ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
-	GameDebug::SingletonGetInstance().DebugIntRender("Test : ", mp_gameTimer->GetTime(), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-	GameDebug::SingletonGetInstance().DebugFloatRender("Test : ", mp_player->GetPos().x, DirectX::SimpleMath::Vector2(20.0f, 50.0f));
-	GameDebug::SingletonGetInstance().DebugBoolRender("Test : ", mp_player->GetJumpState(), DirectX::SimpleMath::Vector2(20.0f, 70.0f));
+	//GameDebug::SingletonGetInstance().DebugRender("ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
+	//GameDebug::SingletonGetInstance().DebugIntRender("Test : ", mp_gameTimer->GetTime(), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
+	//GameDebug::SingletonGetInstance().DebugFloatRender("Test : ", mp_player->GetPos().x, DirectX::SimpleMath::Vector2(20.0f, 50.0f));
+	//GameDebug::SingletonGetInstance().DebugBoolRender("Test : ", mp_player->GetJumpState(), DirectX::SimpleMath::Vector2(20.0f, 70.0f));
 }

@@ -11,6 +11,8 @@
 
 #include "math.h"
 
+#include "Utility/MatrixManager.h"
+
 #include "GameObject/SceneObject/ScenePlay.h"
 
 // デバッグ
@@ -29,7 +31,10 @@ using namespace DirectX::SimpleMath;
 
 using Microsoft::WRL::ComPtr;
 
+//DirectX::SimpleMath::Matrix MatrixManager::m_projection;
 
+
+// Constructor
 Game::Game()
 {
 	DX::DeviceResources::SingletonGetInstance().RegisterDeviceNotify(this);
@@ -52,6 +57,8 @@ void Game::Initialize(HWND window, int width, int height)
 	DX::DeviceResources::SingletonGetInstance().CreateWindowSizeDependentResources();
     CreateWindowSizeDependentResources();
 
+
+	// スタートシーンの設定
 	mp_sceneManager = std::make_unique<SceneManager>(this, SceneId::SCENE_SELECTSTAGE);
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
@@ -122,9 +129,7 @@ void Game::Render()
 	// ここから描画処理を記述する
 
 	// アクティブなシーンを描画
-	m_sprite = new SpriteBatch(context);
 	mp_sceneManager->RenderActiveScene();
-	delete m_sprite;
 
 	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
 
@@ -215,7 +220,6 @@ void Game::CreateDeviceDependentResources()
 
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
-	//m_sprite = new SpriteBatch(context);
 
 	// スプライトフォントの作成
 	m_font = std::make_unique<SpriteFont>(device, L"SegoeUI_18.spritefont");
@@ -247,6 +251,9 @@ void Game::CreateWindowSizeDependentResources()
 		0.01f,
 		200.0f
 	);
+
+	// 射影行列を設定
+	//MatrixManager::SingletonGetInstance().SetProjection(m_projection);
 
 	// デバッグカメラにウインドウのサイズ変更を伝える
 	//m_debugCamera->SetWindowSize(size.right, size.bottom);

@@ -20,3 +20,12 @@ MatrixManager::MatrixManager()
 MatrixManager::~MatrixManager()
 {
 }
+
+/// <summary>
+/// s—ñ‰Šú‰»
+/// </summary>
+void MatrixManager::ResetMatrix()
+{
+	m_view = DirectX::SimpleMath::Matrix::Identity;
+	m_projection = DirectX::SimpleMath::Matrix::Identity;
+}

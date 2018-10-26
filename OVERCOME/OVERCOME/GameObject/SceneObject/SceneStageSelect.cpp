@@ -85,14 +85,10 @@ void SceneStageSelect::Render()
 
 	if (SceneManager::GetStageNum() != 1 && SceneManager::GetStageNum() != 2)
 	{
-		GameDebug::SingletonGetInstance().DebugRender("StageNone", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
+		GameDebug::SingletonGetInstance().DebugRender("StageNone", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 	}
-	else if (SceneManager::GetStageNum() == 1)
+	else 
 	{
-		GameDebug::SingletonGetInstance().DebugRender("Stage1", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
-	}
-	else if (SceneManager::GetStageNum() == 2)
-	{
-		GameDebug::SingletonGetInstance().DebugRender("Stage2", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
+		GameDebug::SingletonGetInstance().DebugIntRender("Stage", SceneManager::GetStageNum(), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 	}
 }
