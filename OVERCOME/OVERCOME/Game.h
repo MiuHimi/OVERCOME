@@ -31,16 +31,11 @@ public:
 private:
 	DX::StepTimer                            m_timer;               // Rendering loop timer.
 
-	std::unique_ptr<DirectX::SpriteBatch>    m_sprites;             // スプライトバッチ
-	std::unique_ptr<DirectX::SpriteFont>     m_font;                // スプライトフォント
-
-	DirectX::SimpleMath::Matrix              m_world;               // ワールド行列
 	DirectX::SimpleMath::Matrix              m_view;                // ビュー行列
 	DirectX::SimpleMath::Matrix              m_projection;          // 射影行列
 	
 	//std::unique_ptr<DebugCamera>           m_debugCamera;         // デバッグカメラ
 	//std::unique_ptr<GridFloor>             m_gridFloor;           // グリッドの床
-	//Camera                                 m_camera;              // カメラオブジェクト
 	//std::unique_ptr<MyCamera>              mp_camera;             // カメラオブジェクト
 
 	std::unique_ptr<SceneManager>            mp_sceneManager;       // シーン管理オブジェクト
@@ -69,12 +64,6 @@ public:
 
     // Properties
     void GetDefaultSize( int& width, int& height ) const;
-
-	// Getter
-	// ビュー行列を取得する
-	const DirectX::SimpleMath::Matrix& GetView() { return m_view; }
-	// 射影行列を取得する
-	const DirectX::SimpleMath::Matrix& GetProjection() { return m_projection; }
 
 private:
     void Update(DX::StepTimer const& timer);

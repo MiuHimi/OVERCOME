@@ -212,24 +212,10 @@ void Game::GetDefaultSize(int& width, int& height) const
 // These are the resources that depend on the device.
 void Game::CreateDeviceDependentResources()
 {
-	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
-	ID3D11DeviceContext* context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
-
     // TODO: Initialize device dependent objects here (independent of window size).
-    device;
-
-	// スプライトバッチの作成
-	m_sprites = std::make_unique<SpriteBatch>(context);
-
-	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(device, L"SegoeUI_18.spritefont");
 
 	// グリッドの床の作成
 	//m_gridFloor = std::make_unique<GridFloor>(device, context, m_states.get(), 10.0f, 10);
-
-	// モデルのテクスチャの読み込み
-	EffectFactory fx(device);
-	fx.SetDirectory(L"Resources\\Models");
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -262,12 +248,6 @@ void Game::CreateWindowSizeDependentResources()
 void Game::OnDeviceLost()
 {
     // TODO: Add Direct3D resource cleanup here
-
-	// スプライトバッチの解放
-	m_sprites.reset();
-
-	// スプライトフォントの解放
-	m_font.reset();
 }
 
 void Game::OnDeviceRestored()
