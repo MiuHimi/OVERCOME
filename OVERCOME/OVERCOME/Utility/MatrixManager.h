@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    MatrixManager.h
 // Summary. MatrixManagerClass
-// Date.    2018/10/22
+// Date.    2018/10/31
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -17,8 +17,8 @@ class MatrixManager : public SingletonBase<MatrixManager>
 public:
 
 private:
-	static DirectX::SimpleMath::Matrix   m_view;         // ビュー行列
-	static DirectX::SimpleMath::Matrix   m_projection;   // 射影行列
+	DirectX::SimpleMath::Matrix   m_view;         // ビュー行列
+	DirectX::SimpleMath::Matrix   m_projection;   // 射影行列
 
 // メンバー関数
 public:
@@ -33,12 +33,12 @@ public:
 	
 
 	// Getter
-	static DirectX::SimpleMath::Matrix& GetView()       { return m_view; }
-	static DirectX::SimpleMath::Matrix& GetProjection() { return m_projection; }
+	DirectX::SimpleMath::Matrix& GetView()       { return m_view; }
+	DirectX::SimpleMath::Matrix& GetProjection() { return m_projection; }
 
 	// Setter
-	static void SetView(DirectX::SimpleMath::Matrix& view)             { m_view = view; }
-	static void SetProjection(DirectX::SimpleMath::Matrix& projection) { m_projection = projection; }
+	void SetView(DirectX::SimpleMath::Matrix& view)             { m_view = view; }
+	void SetProjection(DirectX::SimpleMath::Matrix& projection) { m_projection = projection; }
 
 private:
 	// コンストラクタ

@@ -14,8 +14,6 @@ class Obj3D
 {
 // メンバー変数
 protected:
-	Game* mp_game;
-
 	// モデルハンドル
 	DirectX::Model* mp_model;
 
@@ -42,8 +40,6 @@ public:
 
 	// Setter
 	//---
-	// ゲームオブジェクトを設定
-	void SetGame(Game* game)                                         { mp_game = game; }
 	// モデルハンドルを設定
 	void SetModel(DirectX::Model* model)                             { mp_model = model; }
 

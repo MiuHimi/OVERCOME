@@ -11,6 +11,7 @@
 
 #include "../Utility/InputManager.h"
 #include "../Utility/CommonStateManager.h"
+#include "../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -19,16 +20,9 @@ using namespace DirectX;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-Player::Player()
-{
-}
-/// <summary>
-/// コンストラクタ
-/// </summary>
 /// <param name="game">ゲームオブジェクト</param>
-Player::Player(Game * game) : mp_game(game),
-                              m_pos(22.5f, 2.0f, 7.5f),
-	                          m_vel(0.0f, 0.0f, 0.0f)
+Player::Player() : m_pos(22.5f, 2.0f, 7.5f),
+	               m_vel(0.0f, 0.0f, 0.0f)
 {
 }
 /// <summary>
@@ -68,7 +62,6 @@ void Player::Create()
 	m_modelPlayer = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\player.cmo", fx);
 
 	// プレイヤーの作成
-	SetGame(mp_game);
 	SetModel(m_modelPlayer.get());
 	
 }
@@ -185,11 +178,11 @@ bool Player::Update(DX::StepTimer const & timer)
 /// <summary>
 /// 描画処理
 /// </summary>
-void Player::Render(DirectX::SimpleMath::Matrix view)
+void Player::Render()
 {
 	// プレイヤーの描画
 	m_modelPlayer->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-		           m_world, view, mp_game->GetProjection());
+		           m_world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
 }
 
 /// <summary>
@@ -197,8 +190,6 @@ void Player::Render(DirectX::SimpleMath::Matrix view)
 /// </summary>
 void Player::Depose()
 {
-	delete mp_game;
-	mp_game = NULL;
 }
 
 /// <summary>

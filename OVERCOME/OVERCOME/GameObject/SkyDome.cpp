@@ -9,15 +9,17 @@
 #include "../pch.h"
 #include "SkyDome.h"
 #include "../Utility/CommonStateManager.h"
+#include "../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
+
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
-SkyDome::SkyDome(Game* game) : mp_game(game)
+SkyDome::SkyDome()
 {
 }
 /// <summary>
@@ -52,14 +54,14 @@ void SkyDome::Create()
 /// </summary>
 /// <param name="timer">起動経過時間</param>
 /// <returns>終了状態</returns>
-bool SkyDome::Update(DX::StepTimer const & timer, Game* game)
+bool SkyDome::Update(DX::StepTimer const & timer)
 {
 	return true;
 }
 /// <summary>
 /// 描画処理
 /// </summary>
-void SkyDome::Render(DirectX::SimpleMath::Matrix view)
+void SkyDome::Render()
 {
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
@@ -68,7 +70,7 @@ void SkyDome::Render(DirectX::SimpleMath::Matrix view)
 	// 床の描画
 	world = SimpleMath::Matrix::Identity;
 	m_modelSky->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-		             world, view, mp_game->GetProjection());
+		             world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
 }
 
 /// <summary>
@@ -76,7 +78,4 @@ void SkyDome::Render(DirectX::SimpleMath::Matrix view)
 /// </summary>
 void SkyDome::Depose()
 {
-	// ゲームオブジェクトを削除
-	delete mp_game;
-	mp_game = NULL;
 }

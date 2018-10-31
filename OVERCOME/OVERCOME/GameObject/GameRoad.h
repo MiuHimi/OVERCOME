@@ -47,23 +47,21 @@ private:
 	road m_roadObject[m_maxFloorBlock][m_maxFloorBlock];   // 道路の情報を格納
 	CollisionBox* mp_roadCollideObject[m_maxFloorBlock][m_maxFloorBlock];
 
-	Game* mp_game;                                    // Gameファイルの情報を格納
-
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
-	GameRoad(Game* game);
+	GameRoad();
 	// デストラクタ
 	~GameRoad();
 
 	// 初期化
 	void Initialize();
 	// 生成
-	void Create(Game* game);
+	void Create();
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
-	void Render(DirectX::SimpleMath::Matrix view);
+	void Render();
 	// 廃棄処理
 	void Depose();
 

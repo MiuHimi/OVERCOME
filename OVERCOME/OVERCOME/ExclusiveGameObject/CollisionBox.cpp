@@ -1,13 +1,17 @@
-/*
-	CollisionBox.cpp
-	境界箱を持ったObj3Dクラス
-*/
+//////////////////////////////////////////////////////////////
+// File.    CollisionBox.cpp
+// Summary. 境界箱を持ったObj3Dクラス
+// Date.    2018/10/31
+// Auther.  Miu Himi
+//////////////////////////////////////////////////////////////
 
 // ヘッダをインクルード
 #include "../pch.h"
 #include "../Game.h"
-#include "../Utility/CommonStateManager.h"
 #include "CollisionBox.h"
+#include "../Utility/CommonStateManager.h"
+#include "../Utility/MatrixManager.h"
+
 
 /// <summary>
 /// 衝突判定情報の設定
@@ -18,11 +22,8 @@ void CollisionBox::SetCollision(Collision::Box box)
 	// 衝突判定情報を設定
 	m_collision = box;
 
-	if (mp_game)
-	{
-		// デバッグ用モデルの作成
-		m_dbgObj = std::make_unique<DebugBox>(/*mp_game->GetDevice()*/DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), m_collision.c, m_collision.r);
-	}
+	// デバッグ用モデルの作成
+	m_dbgObj = std::make_unique<DebugBox>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), m_collision.c, m_collision.r);
 }
 
 /// <summary>
@@ -44,23 +45,10 @@ Collision::Box CollisionBox::GetCollision()
 /// <summary>
 /// デバッグ用オブジェクト表示関数
 /// </summary>
-void CollisionBox::DrawDebugCollision(DirectX::SimpleMath::Matrix view)
+void CollisionBox::DrawDebugCollision()
 {
-	if (mp_game)
-	{
-		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
-		// デバッグ用オブジェクトの表示
-		m_dbgObj->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-			           world, view, mp_game->GetProjection());
-	}
-}
-void CollisionBox::DrawDebugCollision(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view)
-{
-	if (mp_game)
-	{
-		//DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
-		// デバッグ用オブジェクトの表示
-		m_dbgObj->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-			           world, view, mp_game->GetProjection());
-	}
+	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
+	// デバッグ用オブジェクトの表示
+	m_dbgObj->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(),
+		world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
 }

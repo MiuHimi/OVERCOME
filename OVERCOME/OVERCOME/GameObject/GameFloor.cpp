@@ -18,7 +18,7 @@ using namespace DirectX;
 /// コンストラクタ
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
-GameFloor::GameFloor(Game* game) : mp_game(game)
+GameFloor::GameFloor()
 {
 }
 /// <summary>
@@ -51,8 +51,7 @@ void GameFloor::Create()
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
 	box.r = DirectX::SimpleMath::Vector3(50.0f, 0.0f, 50.0f);    // 各半径0.5
 
-	// プレイヤーの作成
-	SetGame(mp_game);
+	// 床の作成
 	SetModel(m_modelLattice.get());
 	SetCollision(box);
 }
@@ -69,7 +68,7 @@ bool GameFloor::Update(DX::StepTimer const & timer)
 /// <summary>
 /// 描画処理
 /// </summary>
-void GameFloor::Render(DirectX::SimpleMath::Matrix view)
+void GameFloor::Render()
 {
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
@@ -78,7 +77,7 @@ void GameFloor::Render(DirectX::SimpleMath::Matrix view)
 	// 床の描画
 	world = SimpleMath::Matrix::Identity;
 	m_modelLattice->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-		                 world, /*MatrixManager::SingletonGetInstance().GetView()*/view, /*MatrixManager::SingletonGetInstance().GetProjection()*/mp_game->GetProjection());
+		                 world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
 }
 
 /// <summary>
@@ -86,7 +85,4 @@ void GameFloor::Render(DirectX::SimpleMath::Matrix view)
 /// </summary>
 void GameFloor::Depose()
 {
-	// ゲームオブジェクトを削除
-	delete mp_game;
-	mp_game = NULL;
 }

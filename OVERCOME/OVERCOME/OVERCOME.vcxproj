@@ -162,7 +162,6 @@
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionBox.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
-    <ClInclude Include="ExclusiveGameObject\KeyManager.h" />
     <ClInclude Include="ExclusiveGameObject\Obj3D.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
@@ -194,7 +193,6 @@
   <ItemGroup>
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
-    <ClCompile Include="ExclusiveGameObject\KeyManager.cpp" />
     <ClCompile Include="ExclusiveGameObject\Obj3D.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject\Camera.cpp" />

@@ -26,12 +26,10 @@ private:
 	std::unique_ptr<DirectX::Model> m_modelLattice;   // 格子柄床モデルハンドル
 	//std::unique_ptr<CollisionBox> mp_floor;         // 床衝突判定用オブジェクト
 
-	Game* mp_game;                                    // Gameファイルの情報を格納
-
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
-	GameFloor(Game* game);
+	GameFloor();
 	// デストラクタ
 	~GameFloor();
 
@@ -42,7 +40,7 @@ public:
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
-	void Render(DirectX::SimpleMath::Matrix view);
+	void Render();
 	// 廃棄処理
 	void Depose();
 

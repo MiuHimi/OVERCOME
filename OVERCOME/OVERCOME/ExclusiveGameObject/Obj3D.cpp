@@ -5,6 +5,7 @@
 // ヘッダをインクルード
 #include "../pch.h"
 #include "../Utility/CommonStateManager.h"
+#include "../Utility/MatrixManager.h"
 
 #include "Obj3D.h"
 #include "../Game.h"
@@ -16,7 +17,7 @@ using namespace DirectX::SimpleMath;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-Obj3D::Obj3D():mp_model(nullptr), mp_game(nullptr)
+Obj3D::Obj3D():mp_model(nullptr)
 {
 }
 
@@ -46,10 +47,10 @@ bool Obj3D::Update(float elapsedTime)
 void Obj3D::Render()
 {
 	// モデルの描画
-	if (mp_model && mp_game) // ポインタがnullでない場合(nullの場合if文に入らない)
+	if (mp_model) // ポインタがnullでない場合(nullの場合if文に入らない)
 	{
 		// モデルの描画
 		mp_model->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-			           m_world, mp_game->GetView(), mp_game->GetProjection());
+			           m_world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
 	}
 }

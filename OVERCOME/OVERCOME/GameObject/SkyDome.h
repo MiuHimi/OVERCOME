@@ -24,12 +24,10 @@ public:
 private:
 	std::unique_ptr<DirectX::Model> m_modelSky;   // スカイドームモデルハンドル
 	
-	Game* mp_game;                                // Gameファイルの情報を格納
-
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
-	SkyDome(Game* game);
+	SkyDome();
 	// デストラクタ
 	~SkyDome();
 
@@ -38,9 +36,9 @@ public:
 	// 生成
 	void Create();
 	// 更新
-	bool Update(DX::StepTimer const& timer, Game* game);
+	bool Update(DX::StepTimer const& timer);
 	// 描画
-	void Render(DirectX::SimpleMath::Matrix view);
+	void Render();
 	// 廃棄処理
 	void Depose();
 

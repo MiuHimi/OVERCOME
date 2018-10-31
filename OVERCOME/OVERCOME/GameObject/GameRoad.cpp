@@ -13,6 +13,7 @@
 #include "../pch.h"
 #include "GameRoad.h"
 #include "../Utility/CommonStateManager.h"
+#include "../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -23,8 +24,7 @@ int SceneManager::m_stageNum;
 /// コンストラクタ
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
-GameRoad::GameRoad(Game* game) : mp_game(game)
-                                ,m_stageNum(0)
+GameRoad::GameRoad() : m_stageNum(0)
 {
 }
 /// <summary>
@@ -123,7 +123,7 @@ void GameRoad::Initialize()
 /// <summary>
 /// 生成処理
 /// </summary>
-void GameRoad::Create(Game* game)
+void GameRoad::Create()
 {
 	// エフェクトファクトリー
 	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
@@ -145,7 +145,6 @@ void GameRoad::Create(Game* game)
 		for (int i = 0; i < m_maxFloorBlock; i++)
 		{
 			mp_roadCollideObject[j][i] = new CollisionBox();
-			mp_roadCollideObject[j][i]->SetGame(game);
 			if (m_roadObject[j][i].roadType == 1)     mp_roadCollideObject[j][i]->SetModel(m_modelRoadStraight.get());
 			else if (m_roadObject[j][i].roadType == 2)mp_roadCollideObject[j][i]->SetModel(m_modelRoadStop.get());
 			else if (m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->SetModel(m_modelRoadCurve.get());
@@ -209,7 +208,7 @@ bool GameRoad::Update(DX::StepTimer const & timer)
 /// <summary>
 /// 描画処理
 /// </summary>
-void GameRoad::Render(DirectX::SimpleMath::Matrix view)
+void GameRoad::Render()
 {
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
@@ -237,10 +236,10 @@ void GameRoad::Render(DirectX::SimpleMath::Matrix view)
 			switch (roadType)
 			{
 			case 0: break;                                                                                                                  // 何もなし
-			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, view, mp_game->GetProjection()); break;   // 直線道路
-			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, view, mp_game->GetProjection());     break;   // 末端道路
-			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, view, mp_game->GetProjection());    break;   // 曲線道路
-			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, view, mp_game->GetProjection());    break;   // 分岐道路
+			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());  break;   // 直線道路
+			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());      break;   // 末端道路
+			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());     break;   // 曲線道路
+			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());    break;   // 分岐道路
 			}
 			// デバッグ道路描画
 			//if(m_roadObject[j][i].roadType == 1 || m_roadObject[j][i].roadType == 2 || m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->DrawDebugCollision(view);
@@ -253,7 +252,4 @@ void GameRoad::Render(DirectX::SimpleMath::Matrix view)
 /// </summary>
 void GameRoad::Depose()
 {
-	// ゲームオブジェクトを削除
-	delete mp_game;
-	mp_game = NULL;
 }

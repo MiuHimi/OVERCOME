@@ -42,13 +42,10 @@ private:
 
 	std::unique_ptr<DirectX::Model>          m_modelPlayer;               // プレイヤーモデルオブジェクト
 
-	Game*                                    mp_game;                     // Gameファイルの情報を格納
-
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
 	Player();
-	Player(Game* game);
 	// デストラクタ
 	~Player();
 
@@ -59,7 +56,7 @@ public:
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
-	void Render(DirectX::SimpleMath::Matrix view);
+	void Render();
 	// 廃棄処理
 	void Depose();
 

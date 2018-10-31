@@ -253,7 +253,7 @@ void Game::CreateWindowSizeDependentResources()
 	);
 
 	// 射影行列を設定
-	//MatrixManager::SingletonGetInstance().SetProjection(m_projection);
+	MatrixManager::SingletonGetInstance().SetProjection(m_projection);
 
 	// デバッグカメラにウインドウのサイズ変更を伝える
 	//m_debugCamera->SetWindowSize(size.right, size.bottom);

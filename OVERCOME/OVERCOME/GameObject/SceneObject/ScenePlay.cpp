@@ -19,7 +19,7 @@ using namespace DirectX;
 std::unique_ptr<Player> ScenePlay::mp_player;
 bool SceneManager::m_clearSceneState;
 
-//DirectX::SimpleMath::Matrix MatrixManager::m_view;
+//
 
 /// <summary>
 /// コンストラクタ
@@ -59,24 +59,24 @@ void ScenePlay::Initialize()
 	mp_camera = std::make_unique<GameCamera>();
 
 	// ゲーム床の生成
-	mp_gameFloor = std::make_unique<GameFloor>(mp_game);
+	mp_gameFloor = std::make_unique<GameFloor>();
 	// ゲーム床のモデル読み込み
 	mp_gameFloor->Create();
 
 	// ゲーム道路の生成
-	mp_gameRoad = std::make_unique<GameRoad>(mp_game);
+	mp_gameRoad = std::make_unique<GameRoad>();
 	mp_gameRoad->Initialize();
 	// ゲーム道路のモデル読み込み
-	mp_gameRoad->Create(mp_game);
+	mp_gameRoad->Create();
 
 	// プレイヤーの生成
-	mp_player = std::make_unique<Player>(mp_game);
+	mp_player = std::make_unique<Player>();
 	mp_player->Initialize();
 	// プレイヤーのモデルの読み込み
 	mp_player->Create();
 
 	// スカイドームの生成
-	mp_skydome = std::make_unique<SkyDome>(mp_game);
+	mp_skydome = std::make_unique<SkyDome>();
 	mp_skydome->Initialize();
 	// スカイドームのモデルの読み込み
 	mp_skydome->Create();
@@ -245,22 +245,22 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 void ScenePlay::Render()
 {
 	// ビュー行列の作成
-	DirectX::SimpleMath::Matrix m_view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
+	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
 
 	// 射影行列を設定
-	MatrixManager::SingletonGetInstance().SetView(m_view);
+	MatrixManager::SingletonGetInstance().SetView(view);
 
 	// ゲーム床の描画
-	mp_gameFloor->Render(m_view);
+	mp_gameFloor->Render();
 	// ゲーム道路の描画
-	mp_gameRoad->Render(m_view);
+	mp_gameRoad->Render();
 
 	// スカイドームの描画
-	mp_skydome->Render(m_view);
+	mp_skydome->Render();
 
 	// プレイヤーの描画
-	//mp_player->Render(m_view);
-	//mp_player->DrawDebugCollision(m_view);
+	//mp_player->Render();
+	//mp_player->DrawDebugCollision();
 
 	// 制限時間の描画
 	mp_gameTimer->Render();

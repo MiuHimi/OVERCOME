@@ -60,9 +60,6 @@
     <ClInclude Include="GameObject\SceneObject\ScenePlay.h">
       <Filter>Game\GameObject\SceneObject</Filter>
     </ClInclude>
-    <ClInclude Include="ExclusiveGameObject\KeyManager.h">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\SceneObject\SceneResult.h">
       <Filter>Game\GameObject\SceneObject</Filter>
     </ClInclude>
@@ -148,9 +145,6 @@
     </ClCompile>
     <ClCompile Include="GameObject\SceneObject\ScenePlay.cpp">
       <Filter>Game\GameObject\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="ExclusiveGameObject\KeyManager.cpp">
-      <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
     <ClCompile Include="GameObject\SceneObject\SceneResult.cpp">
       <Filter>Game\GameObject\SceneObject</Filter>
