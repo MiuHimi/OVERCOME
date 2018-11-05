@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneManager.cpp
 // Summary. SceneManagerClass
-// Date.    2018/07/27
+// Date.    2018/11/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -23,19 +23,6 @@
 /// </summary>
 /// <param name="startSceneId">開始シーンのID</param>
 SceneManager::SceneManager(SceneId startSceneId)
-	                     : /*mp_activeScene(nullptr)
-	                     , mp_requestedScene(nullptr)
-	                     , */mp_scene(nullptr)
-{
-	// 開始シーンの設定
-	RequestToChangeScene(startSceneId);
-}
-/// <summary>
-/// コンストラクタ
-/// </summary>
-/// <param name="game">Gameファイルの情報</param>
-/// <param name="startSceneId">開始シーンのID</param>
-SceneManager::SceneManager(Game* game, SceneId startSceneId)
 	: mp_scene(nullptr)
 	, m_nextScene(SceneId::SCENE_LOGO)
 	, m_requestSceneFlag(false)
@@ -48,7 +35,7 @@ SceneManager::SceneManager(Game* game, SceneId startSceneId)
 	case SCENE_LOGO:          mp_scene = new SceneLogo(this);          break;
 	case SCENE_TITLE:         mp_scene = new SceneTitle(this);         break;
 	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(this);   break;
-	case SCENE_PLAY:          mp_scene = new ScenePlay(game, this);          break;
+	case SCENE_PLAY:          mp_scene = new ScenePlay(this);          break;
 	case SCENE_RESULT:        mp_scene = new SceneResult(this);        break;
 	}
 }
@@ -65,13 +52,13 @@ SceneManager::~SceneManager()
 /// 更新中のシーンの更新処理
 /// </summary>
 /// <param name="timer">時間情報</param>
-void SceneManager::UpdateActiveScene(DX::StepTimer const& timer, Game* game)
+void SceneManager::UpdateActiveScene(DX::StepTimer const& timer)
 {
 	// シーンの要求があったら
 	if (mp_scene != nullptr && m_requestSceneFlag == true)
 	{
 		// シーンの変更
-		ChangeScene(game);
+		ChangeScene();
 
 		// シーン遷移の要求を受理
 		m_requestSceneFlag = false;
@@ -123,6 +110,7 @@ bool SceneManager::RequestToChangeScene(SceneId sceneId)
 	// シーン遷移発生
 	m_requestSceneFlag = true;
 
+	if (!m_nextScene) return false;
 	return true;
 
 }
@@ -130,7 +118,7 @@ bool SceneManager::RequestToChangeScene(SceneId sceneId)
 /// <summary>
 /// 活動シーンの変更
 /// </summary>
-void SceneManager::ChangeScene(Game* game)
+void SceneManager::ChangeScene()
 {
 	// 活動中のシーンを終了させる
 	if (mp_scene != nullptr)
@@ -146,7 +134,7 @@ void SceneManager::ChangeScene(Game* game)
 	case SCENE_LOGO:          mp_scene = new SceneLogo(this);          break;
 	case SCENE_TITLE:         mp_scene = new SceneTitle(this);         break;
 	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(this);   break;
-	case SCENE_PLAY:          mp_scene = new ScenePlay(game, this);    break;
+	case SCENE_PLAY:          mp_scene = new ScenePlay(this);          break;
 	case SCENE_RESULT:        mp_scene = new SceneResult(this);        break;
 	}
 	

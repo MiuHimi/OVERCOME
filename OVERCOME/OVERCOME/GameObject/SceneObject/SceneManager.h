@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneManager.h
 // Summary. SceneManagerClass
-// Date.    2018/07/27
+// Date.    2018/11/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -11,12 +11,6 @@
 #include "../../pch.h"
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
-
-#include "../../Game.h"
-
-
-// クラスの宣言
-class SceneBase;
 
 // シーンID
 enum SceneId
@@ -30,9 +24,8 @@ enum SceneId
 	NUM_SCENES
 };
 
-
+class SceneBase;
 // シーン管理クラス
-class Game;
 class SceneManager
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -42,26 +35,20 @@ public :
 
 private:
 	// 他クラスへのポインタ
-	//SceneBase*            mp_scenes[NUM_SCENES];       // 登録されているシーンのリスト
 	SceneBase*            mp_scene;                    // シーンが設定される
 
 	SceneId               m_nextScene;                 // 次に更新するシーンを決定
 	bool                  m_requestSceneFlag;          // シーン遷移を要求されたらフラグが立つ
 
-	/*SceneBase* mp_activeScene;           // 更新中のシーン
-													   SceneBase* mp_requestedScene;        // 要求されたシーン*/
-
-
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
 	SceneManager(SceneId startSceneId);
-	SceneManager(Game* game, SceneId startSceneId);
 	// デストラクタ
 	~SceneManager();
 
 	// 更新中のシーンの更新処理
-	void UpdateActiveScene(DX::StepTimer const& timer, Game* game);
+	void UpdateActiveScene(DX::StepTimer const& timer);
 	// 更新中のシーンの描画処理
 	void RenderActiveScene();
 	// 遷移したいシーンを要求
@@ -77,6 +64,6 @@ public:
 
 private:
 	// シーンを遷移する
-	void ChangeScene(Game* game);
+	void ChangeScene();
 
 };

@@ -118,8 +118,8 @@ void GameCamera::DebugCamera()
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		// マウスの座標を取得
-		m_mousePos.x = InputManager::SingletonGetInstance().GetMouseState().x;
-		m_mousePos.y = InputManager::SingletonGetInstance().GetMouseState().y;
+		m_mousePos.x = float(InputManager::SingletonGetInstance().GetMouseState().x);
+		m_mousePos.y = float(InputManager::SingletonGetInstance().GetMouseState().y);
 	}
 	else if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::RELEASED)
 	{
@@ -225,8 +225,8 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float d
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		// マウスの座標を取得
-		m_mousePos.x = InputManager::SingletonGetInstance().GetMouseState().x;
-		m_mousePos.y = InputManager::SingletonGetInstance().GetMouseState().y;
+		m_mousePos.x = float(InputManager::SingletonGetInstance().GetMouseState().x);
+		m_mousePos.y = float(InputManager::SingletonGetInstance().GetMouseState().y);
 	}
 	else if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::RELEASED)
 	{
@@ -253,8 +253,6 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float d
 
 	eye = Vector3::Transform(eye, rt);
 	eye += target;
-
-	//eye = Vector3::Transform(eye, rt.Invert());
 	up = Vector3::Transform(up, rt.Invert());
 
 	m_eyePt = eye;
@@ -292,6 +290,6 @@ void GameCamera::Motion(int x, int y)
 /// <param name="windowHeight">画面サイズ(縦幅)</param>
 void GameCamera::SetWindowSize(int windowWidth, int windowHeight)
 {
-	m_dragUnit.x = 1.0f / float(windowWidth);
-	m_dragUnit.y = 1.0f / float(windowHeight);
+	m_dragUnit.x = (1.0f / float(windowWidth)) / 5.0f;
+	m_dragUnit.y = (1.0f / float(windowHeight)) / 5.0f;
 }

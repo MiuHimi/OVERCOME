@@ -1,7 +1,7 @@
 ﻿//////////////////////////////////////////////////////////////
 // File.    Game.h
 // Summary. GameClass
-// Date.    2018/09/26
+// Date.    2018/11/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -12,11 +12,6 @@
 
 #include "Utility/DeviceResources.h"
 #include "Utility/StepTimer.h"
-
-//#include "DebugCamera.h"
-//#include "GridFloor.h"
-//#include "GameObject/Camera.h"
-//#include "GameObject/MyCamera.h"
 
 #include "GameObject/SceneObject/SceneManager.h"
 
@@ -34,10 +29,6 @@ private:
 	DirectX::SimpleMath::Matrix              m_view;                // ビュー行列
 	DirectX::SimpleMath::Matrix              m_projection;          // 射影行列
 	
-	//std::unique_ptr<DebugCamera>           m_debugCamera;         // デバッグカメラ
-	//std::unique_ptr<GridFloor>             m_gridFloor;           // グリッドの床
-	//std::unique_ptr<MyCamera>              mp_camera;             // カメラオブジェクト
-
 	std::unique_ptr<SceneManager>            mp_sceneManager;       // シーン管理オブジェクト
 
 // メンバー関数(関数、Getter、Setter)

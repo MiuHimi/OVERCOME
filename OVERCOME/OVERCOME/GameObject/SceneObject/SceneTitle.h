@@ -17,9 +17,7 @@ class SceneTitle : public SceneBase
 public:
 
 private:
-	bool m_toPlayMoveOnChecker;   // ロゴシーンに進めるかどうかのチェック
-
-	Game* mp_game;                                // Gameファイルの情報を格納
+	bool              m_toPlayMoveOnChecker;              // ロゴシーンに進めるかどうかのチェック
 
 // メンバー関数(関数、Getter、Setter)
 public:

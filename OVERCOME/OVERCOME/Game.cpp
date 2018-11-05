@@ -1,7 +1,7 @@
 ﻿//////////////////////////////////////////////////////////////
 // File.    Game.cpp
 // Summary. GameClass
-// Date.    2018/09/26
+// Date.    2018/11/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -28,10 +28,7 @@ extern void ExitGame();
 // usingディレクトリ
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
-
 using Microsoft::WRL::ComPtr;
-
-//DirectX::SimpleMath::Matrix MatrixManager::m_projection;
 
 
 // Constructor
@@ -43,12 +40,6 @@ Game::Game()
 // Initialize the Direct3D resources required to run.
 void Game::Initialize(HWND window, int width, int height)
 {
-	// カメラオブジェクトの作成
-	//mp_camera = std::make_unique<MyCamera>();
-
-	// デバッグカメラの作成
-	//m_debugCamera = std::make_unique<DebugCamera>(width, height);
-
 	DX::DeviceResources::SingletonGetInstance().SetWindow(window, width, height);
 
 	DX::DeviceResources::SingletonGetInstance().CreateDeviceResources();
@@ -59,7 +50,7 @@ void Game::Initialize(HWND window, int width, int height)
 
 
 	// スタートシーンの設定
-	mp_sceneManager = std::make_unique<SceneManager>(this, SceneId::SCENE_SELECTSTAGE);
+	mp_sceneManager = std::make_unique<SceneManager>(SceneId::SCENE_SELECTSTAGE);
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -90,17 +81,8 @@ void Game::Update(DX::StepTimer const& timer)
     // TODO: Add your game logic here.
     elapsedTime;
 
-	// デバッグカメラの更新
-	//m_debugCamera->Update();
-
-	// カメラの位置の設定
-	//mp_camera.SetPositionTarget(Vector3(0.0f, 4.0f, 8.0f), Vector3(0.0f, 0.0f, 0.0f));
-
-	// カメラの更新
-	//mp_camera->Update(timer, /*mp_player->GetPlayer())*/ScenePlay::GetPlayer()->GetPlayer());
-
 	// アクティブなシーンを更新
-	mp_sceneManager->UpdateActiveScene(timer, this);
+	mp_sceneManager->UpdateActiveScene(timer);
 }
 #pragma endregion
 
@@ -118,13 +100,6 @@ void Game::Render()
 
 	DX::DeviceResources::SingletonGetInstance().PIXBeginEvent(L"Render");
 	auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
-
-	// ビュー行列の作成
-	//m_view = Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), Vector3::Up);
-	//m_view = m_debugCamera->GetCameraMatrix();
-
-	// グリッドの床の描画
-	//m_gridFloor->Render(context, m_view, m_projection);
 
 	// ここから描画処理を記述する
 
@@ -213,9 +188,6 @@ void Game::GetDefaultSize(int& width, int& height) const
 void Game::CreateDeviceDependentResources()
 {
     // TODO: Initialize device dependent objects here (independent of window size).
-
-	// グリッドの床の作成
-	//m_gridFloor = std::make_unique<GridFloor>(device, context, m_states.get(), 10.0f, 10);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -240,9 +212,6 @@ void Game::CreateWindowSizeDependentResources()
 
 	// 射影行列を設定
 	MatrixManager::SingletonGetInstance().SetProjection(m_projection);
-
-	// デバッグカメラにウインドウのサイズ変更を伝える
-	//m_debugCamera->SetWindowSize(size.right, size.bottom);
 }
 
 void Game::OnDeviceLost()

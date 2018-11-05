@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    ScenePlay.cpp
 // Summary. ScenePlayClass
-// Date.    2018/08/15
+// Date.    2018/11/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -30,22 +30,10 @@ ScenePlay::ScenePlay(SceneManager* sceneManager)
 {
 }
 /// <summary>
-/// コンストラクタ
-/// </summary>
-/// <param name="game">ゲームオブジェクト</param>
-/// <param name="sceneManager">登録されているシーンマネージャー</param>
-ScenePlay::ScenePlay(Game * game, SceneManager * sceneManager)
-	: mp_game(game)
-	, SceneBase(sceneManager)
-{
-}
-/// <summary>
 /// デストラクタ
 /// </summary>
 ScenePlay::~ScenePlay()
 {
-	/*delete mp_game;
-	mp_game = nullptr;*/
 }
 
 /// <summary>
@@ -255,26 +243,20 @@ void ScenePlay::Render()
 	MatrixManager::SingletonGetInstance().SetView(view);
 
 	// ゲーム床の描画
-	//mp_gameFloor->Render();
+	mp_gameFloor->Render();
 	// ゲーム道路の描画
 	mp_gameRoad->Render();
 
 	// スカイドームの描画
-	//mp_skydome->Render();
+	mp_skydome->Render();
 
 	// プレイヤーの描画
 	//mp_player->Render();
 	//mp_player->DrawDebugCollision();
 
 	// 制限時間の描画
-	//mp_gameTimer->Render();
+	mp_gameTimer->Render();
 
 	// スコアの描画
-	//mp_gameScore->Render();
-
-	// デバッグ用
-	//GameDebug::SingletonGetInstance().DebugRender("ScenePlay", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
-	//GameDebug::SingletonGetInstance().DebugIntRender("Test : ", mp_gameTimer->GetTime(), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-	//GameDebug::SingletonGetInstance().DebugFloatRender("Test : ", mp_player->GetPos().x, DirectX::SimpleMath::Vector2(20.0f, 50.0f));
-	//GameDebug::SingletonGetInstance().DebugBoolRender("Test : ", mp_player->GetJumpState(), DirectX::SimpleMath::Vector2(20.0f, 70.0f));
+	mp_gameScore->Render();
 }

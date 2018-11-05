@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    ScenePlay.h
 // Summary. ScenePlayClass
-// Date.    2018/08/15
+// Date.    2018/11/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -33,8 +33,6 @@ private:
 	bool m_toResultMoveOnChecker;                 // リザルトシーンに進めるかどうかのチェック
 	bool m_returnToTitleChecker;                  // タイトルシーンに戻れるかどうかのチェック
 
-	Game* mp_game;                                // Gameファイルの情報を格納
-
 	std::unique_ptr<GameCamera> mp_camera;        // カメラオブジェクト
 
 	std::unique_ptr<GameFloor> mp_gameFloor;	  // ゲーム床オブジェクト
@@ -54,17 +52,14 @@ private:
 public:
 	// コンストラクタ
 	ScenePlay(SceneManager* sceneManager);
-	ScenePlay(Game* game, SceneManager* sceneManager);
 	// デストラクタ
 	~ScenePlay();
 
 	// 初期化
 	virtual void Initialize() override;
 	// 更新
-	//virtual void Update(DX::StepTimer const& timer) override;
 	virtual void Update(DX::StepTimer const& timer) override;
 	// 描画
-	//virtual void Render() override;
 	virtual void Render() override;
 	// 終了
 	virtual void Finalize() override;

@@ -20,8 +20,6 @@ private:
 	bool m_toPlayMoveOnChecker;                   // プレイシーンに進めるかどうかのチェック
 	bool m_returnToTitleChecker;                  // タイトルシーンに戻れるかどうかのチェック
 
-	Game* mp_game;                                // Gameファイルの情報を格納
-
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
