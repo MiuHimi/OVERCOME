@@ -23,14 +23,15 @@ const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-GameCamera::GameCamera() :m_angle(0.0f)
+GameCamera::GameCamera() :m_aroundAngle(0.0f)
 {
 }
 GameCamera::GameCamera(int windowWidth, int windowHeight)
-	: m_angle(0.0f), 
-	m_yAngle(0.0f), m_yTmp(0.0f), 
-	m_xAngle(0.0f), m_xTmp(0.0f), 
-	m_posX(0), m_posY(0), 
+	: m_aroundAngle(0.0f),
+	m_angle(0.0f, 0.0f),
+	m_angleTmp(0.0f, 0.0f),
+	m_mousePos(0.0f, 0.0f),
+	m_dragUnit(0.0f, 0.0f),
 	m_scrollWheelValue(0)
 {
 	SetWindowSize(windowWidth, windowHeight);
@@ -75,7 +76,9 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		//target.y += player->GetHeight();
 		//RunPlayerCamera(target, player->GetDirection());
 
-		MouseOperateCamera();
+		Vector3 target(player->GetPos());
+		target.y += player->GetHeight();
+		MouseOperateCamera(target, player->GetDirection());
 	}
 	else
 	{
@@ -96,10 +99,64 @@ void GameCamera::OriginPointAroundCamera()
 	Vector3 eye(20.0f, 8.0f, 0.0f);
 
 	// 注視点は(0,0,0)でカメラをY軸回転させる
-	m_angle += 0.5f;
-	Matrix rotY = Matrix::CreateRotationY(XMConvertToRadians(m_angle));
+	m_aroundAngle += 0.5f;
+	Matrix rotY = Matrix::CreateRotationY(XMConvertToRadians(m_aroundAngle));
 	eye = Vector3::Transform(eye, rotY);
 	SetPositionTarget(eye, Vector3(0.0f, 0.0f, 0.0f));
+}
+/// <summary>
+/// デバッグ用カメラ
+/// </summary>
+void GameCamera::DebugCamera()
+{
+	// 相対モードなら何もしない
+	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
+
+	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
+
+	// マウスの左ボタンが押された
+	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	{
+		// マウスの座標を取得
+		m_mousePos.x = InputManager::SingletonGetInstance().GetMouseState().x;
+		m_mousePos.y = InputManager::SingletonGetInstance().GetMouseState().y;
+	}
+	else if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::RELEASED)
+	{
+		// 現在の回転を保存
+		m_angle.x = m_angleTmp.x;
+		m_angle.y = m_angleTmp.y;
+	}
+	// マウスのボタンが押されていたらカメラを移動させる
+	if (InputManager::SingletonGetInstance().GetMouseState().leftButton)
+	{
+		Motion(InputManager::SingletonGetInstance().GetMouseState().x, InputManager::SingletonGetInstance().GetMouseState().y);
+	}
+
+	// マウスのフォイール値を取得
+	m_scrollWheelValue = InputManager::SingletonGetInstance().GetMouseState().scrollWheelValue;
+	if (m_scrollWheelValue > 0)
+	{
+		m_scrollWheelValue = 0;
+		Mouse::Get().ResetScrollWheelValue();
+	}
+
+	// ビュー行列を算出する
+	Matrix rotY = Matrix::CreateRotationY(m_angleTmp.y);
+	Matrix rotX = Matrix::CreateRotationX(m_angleTmp.x);
+
+	Matrix rt = rotY * rotX;
+
+	Vector3 eye(0.0f, 5.0f, 5.0f);
+	Vector3 target(0.0f, 0.0f, 0.0f);
+	Vector3 up(0.0f, 1.0f, 0.0f);
+
+	eye = Vector3::Transform(eye, rt.Invert());
+	eye *= (DEFAULT_CAMERA_DISTANCE - m_scrollWheelValue / 100);
+	up = Vector3::Transform(up, rt.Invert());
+
+	m_eyePt = eye;
+	m_targetPt = target;
 }
 
 /// <summary>
@@ -157,7 +214,7 @@ void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float d
 /// <summary>
 /// マウスで視点移動するカメラ
 /// </summary>
-void GameCamera::MouseOperateCamera()
+void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float direction)
 {
 	// 相対モードなら何もしない
 	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
@@ -168,14 +225,14 @@ void GameCamera::MouseOperateCamera()
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		// マウスの座標を取得
-		m_posX = InputManager::SingletonGetInstance().GetMouseState().x;
-		m_posY = InputManager::SingletonGetInstance().GetMouseState().y;
+		m_mousePos.x = InputManager::SingletonGetInstance().GetMouseState().x;
+		m_mousePos.y = InputManager::SingletonGetInstance().GetMouseState().y;
 	}
 	else if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::RELEASED)
 	{
 		// 現在の回転を保存
-		m_xAngle = m_xTmp;
-		m_yAngle = m_yTmp;
+		m_angle.x = m_angleTmp.x;
+		m_angle.y = m_angleTmp.y;
 	}
 	// マウスのボタンが押されていたらカメラを移動させる
 	if (InputManager::SingletonGetInstance().GetMouseState().leftButton)
@@ -183,26 +240,21 @@ void GameCamera::MouseOperateCamera()
 		Motion(InputManager::SingletonGetInstance().GetMouseState().x, InputManager::SingletonGetInstance().GetMouseState().y);
 	}
 
-	// マウスのフォイール値を取得
-	m_scrollWheelValue = InputManager::SingletonGetInstance().GetMouseState().scrollWheelValue;
-	if (m_scrollWheelValue > 0)
-	{
-		m_scrollWheelValue = 0;
-		Mouse::Get().ResetScrollWheelValue();
-	}
-
+	
 	// ビュー行列を算出する
-	Matrix rotY = Matrix::CreateRotationY(m_yTmp);
-	Matrix rotX = Matrix::CreateRotationX(m_xTmp);
+	Matrix rotY = Matrix::CreateRotationY(-m_angleTmp.y + direction);
+	Matrix rotX = Matrix::CreateRotationX(-m_angleTmp.x);
 
 	Matrix rt = rotY * rotX;
 
-	Vector3 eye(0.0f, 5.0f, 5.0f);
-	Vector3 target(0.0f, 0.0f, 0.0f);
+	Vector3 eye(0.0f, 0.0f, -0.1f);
+	//Vector3 target(target);
 	Vector3 up(0.0f, 1.0f, 0.0f);
 
-	eye = Vector3::Transform(eye, rt.Invert());
-	eye *= (DEFAULT_CAMERA_DISTANCE - m_scrollWheelValue / 100);
+	eye = Vector3::Transform(eye, rt);
+	eye += target;
+
+	//eye = Vector3::Transform(eye, rt.Invert());
 	up = Vector3::Transform(up, rt.Invert());
 
 	m_eyePt = eye;
@@ -217,8 +269,8 @@ void GameCamera::MouseOperateCamera()
 void GameCamera::Motion(int x, int y)
 {
 	// 相対的な位置を算出
-	float dragPosX = (x - m_posX) * m_sx;
-	float dragPosY = (y - m_posY) * m_sy;
+	float dragPosX = (x - m_mousePos.x) * m_dragUnit.x;
+	float dragPosY = (y - m_mousePos.y) * m_dragUnit.y;
 
 	// クリックした座標と異なっていたら
 	if (dragPosX != 0.0f || dragPosY != 0.0f)
@@ -228,8 +280,8 @@ void GameCamera::Motion(int x, int y)
 		float xAngle = dragPosY * XM_PI;
 
 		// 現在の回転量に加える
-		m_xTmp = m_xAngle + xAngle;
-		m_yTmp = m_yAngle + yAngle;
+		m_angleTmp.x = m_angle.x + xAngle;
+		m_angleTmp.y = m_angle.y + yAngle;
 	}
 }
 
@@ -240,6 +292,6 @@ void GameCamera::Motion(int x, int y)
 /// <param name="windowHeight">画面サイズ(縦幅)</param>
 void GameCamera::SetWindowSize(int windowWidth, int windowHeight)
 {
-	m_sx = 1.0f / float(windowWidth);
-	m_sy = 1.0f / float(windowHeight);
+	m_dragUnit.x = 1.0f / float(windowWidth);
+	m_dragUnit.y = 1.0f / float(windowHeight);
 }

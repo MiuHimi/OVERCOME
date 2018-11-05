@@ -21,24 +21,18 @@ class GameCamera : public Camera
 public:
 
 private:
-	float          m_angle;          // 回転角
+	static const float                 DEFAULT_CAMERA_DISTANCE;           // カメラの距離
 
-	// カメラの距離
-	static const float DEFAULT_CAMERA_DISTANCE;
+	float                              m_aroundAngle;                     // 回転角
 
-	// 横回転
-	float m_yAngle, m_yTmp;
-	// 縦回転
-	float m_xAngle, m_xTmp;
+	DirectX::SimpleMath::Vector2       m_angle;                           // 現在の回転角
+	DirectX::SimpleMath::Vector2       m_angleTmp;                        // 保存している回転角
 
-	int m_posX, m_posY;  // 二次元上の絶対値(座標)
+	DirectX::SimpleMath::Vector2       m_mousePos;                        // 二次元上の絶対値(座標)
 
-	// ドラッグされた座標
-	
-	float m_sx, m_sy;
+	DirectX::SimpleMath::Vector2       m_dragUnit;                        // ドラッグされた座標
 
-	// スクロールフォイール値
-	int m_scrollWheelValue;
+	int                                m_scrollWheelValue;                // スクロールホイール値
 
 
 // メンバー関数
@@ -55,13 +49,16 @@ public:
 	// 原点を注視点にし、周りを周回するカメラ
 	void OriginPointAroundCamera();
 
+	// デバック用カメラ
+	void DebugCamera();
+
 	// 走っているとき用カメラ
 	void RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
 	// 後ろから追いかけるカメラ
 	void FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
 
 	// マウスで視点移動するカメラ
-	void MouseOperateCamera();
+	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float direction);
 
 	/// <summary>
 	/// 画面サイズの設定関数
