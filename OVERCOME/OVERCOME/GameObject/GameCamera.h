@@ -23,10 +23,29 @@ public:
 private:
 	float          m_angle;          // 回転角
 
+	// カメラの距離
+	static const float DEFAULT_CAMERA_DISTANCE;
+
+	// 横回転
+	float m_yAngle, m_yTmp;
+	// 縦回転
+	float m_xAngle, m_xTmp;
+
+	int m_posX, m_posY;  // 二次元上の絶対値(座標)
+
+	// ドラッグされた座標
+	
+	float m_sx, m_sy;
+
+	// スクロールフォイール値
+	int m_scrollWheelValue;
+
+
 // メンバー関数
 public:
 	// コンストラクタ
 	GameCamera();
+	GameCamera(int windowWidth, int windowHeight);
 	// デストラクタ
 	~GameCamera();
 
@@ -41,6 +60,18 @@ public:
 	// 後ろから追いかけるカメラ
 	void FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
 
+	// マウスで視点移動するカメラ
+	void MouseOperateCamera();
+
+	/// <summary>
+	/// 画面サイズの設定関数
+	/// </summary>
+	/// <param name="windowWidth">ウインドウサイズ（幅）</param>
+	/// <param name="windowHeight">ウインドウサイズ（高さ）</param>
+	void SetWindowSize(int windowWidth, int windowHeight);
+
 private:
+
+	void Motion(int x, int y);
 
 };

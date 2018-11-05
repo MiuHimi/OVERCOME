@@ -18,12 +18,22 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
+const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 GameCamera::GameCamera() :m_angle(0.0f)
 {
+}
+GameCamera::GameCamera(int windowWidth, int windowHeight)
+	: m_angle(0.0f), 
+	m_yAngle(0.0f), m_yTmp(0.0f), 
+	m_xAngle(0.0f), m_xTmp(0.0f), 
+	m_posX(0), m_posY(0), 
+	m_scrollWheelValue(0)
+{
+	SetWindowSize(windowWidth, windowHeight);
 }
 /// <summary>
 /// デストラクタ
@@ -61,9 +71,11 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 	// フラグに応じたカメラ管理
 	if (cameraFlag)
 	{
-		Vector3 target(player->GetPos());
-		target.y += player->GetHeight();
-		RunPlayerCamera(target, player->GetDirection());
+		//Vector3 target(player->GetPos());
+		//target.y += player->GetHeight();
+		//RunPlayerCamera(target, player->GetDirection());
+
+		MouseOperateCamera();
 	}
 	else
 	{
@@ -140,4 +152,94 @@ void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float d
 	// 補間しない場合
 	m_eyePt = eye;
 	m_targetPt = target;
+}
+
+/// <summary>
+/// マウスで視点移動するカメラ
+/// </summary>
+void GameCamera::MouseOperateCamera()
+{
+	// 相対モードなら何もしない
+	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
+
+	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
+
+	// マウスの左ボタンが押された
+	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	{
+		// マウスの座標を取得
+		m_posX = InputManager::SingletonGetInstance().GetMouseState().x;
+		m_posY = InputManager::SingletonGetInstance().GetMouseState().y;
+	}
+	else if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::RELEASED)
+	{
+		// 現在の回転を保存
+		m_xAngle = m_xTmp;
+		m_yAngle = m_yTmp;
+	}
+	// マウスのボタンが押されていたらカメラを移動させる
+	if (InputManager::SingletonGetInstance().GetMouseState().leftButton)
+	{
+		Motion(InputManager::SingletonGetInstance().GetMouseState().x, InputManager::SingletonGetInstance().GetMouseState().y);
+	}
+
+	// マウスのフォイール値を取得
+	m_scrollWheelValue = InputManager::SingletonGetInstance().GetMouseState().scrollWheelValue;
+	if (m_scrollWheelValue > 0)
+	{
+		m_scrollWheelValue = 0;
+		Mouse::Get().ResetScrollWheelValue();
+	}
+
+	// ビュー行列を算出する
+	Matrix rotY = Matrix::CreateRotationY(m_yTmp);
+	Matrix rotX = Matrix::CreateRotationX(m_xTmp);
+
+	Matrix rt = rotY * rotX;
+
+	Vector3 eye(0.0f, 5.0f, 5.0f);
+	Vector3 target(0.0f, 0.0f, 0.0f);
+	Vector3 up(0.0f, 1.0f, 0.0f);
+
+	eye = Vector3::Transform(eye, rt.Invert());
+	eye *= (DEFAULT_CAMERA_DISTANCE - m_scrollWheelValue / 100);
+	up = Vector3::Transform(up, rt.Invert());
+
+	m_eyePt = eye;
+	m_targetPt = target;
+}
+
+/// <summary>
+/// マウスポインタの位置のドラッグ開始位置からの変位 (相対値)
+/// </summary>
+/// <param name="x">現在のポインタのX座標</param>
+/// <param name="y">現在のポインタのY座標</param>
+void GameCamera::Motion(int x, int y)
+{
+	// 相対的な位置を算出
+	float dragPosX = (x - m_posX) * m_sx;
+	float dragPosY = (y - m_posY) * m_sy;
+
+	// クリックした座標と異なっていたら
+	if (dragPosX != 0.0f || dragPosY != 0.0f)
+	{
+		// 回転量を設定
+		float yAngle = dragPosX * XM_PI;
+		float xAngle = dragPosY * XM_PI;
+
+		// 現在の回転量に加える
+		m_xTmp = m_xAngle + xAngle;
+		m_yTmp = m_yAngle + yAngle;
+	}
+}
+
+/// <summary>
+/// 画面サイズに対する相対的なスケールに調整
+/// </summary>
+/// <param name="windowWidth">画面サイズ(横幅)</param>
+/// <param name="windowHeight">画面サイズ(縦幅)</param>
+void GameCamera::SetWindowSize(int windowWidth, int windowHeight)
+{
+	m_sx = 1.0f / float(windowWidth);
+	m_sy = 1.0f / float(windowHeight);
 }

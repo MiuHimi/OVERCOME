@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "ScenePlay.h"
 
+#include "../Utility/DeviceResources.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"
 
@@ -19,7 +20,6 @@ using namespace DirectX;
 std::unique_ptr<Player> ScenePlay::mp_player;
 bool SceneManager::m_clearSceneState;
 
-//
 
 /// <summary>
 /// コンストラクタ
@@ -55,8 +55,12 @@ void ScenePlay::Initialize()
 {
 	m_toResultMoveOnChecker = false;
 
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+
 	// カメラオブジェクトの作成
-	mp_camera = std::make_unique<GameCamera>();
+	//mp_camera = std::make_unique<GameCamera>();
+	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
 
 	// ゲーム床の生成
 	mp_gameFloor = std::make_unique<GameFloor>();
@@ -251,19 +255,19 @@ void ScenePlay::Render()
 	MatrixManager::SingletonGetInstance().SetView(view);
 
 	// ゲーム床の描画
-	mp_gameFloor->Render();
+	//mp_gameFloor->Render();
 	// ゲーム道路の描画
 	mp_gameRoad->Render();
 
 	// スカイドームの描画
-	mp_skydome->Render();
+	//mp_skydome->Render();
 
 	// プレイヤーの描画
 	//mp_player->Render();
 	//mp_player->DrawDebugCollision();
 
 	// 制限時間の描画
-	mp_gameTimer->Render();
+	//mp_gameTimer->Render();
 
 	// スコアの描画
 	//mp_gameScore->Render();
