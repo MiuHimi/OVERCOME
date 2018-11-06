@@ -18,7 +18,6 @@
 // usingディレクトリ
 using namespace DirectX;
 
-int SceneManager::m_stageNum;
 
 /// <summary>
 /// コンストラクタ

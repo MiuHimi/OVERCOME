@@ -12,11 +12,9 @@
 #include "../Utility/DeviceResources.h"
 #include "../Utility/StepTimer.h"
 
-#include "../Game.h"
-
 #include "../ExclusiveGameObject/CollisionBox.h"
 
-class Game;
+class SceneManager;
 class GameRoad : public CollisionBox 
 {
 // メンバー変数(構造体、enum、列挙子 etc...)

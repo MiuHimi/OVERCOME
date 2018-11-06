@@ -23,7 +23,8 @@
 /// </summary>
 /// <param name="startSceneId">開始シーンのID</param>
 SceneManager::SceneManager(SceneId startSceneId)
-	: mp_scene(nullptr)
+	: /*m_stageID(0)
+	,*/ mp_scene(nullptr)
 	, m_nextScene(SceneId::SCENE_LOGO)
 	, m_requestSceneFlag(false)
 {

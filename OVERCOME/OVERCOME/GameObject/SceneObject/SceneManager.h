@@ -30,7 +30,7 @@ class SceneManager
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
 public :
-	static int            m_stageNum;                  // ステージ番号
+	static int                   m_stageID;                   // ステージ番号
 	static bool           m_clearSceneState;           // リザルトシーンの状態を決める
 
 private:
@@ -55,8 +55,8 @@ public:
 	bool RequestToChangeScene(SceneId sceneId);
 
 	// ステージ番号の設定、取得
-	static void SetStageNum(int stageID)         { m_stageNum = stageID; }
-	static int GetStageNum()                     { return m_stageNum; }
+	static void SetStageNum(int stageID)         { m_stageID = stageID; }
+	static int GetStageNum()                     { return m_stageID; }
 
 	// リザルトシーンの状態の設定、取得
 	static void SetResultSceneState(bool state)  { m_clearSceneState = state; }
