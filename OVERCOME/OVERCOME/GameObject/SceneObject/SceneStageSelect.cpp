@@ -83,14 +83,12 @@ void SceneStageSelect::Render()
 	// デバッグ用
 	GameDebug::SingletonGetInstance().DebugRender("SceneStageSelect", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
 
-	int stage = SceneManager::GetStageNum();
-
-	if (stage != 1 && stage != 2)
+	if (SceneManager::GetStageNum() != 1 && SceneManager::GetStageNum() != 2)
 	{
 		GameDebug::SingletonGetInstance().DebugRender("StageNone", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 	}
 	else 
 	{
-		GameDebug::SingletonGetInstance().DebugIntRender("Stage", stage, DirectX::SimpleMath::Vector2(20.0f, 30.0f));
+		GameDebug::SingletonGetInstance().DebugIntRender("Stage", SceneManager::GetStageNum(), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 	}
 }
