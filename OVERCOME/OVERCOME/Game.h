@@ -25,9 +25,6 @@ public:
 
 private:
 	DX::StepTimer                            m_timer;               // Rendering loop timer.
-
-	DirectX::SimpleMath::Matrix              m_view;                // ビュー行列
-	DirectX::SimpleMath::Matrix              m_projection;          // 射影行列
 	
 	std::unique_ptr<SceneManager>            mp_sceneManager;       // シーン管理オブジェクト
 

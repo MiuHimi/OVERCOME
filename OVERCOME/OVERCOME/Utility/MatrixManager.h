@@ -37,8 +37,7 @@ public:
 	DirectX::SimpleMath::Matrix& GetProjection() { return m_projection; }
 
 	// Setter
-	void SetView(DirectX::SimpleMath::Matrix& view)             { m_view = view; }
-	void SetProjection(DirectX::SimpleMath::Matrix& projection) { m_projection = projection; }
+	void SetViewProjection(DirectX::SimpleMath::Matrix& view, DirectX::SimpleMath::Matrix& projection) { m_view = view; m_projection = projection; }
 
 private:
 	// コンストラクタ

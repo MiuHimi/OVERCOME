@@ -120,6 +120,9 @@
     <ClInclude Include="GameObject\GameTarget.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\CountManager.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -208,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="GameObject\GameTarget.cpp">
       <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\CountManager.cpp">
+      <Filter>Game\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

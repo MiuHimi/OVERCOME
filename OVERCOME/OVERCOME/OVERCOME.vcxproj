@@ -188,6 +188,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Utility\CommonStateManager.h" />
+    <ClInclude Include="Utility\CountManager.h" />
     <ClInclude Include="Utility\DeviceResources.h" />
     <ClInclude Include="Utility\GameDebug.h" />
     <ClInclude Include="Utility\InputManager.h" />
@@ -225,6 +226,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Utility\CommonStateManager.cpp" />
+    <ClCompile Include="Utility\CountManager.cpp" />
     <ClCompile Include="Utility\DeviceResources.cpp" />
     <ClCompile Include="Utility\GameDebug.cpp" />
     <ClCompile Include="Utility\InputManager.cpp" />

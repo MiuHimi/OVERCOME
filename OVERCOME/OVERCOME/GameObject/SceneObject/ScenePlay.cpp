@@ -227,7 +227,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	}
 
 	// シーン操作
-	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
 	{
 		m_toResultMoveOnChecker = true;
 	}
@@ -245,8 +245,23 @@ void ScenePlay::Render()
 	// ビュー行列の作成
 	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
 
-	// ビュー行列の設定
-	MatrixManager::SingletonGetInstance().SetView(view);
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	float aspectRatio = float(size.right) / float(size.bottom);
+	// 画角を設定
+	float fovAngleY = XMConvertToRadians(45.0f);
+
+	// 射影行列を作成
+	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		200.0f
+	);
+
+	// 行列を設定
+	MatrixManager::SingletonGetInstance().SetViewProjection(view, projection);
+
 
 	// ゲーム床の描画
 	mp_gameFloor->Render();

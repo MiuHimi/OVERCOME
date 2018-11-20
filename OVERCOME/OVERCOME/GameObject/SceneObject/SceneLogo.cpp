@@ -10,6 +10,8 @@
 #include "SceneLogo.h"
 
 #include "../../Utility/GameDebug.h"
+#include "../Utility/DeviceResources.h"
+#include "../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -22,7 +24,9 @@ using namespace DirectX;
 /// <param name="game">ゲームオブジェクト</param>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneLogo::SceneLogo(SceneManager * sceneManager)
-	               : SceneBase(sceneManager)
+	: SceneBase(sceneManager),
+	  m_toTitleMoveOnChecker(false),
+	  m_changeSceneNeedTime(2)
 {
 }
 /// <summary>
@@ -37,9 +41,6 @@ SceneLogo::~SceneLogo()
 /// </summary>
 void SceneLogo::Initialize()
 {
-	m_toTitleMoveOnChecker = false;
-
-	m_changeSceneNeedTime = 2;
 }
 
 /// <summary>
@@ -76,6 +77,27 @@ void SceneLogo::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneLogo::Render()
 {
+	// ビュー行列の作成
+	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	float aspectRatio = float(size.right) / float(size.bottom);
+	// 画角を設定
+	float fovAngleY = XMConvertToRadians(45.0f);
+
+	// 射影行列を作成
+	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		200.0f
+	);
+
+	// 行列を設定
+	MatrixManager::SingletonGetInstance().SetViewProjection(view, projection);
+
 	// デバッグ用
 	GameDebug::SingletonGetInstance().DebugRender("SceneLogo", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
+	GameDebug::SingletonGetInstance().Render();
 }

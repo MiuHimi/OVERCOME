@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "SceneTitle.h"
 
+#include "../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"
 
 // usingディレクトリ
@@ -57,11 +58,8 @@ void SceneTitle::Finalize()
 void SceneTitle::Update(DX::StepTimer const& timer)
 {
 	InputManager::SingletonGetInstance().Update();
-	// 入力情報を更新
-	//InputManager::GetInstance().Update();
-	// キー入力
-	//if (InputManager::GetInstance().GetTracker().leftButton == DirectX::Mouse::ButtonStateTracker::PRESSED)
-	if (/*InputManager::GetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space)*/InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
+	
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
 	{
 		m_toPlayMoveOnChecker = true;
 	}
@@ -77,7 +75,28 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneTitle::Render()
 {
+	// ビュー行列の作成
+	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	float aspectRatio = float(size.right) / float(size.bottom);
+	// 画角を設定
+	float fovAngleY = XMConvertToRadians(45.0f);
+
+	// 射影行列を作成
+	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		200.0f
+	);
+
+	// 行列を設定
+	MatrixManager::SingletonGetInstance().SetViewProjection(view, projection);
+
 	// デバッグ用
 	GameDebug::SingletonGetInstance().DebugRender("SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
 	GameDebug::SingletonGetInstance().DebugRender("SPACEkey to SceneSelectStage", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
+	GameDebug::SingletonGetInstance().Render();
 }

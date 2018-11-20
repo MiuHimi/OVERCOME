@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "SceneResult.h"
 
+#include "../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"
 
 // usingディレクトリ
@@ -74,9 +75,30 @@ void SceneResult::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneResult::Render()
 {
+	// ビュー行列の作成
+	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	float aspectRatio = float(size.right) / float(size.bottom);
+	// 画角を設定
+	float fovAngleY = XMConvertToRadians(45.0f);
+
+	// 射影行列を作成
+	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		200.0f
+	);
+
+	// 行列を設定
+	MatrixManager::SingletonGetInstance().SetViewProjection(view, projection);
+
 	// デバッグ用
 	GameDebug::SingletonGetInstance().DebugRender("SceneResult", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
 	if (m_resultState == true) GameDebug::SingletonGetInstance().DebugRender("Clear", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 	if (m_resultState == false)GameDebug::SingletonGetInstance().DebugRender("GameOver", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 	GameDebug::SingletonGetInstance().DebugRender("SPACEkey to SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
+	GameDebug::SingletonGetInstance().Render();
 }

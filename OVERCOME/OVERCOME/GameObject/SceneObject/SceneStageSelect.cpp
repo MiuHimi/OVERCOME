@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "SceneStageSelect.h"
 
+#include "../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"
 
 // usingディレクトリ
@@ -65,7 +66,7 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 	}
 
 	// キー入力
-	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
 	{
 		m_toPlayMoveOnChecker = true;
 	}
@@ -80,6 +81,26 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneStageSelect::Render()
 {
+	// ビュー行列の作成
+	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	float aspectRatio = float(size.right) / float(size.bottom);
+	// 画角を設定
+	float fovAngleY = XMConvertToRadians(45.0f);
+
+	// 射影行列を作成
+	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		200.0f
+	);
+
+	// 行列を設定
+	MatrixManager::SingletonGetInstance().SetViewProjection(view, projection);
+
 	// デバッグ用
 	GameDebug::SingletonGetInstance().DebugRender("SceneStageSelect", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
 

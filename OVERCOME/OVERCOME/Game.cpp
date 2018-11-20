@@ -9,12 +9,6 @@
 #include "pch.h"
 #include "Game.h"
 
-#include "math.h"
-
-#include "Utility/MatrixManager.h"
-
-#include "GameObject/SceneObject/ScenePlay.h"
-
 // デバッグ
 #if _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -194,24 +188,6 @@ void Game::CreateDeviceDependentResources()
 void Game::CreateWindowSizeDependentResources()
 {
     // TODO: Initialize windows-size dependent objects here.
-
-	// ウインドウサイズからアスペクト比を算出する
-	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
-	float aspectRatio = float(size.right) / float(size.bottom);
-
-	// 画角を設定
-	float fovAngleY = XMConvertToRadians(45.0f);
-
-	// 射影行列を作成する
-	m_projection = Matrix::CreatePerspectiveFieldOfView(
-		fovAngleY,
-		aspectRatio,
-		0.01f,
-		200.0f
-	);
-
-	// 射影行列を設定
-	MatrixManager::SingletonGetInstance().SetProjection(m_projection);
 }
 
 void Game::OnDeviceLost()
