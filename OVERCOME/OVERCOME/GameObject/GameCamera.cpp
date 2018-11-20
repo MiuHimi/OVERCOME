@@ -13,6 +13,9 @@
 #include "GameCamera.h"
 
 #include "../Utility/InputManager.h"
+#include "../Utility/DeviceResources.h"
+
+#include "../Utility/GameDebug.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -30,8 +33,10 @@ GameCamera::GameCamera(int windowWidth, int windowHeight)
 	: m_aroundAngle(0.0f),
 	m_angle(0.0f, 0.0f),
 	m_angleTmp(0.0f, 0.0f),
+	//m_cameraDir(0.0f, 0.0f, 0.0f),
 	m_mousePos(0.0f, 0.0f),
 	m_dragUnit(0.0f, 0.0f),
+	m_checkMousePos(false),
 	m_scrollWheelValue(0)
 {
 	SetWindowSize(windowWidth, windowHeight);
@@ -72,13 +77,15 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 	// フラグに応じたカメラ管理
 	if (cameraFlag)
 	{
-		//Vector3 target(player->GetPos());
-		//target.y += player->GetHeight();
-		//RunPlayerCamera(target, player->GetDirection());
+		/*Vector3 target(player->GetPos());
+		target.y += player->GetHeight();
+		RunPlayerCamera(target, player->GetDirection());*/
 
 		Vector3 target(player->GetPos());
 		target.y += player->GetHeight();
 		MouseOperateCamera(target, player->GetDirection());
+
+		//DebugCamera();
 	}
 	else
 	{
@@ -218,45 +225,110 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float d
 {
 	// 相対モードなら何もしない
 	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
-
+	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 
-	// マウスの左ボタンが押された
-	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
-	{
-		// マウスの座標を取得
-		m_mousePos.x = float(InputManager::SingletonGetInstance().GetMouseState().x);
-		m_mousePos.y = float(InputManager::SingletonGetInstance().GetMouseState().y);
-	}
-	else if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::RELEASED)
-	{
-		// 現在の回転を保存
-		m_angle.x = m_angleTmp.x;
-		m_angle.y = m_angleTmp.y;
-	}
-	// マウスのボタンが押されていたらカメラを移動させる
-	if (InputManager::SingletonGetInstance().GetMouseState().leftButton)
-	{
-		Motion(InputManager::SingletonGetInstance().GetMouseState().x, InputManager::SingletonGetInstance().GetMouseState().y);
-	}
-
+	// マウスポインターと円の衝突判定
+	float distX = 400.0f - float(InputManager::SingletonGetInstance().GetMouseState().x);
+	float distY = 300.0f - float(InputManager::SingletonGetInstance().GetMouseState().y);
+	float distX2 = distX * distX;
+	float distY2 = distY * distY;
+	float r = 100.0f;
+	float r2 = r * r;
 	
-	// ビュー行列を算出する
-	Matrix rotY = Matrix::CreateRotationY(-m_angleTmp.y + direction);
-	Matrix rotX = Matrix::CreateRotationX(-m_angleTmp.x);
+	// マウスポインターが画面中央に来たら視点移動を開始する
+	if (distX2 + distY2 <= r2 &&
+		InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	{
+		m_checkMousePos = true;
+	}
 
-	Matrix rt = rotY * rotX;
+	if(m_checkMousePos == true)
+	{
+		// 中心座標設定(移動量を三倍にするため中心座標も三倍に)
+		m_mousePos.x = 400.0f;
+		m_mousePos.y = 300.0f;
 
-	Vector3 eye(0.0f, 0.0f, -0.1f);
-	//Vector3 target(target);
-	Vector3 up(0.0f, 1.0f, 0.0f);
+		bool flag = false;
 
-	eye = Vector3::Transform(eye, rt);
-	eye += target;
-	up = Vector3::Transform(up, rt.Invert());
+		//if (InputManager::SingletonGetInstance().GetMouseState().x < 10 || InputManager::SingletonGetInstance().GetMouseState().x > 790 ||
+		//	InputManager::SingletonGetInstance().GetMouseState().y < 10 || InputManager::SingletonGetInstance().GetMouseState().y > 590)
+		//{
+		//	// 現在の回転を保存
+		//	m_angle.x = m_angleTmp.x;
+		//	m_angle.y = m_angleTmp.y;
+		//	flag = true;
 
-	m_eyePt = eye;
-	m_targetPt = target;
+		//	m_mousePos.x = InputManager::SingletonGetInstance().GetMouseState().x;
+		//	m_mousePos.y = InputManager::SingletonGetInstance().GetMouseState().y;
+
+		//	SetCursorPos(400, 300);
+		//}
+
+		Vector2 mouseWhereabouts;
+		mouseWhereabouts.x = float(InputManager::SingletonGetInstance().GetMouseState().x);
+		mouseWhereabouts.y = float(InputManager::SingletonGetInstance().GetMouseState().y);
+
+		if (mouseWhereabouts.x < m_mousePos.x) { mouseWhereabouts.x = (m_mousePos.x)-((m_mousePos.x - InputManager::SingletonGetInstance().GetMouseState().x) * 10); }
+		if (mouseWhereabouts.x > m_mousePos.x) { mouseWhereabouts.x = (m_mousePos.x)+((InputManager::SingletonGetInstance().GetMouseState().x - m_mousePos.x) * 10); }
+		if (mouseWhereabouts.y < m_mousePos.y) { mouseWhereabouts.y = (m_mousePos.y)-((m_mousePos.y - InputManager::SingletonGetInstance().GetMouseState().y) * 10); }
+		if (mouseWhereabouts.y > m_mousePos.y) { mouseWhereabouts.y = (m_mousePos.y)+((InputManager::SingletonGetInstance().GetMouseState().y - m_mousePos.y) * 10); }
+
+		// 偏差分を移動
+	    Motion(int(mouseWhereabouts.x), int(mouseWhereabouts.y));
+
+		// ビュー行列を算出する
+		Matrix rotY = Matrix::CreateRotationY(-m_angleTmp.y + XMConvertToRadians(180.0f));
+		Matrix rotX = Matrix::CreateRotationX(-m_angleTmp.x);
+		Matrix rt = rotY * rotX;
+
+		Vector3 eye(0.0f, 0.0f, -0.1f);
+		//Vector3 target(target);
+		//Vector3 up(0.0f, 1.0f, 0.0f);
+
+		// 視点、上方向設定
+		eye = Vector3::Transform(eye, rt);
+		eye += target;
+		//up = Vector3::Transform(up, rt.Invert());
+
+		// 視点、注視点決定
+		m_eyePt = eye;
+		m_targetPt = target;
+
+		/*//ベクトルの長さ
+		float lengthX = std::abs(eye.x - target.x);
+		float lengthY = std::abs(eye.y - target.y);
+		float lengthZ = std::abs(eye.z - target.z);
+
+		double length = pow((lengthX * lengthX) + (lengthY * lengthY), 0.5);
+
+		//XY各成分を長さで割る
+		Vector2D unit;
+		unit.x = v.x / length;
+		unit.y = v.y / length;*/
+
+		m_cameraDir.x = (target.x - eye.x);
+		m_cameraDir.y = (target.y - eye.y);
+		m_cameraDir.z = (target.z - eye.z);
+
+		m_cameraDir.Normalize();
+
+		m_cameraDir.x *= 2.0f;
+		m_cameraDir.y *= 2.0f;
+		m_cameraDir.z *= 2.0f;
+	}
+	else
+	{
+		// 視点設定
+		Vector3 eye(0.0f, 0.0f, -0.1f);
+
+		Matrix rotY = Matrix::CreateRotationY(XMConvertToRadians(180.0f));
+		eye = Vector3::Transform(eye, rotY);
+		eye += target;
+
+		m_eyePt = eye;
+		m_targetPt = target;
+	}
 }
 
 /// <summary>

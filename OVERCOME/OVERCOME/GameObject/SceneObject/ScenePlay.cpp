@@ -61,6 +61,12 @@ void ScenePlay::Initialize()
 	// ゲーム道路のモデル読み込み
 	mp_gameRoad->Create();
 
+	// ゲーム道路の生成
+	mp_gameTarget = std::make_unique<GameTarget>();
+	mp_gameTarget->Initialize();
+	// ゲーム道路のモデル読み込み
+	mp_gameTarget->Create();
+
 	// プレイヤーの生成
 	mp_player = std::make_unique<Player>();
 	mp_player->Initialize();
@@ -97,6 +103,9 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 {
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
+
+	// カメラの更新
+	mp_camera->Update(timer, mp_player->GetPlayer());
 
 	// 床とプレイヤーの衝突判定
 	//m_hitPlayerToFloorFlag = false;
@@ -184,6 +193,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_gameFloor->Update(timer);
 	// ゲーム道路の更新
 	mp_gameRoad->Update(timer);
+	// ゲーム的の更新
+	mp_gameTarget->Update(timer);
 
 	// プレイヤーの更新
 	mp_player->Update(timer);
@@ -215,11 +226,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		SceneManager::SetResultSceneState(false);
 	}
 
-	// カメラの更新
-	mp_camera->Update(timer, mp_player->GetPlayer());
-
-	
-
 	// シーン操作
 	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Z))
 	{
@@ -239,19 +245,21 @@ void ScenePlay::Render()
 	// ビュー行列の作成
 	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
 
-	// 射影行列を設定
+	// ビュー行列の設定
 	MatrixManager::SingletonGetInstance().SetView(view);
 
 	// ゲーム床の描画
 	mp_gameFloor->Render();
 	// ゲーム道路の描画
 	mp_gameRoad->Render();
+	// ゲーム的の描画
+	mp_gameTarget->Render();
 
 	// スカイドームの描画
 	mp_skydome->Render();
 
 	// プレイヤーの描画
-	//mp_player->Render();
+	mp_player->Render();
 	//mp_player->DrawDebugCollision();
 
 	// 制限時間の描画
@@ -259,4 +267,6 @@ void ScenePlay::Render()
 
 	// スコアの描画
 	mp_gameScore->Render();
+
+	
 }

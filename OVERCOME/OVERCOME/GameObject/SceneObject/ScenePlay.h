@@ -18,6 +18,7 @@
 
 #include "../GameFloor.h"
 #include "../GameRoad.h"
+#include "../GameTarget.h"
 
 #include "../SkyDome.h"
 
@@ -37,6 +38,7 @@ private:
 
 	std::unique_ptr<GameFloor> mp_gameFloor;	  // ゲーム床オブジェクト
 	std::unique_ptr<GameRoad>  mp_gameRoad;	      // ゲーム道路オブジェクト
+	std::unique_ptr<GameTarget> mp_gameTarget;    // ゲーム標的オブジェクト
 
 	static std::unique_ptr<Player> mp_player;     // プレイヤーオブジェクト
 

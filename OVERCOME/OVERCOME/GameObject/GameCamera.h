@@ -28,9 +28,12 @@ private:
 	DirectX::SimpleMath::Vector2       m_angle;                           // 現在の回転角
 	DirectX::SimpleMath::Vector2       m_angleTmp;                        // 保存している回転角
 
+	DirectX::SimpleMath::Vector3       m_cameraDir;                       // カメラの向きのベクトル
+
 	DirectX::SimpleMath::Vector2       m_mousePos;                        // 二次元上の絶対値(座標)
 
 	DirectX::SimpleMath::Vector2       m_dragUnit;                        // ドラッグされた座標
+	bool                               m_checkMousePos;                   // マウスの初期位置指定用変数
 
 	int                                m_scrollWheelValue;                // スクロールホイール値
 
@@ -66,6 +69,16 @@ public:
 	/// <param name="windowWidth">ウインドウサイズ（幅）</param>
 	/// <param name="windowHeight">ウインドウサイズ（高さ）</param>
 	void SetWindowSize(int windowWidth, int windowHeight);
+
+	// カメラの向きのベクトルを取得
+	DirectX::SimpleMath::Vector3 GetCameraAngle() { return m_cameraDir; }
+
+	// 回転角の設定、取得
+	DirectX::SimpleMath::Vector2 SetAngle(DirectX::SimpleMath::Vector2 angle) { m_angleTmp = angle; }
+	DirectX::SimpleMath::Vector2 GetAngle()                                   { return m_angleTmp; }
+
+	// マウスが初期位置に配置されたらtrue
+	bool GetStartPosMouse() { return m_checkMousePos; }
 
 private:
 

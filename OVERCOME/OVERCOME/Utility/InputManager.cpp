@@ -52,6 +52,14 @@ DirectX::Keyboard::KeyboardStateTracker InputManager::GetKeyTracker()
 }
 
 /// <summary>
+/// マウス軸モードの変更
+/// </summary>
+void InputManager::SetMouseMode(DirectX::Mouse::Mode mode)
+{
+	mp_mouse->SetMode(mode);
+}
+
+/// <summary>
 /// 更新処理
 /// </summary>
 void InputManager::Update()

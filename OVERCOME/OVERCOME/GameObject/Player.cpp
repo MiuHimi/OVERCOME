@@ -10,8 +10,10 @@
 #include "Player.h"
 
 #include "../Utility/InputManager.h"
+#include "../Utility/DeviceResources.h"
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
+#include "../Utility/GameDebug.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -22,7 +24,9 @@ using namespace DirectX;
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 Player::Player() : m_pos(22.5f, 2.0f, 7.5f),
-	               m_vel(0.0f, 0.0f, 0.0f)
+	               m_vel(0.0f, 0.0f, 0.0f),
+	               mp_gameCamera(nullptr),
+	               mp_bulletManager(nullptr)
 {
 }
 /// <summary>
@@ -40,7 +44,7 @@ void Player::Initialize()
 {
 	// 各変数初期化
 	m_accel        = 0.0f;                                        // 加速度
-	m_direction    = XMConvertToRadians(180.0f);                  // 向き(角度)
+	m_direction    = XMConvertToRadians(0.0f);                    // 向き(角度)
 	m_rotation     = DirectX::SimpleMath::Quaternion::Identity;   // 回転
 	m_height       = 1.75f;                                       // プレイヤー自身の高さ
 	m_jumpForce    = 0.0f;                                        // ジャンプ力
@@ -48,6 +52,10 @@ void Player::Initialize()
 	m_fallingPower = 0.0f;                                        // そのまま落ちる時の力
 
 	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
+
+	mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
+	mp_bulletManager = std::make_unique<GameBulletManager>();
+	mp_bulletManager->Initialize();
 }
 /// <summary>
 /// 生成処理
@@ -63,6 +71,8 @@ void Player::Create()
 
 	// プレイヤーの作成
 	SetModel(m_modelPlayer.get());
+
+	mp_bulletManager->Create();
 	
 }
 
@@ -73,55 +83,63 @@ void Player::Create()
 /// <returns>終了状態</returns>
 bool Player::Update(DX::StepTimer const & timer)
 {
+	mp_gameCamera->Update(timer,this);
+
 	m_vel = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_accel);
 
-	// プレイヤー移動(ベクトル)
-	if (InputManager::SingletonGetInstance().GetKeyState().Up)
+	if (mp_gameCamera->GetStartPosMouse())
 	{
-		// 加速度設定
-		m_accel += 0.01f;
-		if (m_accel > 1.0f)
-		{
-			m_accel = 1.0f;
-		}
-		// 速度初期化
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.2f + m_accel);
+		debugFlag = true;
 	}
-	if (InputManager::SingletonGetInstance().GetKeyState().Down)
+	if(debugFlag)
+	{
+		mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
+	}
+
+	// プレイヤー移動(ベクトル)
+	
+	//if (InputManager::SingletonGetInstance().GetKeyState().S/*mp_gameCamera->GetStartPosMouse()*/)
+	//{
+	//	// 加速度設定
+	//	m_accel += 0.001f;
+	//	// 速度初期化
+	//	m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.1f + m_accel);
+	//}
+	if (mp_gameCamera->GetStartPosMouse())
 	{
 		// 加速度設定
 		m_accel -= 0.01f;
-		if (m_accel < -1.0f)
+		if (m_accel < -0.05f)
 		{
-			m_accel = -1.0f;
+			m_accel = -0.05f;
 		}
 		// 速度初期化
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.2f + m_accel);
+		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.1f + m_accel);
 	}
-	if (InputManager::SingletonGetInstance().GetKeyState().Left)
+
+	// プレイヤーの向き設定
+	if (InputManager::SingletonGetInstance().GetKeyState().A)
 	{
 		m_direction += XMConvertToRadians(2.0f);
 	}
-	if (InputManager::SingletonGetInstance().GetKeyState().Right)
+	if (InputManager::SingletonGetInstance().GetKeyState().D)
 	{
-		m_direction += XMConvertToRadians(-2.0f);
+		m_direction -= XMConvertToRadians(2.0f);
 	}
-
+	
+	
 	if (InputManager::SingletonGetInstance().GetKeyState().Up == false &&
 		InputManager::SingletonGetInstance().GetKeyState().Down == false &&
-		InputManager::SingletonGetInstance().GetKeyState().Left == false &&
-		InputManager::SingletonGetInstance().GetKeyState().Right == false &&
-		m_vel.z < 0.2f && m_vel.z > -0.2f)
+		m_vel.z < 0.1f && m_vel.z > -0.1f)
 	{
 		// 移動が遅すぎる場合は停止する
 		m_vel.z = 0.0f;
 	}
 
 	// ジャンプ
-	if (InputManager::SingletonGetInstance().GetKeyState().Space && m_isJump == false ||
-		InputManager::SingletonGetInstance().GetKeyState().Space && m_collideToRoad == true && m_pos.y >= 0.95f)
+	if (InputManager::SingletonGetInstance().GetKeyState().W && m_isJump == false ||
+		InputManager::SingletonGetInstance().GetKeyState().W && m_collideToRoad == true && m_pos.y >= 0.95f)
 	{
 		m_isJump = true;
 		m_vel.y = 0.0f;
@@ -181,8 +199,10 @@ bool Player::Update(DX::StepTimer const & timer)
 void Player::Render()
 {
 	// プレイヤーの描画
-	m_modelPlayer->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-		           m_world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
+	//m_modelPlayer->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
+	//	           m_world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
+
+	mp_bulletManager->Render();
 }
 
 /// <summary>

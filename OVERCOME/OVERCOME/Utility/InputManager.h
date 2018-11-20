@@ -47,6 +47,9 @@ public:
 	DirectX::Mouse::ButtonStateTracker GetTracker();
 	DirectX::Keyboard::KeyboardStateTracker GetKeyTracker();
 
+	// マウス軸モードの変更
+	void SetMouseMode(DirectX::Mouse::Mode mode);
+
 	// マウス座標の取得
 	int GetMousePosX() { return GetMouseState().x; }
 	int GetMousePosY() { return GetMouseState().y; }

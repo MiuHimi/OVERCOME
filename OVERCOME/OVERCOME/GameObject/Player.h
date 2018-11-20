@@ -16,7 +16,10 @@
 
 #include "../ExclusiveGameObject/CollisionBox.h"
 
-class Game;
+#include "GameBulletManager.h"
+#include "GameCamera.h"
+
+class GameCamera;
 class Player : public CollisionBox
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -38,9 +41,14 @@ private:
 	bool                                     m_collideToRoad    = false;  // 道路と接触したかを判定
 	bool                                     m_noTouchObectFlag = false;  // 何にも触れずジャンプもしていない時にフラグが立つ
 
+	bool   debugFlag = false;
+
 	DirectX::SimpleMath::Matrix              m_world;                     // ワールド座標
 
 	std::unique_ptr<DirectX::Model>          m_modelPlayer;               // プレイヤーモデルオブジェクト
+	std::unique_ptr<GameBulletManager>       mp_bulletManager;
+	std::unique_ptr<GameCamera>              mp_gameCamera;               // カメラポインター
+
 
 // メンバー関数(関数、Getter、Setter)
 public:

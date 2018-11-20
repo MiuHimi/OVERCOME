@@ -84,6 +84,8 @@ namespace DX
         void RegisterDeviceNotify(IDeviceNotify* deviceNotify) { m_deviceNotify = deviceNotify; }
         void Present();
 
+		HWND                    GetWindow()                             { return m_window; }
+
         // Device Accessors.
         RECT                    GetOutputSize() const                   { return m_outputSize; }
 

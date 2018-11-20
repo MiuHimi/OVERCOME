@@ -161,16 +161,20 @@
   <ItemGroup>
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionBox.h" />
+    <ClInclude Include="ExclusiveGameObject\CollisionSphere.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
+    <ClInclude Include="ExclusiveGameObject\DebugSphere.h" />
     <ClInclude Include="ExclusiveGameObject\Obj3D.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject\Camera.h" />
-    <ClInclude Include="GameObject\Collision.h" />
+    <ClInclude Include="GameObject\GameBullet.h" />
+    <ClInclude Include="GameObject\GameBulletManager.h" />
     <ClInclude Include="GameObject\GameCamera.h" />
     <ClInclude Include="GameObject\GameFloor.h" />
     <ClInclude Include="GameObject\GameRoad.h" />
     <ClInclude Include="GameObject\GameScore.h" />
+    <ClInclude Include="GameObject\GameTarget.h" />
     <ClInclude Include="GameObject\GameTimer.h" />
     <ClInclude Include="GameObject\Player.h" />
     <ClInclude Include="GameObject\SceneObject\SceneBase.h" />
@@ -191,14 +195,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
+    <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
+    <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\Obj3D.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject\Camera.cpp" />
+    <ClCompile Include="GameObject\GameBullet.cpp" />
+    <ClCompile Include="GameObject\GameBulletManager.cpp" />
     <ClCompile Include="GameObject\GameCamera.cpp" />
     <ClCompile Include="GameObject\GameFloor.cpp" />
     <ClCompile Include="GameObject\GameRoad.cpp" />
     <ClCompile Include="GameObject\GameScore.cpp" />
+    <ClCompile Include="GameObject\GameTarget.cpp" />
     <ClCompile Include="GameObject\GameTimer.cpp" />
     <ClCompile Include="GameObject\Player.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneBase.cpp" />
@@ -231,6 +240,9 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <MeshContentTask Include="..\FBX\bullet.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
     <MeshContentTask Include="..\FBX\floor01.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
@@ -250,6 +262,9 @@
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\sky2.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\target.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
   </ItemGroup>

@@ -89,6 +89,8 @@ void SceneStageSelect::Render()
 	}
 	else 
 	{
-		GameDebug::SingletonGetInstance().DebugIntRender("Stage", SceneManager::GetStageNum(), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
+		GameDebug::SingletonGetInstance().DebugRender("Stage", float(SceneManager::GetStageNum()), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
 	}
+
+	GameDebug::SingletonGetInstance().Render();
 }
