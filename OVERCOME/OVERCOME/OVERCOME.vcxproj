@@ -190,6 +190,7 @@
     <ClInclude Include="Utility\CommonStateManager.h" />
     <ClInclude Include="Utility\CountManager.h" />
     <ClInclude Include="Utility\DeviceResources.h" />
+    <ClInclude Include="Utility\DrawManager.h" />
     <ClInclude Include="Utility\GameDebug.h" />
     <ClInclude Include="Utility\InputManager.h" />
     <ClInclude Include="Utility\MatrixManager.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="Utility\CommonStateManager.cpp" />
     <ClCompile Include="Utility\CountManager.cpp" />
     <ClCompile Include="Utility\DeviceResources.cpp" />
+    <ClCompile Include="Utility\DrawManager.cpp" />
     <ClCompile Include="Utility\GameDebug.cpp" />
     <ClCompile Include="Utility\InputManager.cpp" />
     <ClCompile Include="Utility\MatrixManager.cpp" />

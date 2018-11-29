@@ -37,9 +37,9 @@ private:
 
 	struct target
 	{
-		int height;                                      // “¹˜H‚Ìí—Ş
-		DirectX::SimpleMath::Vector3 pos;                  // “¹˜H‚ÌˆÊ’u
-		int rotaAngle;                                     // ‰ñ“]Šp‚ğİ’è( (0 or 1 or 2 or 3) * 90.0f )
+		DirectX::SimpleMath::Vector3       pos;           // “¹˜H‚ÌˆÊ’u
+		int                                height;        // “I‚Ì‚‚³
+		int                                rotaAngle;     // ‰ñ“]Šp‚ğİ’è( (0 or 1 or 2 or 3) * 90.0f )
 	};
 
 	target m_targetObject[m_maxFloorBlock][m_maxFloorBlock];   // “¹˜H‚Ìî•ñ‚ğŠi”[

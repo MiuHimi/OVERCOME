@@ -12,11 +12,8 @@
 #include "../Utility/DeviceResources.h"
 #include "../Utility/StepTimer.h"
 
-#include "../Game.h"
-
 #include "../ExclusiveGameObject/CollisionBox.h"
 
-class Game;
 class GameRoad : public CollisionBox 
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -34,8 +31,6 @@ private:
 
 	static const int m_maxFloorBlock = 20;                 // ブロックごとに分けたフロアの幅(個数)
 	const int m_roadBlockSize = 5;                         // 単位ブロックの幅(設定[m])
-
-	int m_stageNum;
 
 	struct road
 	{

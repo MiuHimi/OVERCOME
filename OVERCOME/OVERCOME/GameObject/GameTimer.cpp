@@ -7,7 +7,9 @@
 
 // インクルードディレクトリ
 #include "GameTimer.h"
+#include "../Utility/DrawManager.h"
 
+#include "../Utility/GameDebug.h"
 
 /// <summary>
 /// コンストラクタ
@@ -25,8 +27,6 @@ GameTimer::GameTimer()
 		m_posCountDigit[i] = DirectX::SimpleMath::Vector2(m_posBackground);
 	}
 
-	// スプライトバッチの作成
-	m_sprites = std::make_unique<DirectX::SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
 	// コモンステートの作成 
 	m_states = std::make_unique<DirectX::CommonStates>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 }
@@ -84,6 +84,10 @@ bool GameTimer::Update(DX::StepTimer const& timer)
 /// </summary>
 void GameTimer::Render()
 {
+	RECT rect;
+	HWND hDeskWnd = GetActiveWindow();  //この関数でデスクトップのハンドルを取得
+	GetWindowRect(hDeskWnd, &rect);     //デスクトップのハンドルからその(画面の)大きさを取得
+
 	// 桁ごとの位置設定
 	m_posCountDigit[e_minuteUpperDigit] = DirectX::SimpleMath::Vector2(m_posBackground.x + 5, m_posBackground.y + 8);
 	m_posCountDigit[e_minuteLowerDigit] = DirectX::SimpleMath::Vector2(m_posBackground.x + 50, m_posBackground.y + 8);
@@ -91,10 +95,9 @@ void GameTimer::Render()
 	m_posCountDigit[e_secondLowerDigit] = DirectX::SimpleMath::Vector2(m_posBackground.x + 155, m_posBackground.y + 8);
 
 	// スプライトの描画
-	m_sprites->Begin(DirectX::SpriteSortMode_Deferred, m_states->NonPremultiplied());
-
 	// 制限時間背景の描画
-	m_sprites->Draw(m_textureBackground.Get(), m_posBackground);
+	DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), m_posBackground);
+	//m_sprites->Draw(m_textureBackground.Get(), m_posBackground);
 	// 制限時間数列の描画
 	for (int i = 0; i < e_numDigit; ++i)
 	{
@@ -108,8 +111,18 @@ void GameTimer::Render()
 		rect.right  = LONG(u + m_timeNumWidth);
 		rect.bottom = LONG(m_timeNumHeight);
 		
-		m_sprites->Draw(m_textureNum.Get(), m_posCountDigit[i], &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f, DirectX::SpriteEffects_None, 0.0f);
+		DrawManager::SingletonGetInstance().DrawRect(m_textureNum.Get(), m_posCountDigit[i], &rect);
+		//m_sprites->Draw(m_textureNum.Get(), m_posCountDigit[i], &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f, DirectX::SpriteEffects_None, 0.0f);
 	}
 
-	m_sprites->End();
+
+	DirectX::SimpleMath::Vector2 leftTop;
+	leftTop.x = rect.left;
+	leftTop.y = rect.top;
+	DirectX::SimpleMath::Vector2 RightBottom;
+	RightBottom.x = rect.right;
+	RightBottom.y = rect.bottom;
+	GameDebug::SingletonGetInstance().DebugRender("windowLeftTop", leftTop, DirectX::SimpleMath::Vector2(10.0f, 300.0f));
+	GameDebug::SingletonGetInstance().DebugRender("windowRightBottom", RightBottom, DirectX::SimpleMath::Vector2(10.0f, 330.0f));
+	GameDebug::SingletonGetInstance().Render();
 }

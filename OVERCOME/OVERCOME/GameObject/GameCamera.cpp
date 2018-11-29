@@ -81,11 +81,11 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		target.y += player->GetHeight();
 		RunPlayerCamera(target, player->GetDirection());*/
 
-		Vector3 target(player->GetPos());
+		/*Vector3 target(player->GetPos());
 		target.y += player->GetHeight();
-		MouseOperateCamera(target, player->GetDirection());
+		MouseOperateCamera(target, player->GetDirection());*/
 
-		//DebugCamera();
+		DebugCamera();
 	}
 	else
 	{

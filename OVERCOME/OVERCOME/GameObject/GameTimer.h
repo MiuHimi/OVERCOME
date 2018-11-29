@@ -45,7 +45,6 @@ private:
 	DirectX::SimpleMath::Vector2                         m_posBackground;               // タイマー背景位置
 	DirectX::SimpleMath::Vector2                         m_posCountDigit[e_numDigit];   // タイマー数列位置
 
-	std::unique_ptr<DirectX::SpriteBatch>                m_sprites;                     // スプライトバッチ
 	std::unique_ptr<DirectX::CommonStates>               m_states;                      // コモンステート
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;           // テクスチャハンドル(背景)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureNum;                  // テクスチャハンドル(数字)

@@ -66,9 +66,9 @@ public:
 		return *mp_modelBullet;
 	}
 	// ƒ‚ƒfƒ‹î•ñİ’è
-	void SetModel(std::unique_ptr<DirectX::Model>&& new_data)
+	void SetModel(std::unique_ptr<DirectX::Model>&& newData)
 	{
-		mp_modelBullet = std::move(new_data);
+		mp_modelBullet = std::move(newData);
 	}
 
 

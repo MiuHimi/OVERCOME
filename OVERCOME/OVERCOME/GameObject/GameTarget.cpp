@@ -34,14 +34,14 @@ GameTarget::GameTarget() : m_stageCount(0)
 GameTarget::~GameTarget()
 {
 	//GameRoad::Depose();
-	/*for (int j = 0; j < m_maxFloorBlock; j++)
+	for (int j = 0; j < m_maxFloorBlock; j++)
 	{
 		for (int i = 0; i < m_maxFloorBlock; i++)
 		{
-			delete mp_roadCollideObject[j][i];
-			mp_roadCollideObject[j][i] = nullptr;
+			delete mp_targetCollideObject[j][i];
+			mp_targetCollideObject[j][i] = nullptr;
 		}
-	}*/
+	}
 }
 
 /// <summary>

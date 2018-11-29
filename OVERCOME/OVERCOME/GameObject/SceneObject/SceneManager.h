@@ -55,8 +55,8 @@ public:
 	bool RequestToChangeScene(SceneId sceneId);
 
 	// ステージ番号の設定、取得
-	static void SetStageNum(int stageID)         { m_stageID = stageID; }
-	static int GetStageNum()                     { return m_stageID; }
+	static void SetStageNum(int stageID) { m_stageID = stageID; }
+	static int  GetStageNum()            { return m_stageID; }
 
 	// リザルトシーンの状態の設定、取得
 	static void SetResultSceneState(bool state)  { m_clearSceneState = state; }

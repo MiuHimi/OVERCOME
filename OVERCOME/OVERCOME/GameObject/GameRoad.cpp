@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "../pch.h"
+#include "SceneObject/SceneManager.h"
 #include "GameRoad.h"
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
@@ -24,7 +25,7 @@ int SceneManager::m_stageID;
 /// コンストラクタ
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
-GameRoad::GameRoad() : m_stageNum(0)
+GameRoad::GameRoad()
 {
 }
 /// <summary>
@@ -51,8 +52,8 @@ void GameRoad::Initialize()
 	// ステージマップの読み込み
 	std::string filePath = "Resources\\StageMap\\Stage";
 	std::ostringstream os;
-	m_stageNum = SceneManager::GetStageNum();
-	os << m_stageNum;
+	int stageNum = SceneManager::GetStageNum();
+	os << stageNum;
 	filePath += os.str() + ".csv";
 
 	// ステージマップの取得
