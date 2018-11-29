@@ -62,11 +62,16 @@
 
 #include <Model.h>
 
-//#include "ExclusiveGameObject/KeyManager.h"
 
 #ifdef _DEBUG
 #include <dxgidebug.h>
 #endif
+
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
 
 namespace DX
 {
