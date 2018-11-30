@@ -37,6 +37,7 @@ private:
 	// 他クラスへのポインタ
 	SceneBase*            mp_scene;                    // シーンが設定される
 
+	static SceneId        m_activeScene;               // アクティブなシーンを保存
 	SceneId               m_nextScene;                 // 次に更新するシーンを決定
 	bool                  m_requestSceneFlag;          // シーン遷移を要求されたらフラグが立つ
 
@@ -61,6 +62,9 @@ public:
 	// リザルトシーンの状態の設定、取得
 	static void SetResultSceneState(bool state)  { m_clearSceneState = state; }
 	static bool GetResultSceneState()            { return m_clearSceneState; }
+
+	// アクティブなシーンの取得
+	static SceneId GetActiveScene() { return m_activeScene; }
 
 private:
 	// シーンを遷移する

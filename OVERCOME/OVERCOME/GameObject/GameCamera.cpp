@@ -11,6 +11,7 @@
 
 #include "../pch.h"
 #include "GameCamera.h"
+#include "SceneObject/SceneManager.h"
 
 #include "../Utility/InputManager.h"
 #include "../Utility/DeviceResources.h"
@@ -22,6 +23,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
+SceneId SceneManager::m_activeScene;
 
 /// <summary>
 /// コンストラクタ
@@ -59,39 +61,64 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 	// カメラの切り替えを決めるフラグ
 	static bool cameraFlag = true;
 
-	// Bキーでカメラ切り替え(仮)
-	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
+	DirectX::SimpleMath::Vector3 eyePos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	DirectX::SimpleMath::Vector3 debugPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	SceneId scene = SceneManager::GetActiveScene();
+	switch (scene)
 	{
-		if (cameraFlag == true)
+	case SCENE_LOGO:
+		debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+		DebugCamera(debugPos);
+		break;
+	case SCENE_TITLE:
+		debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+		DebugCamera(debugPos);
+		break;
+	case SCENE_SELECTSTAGE:      
+		eyePos = DirectX::SimpleMath::Vector3(0.0f, 30.0f, 70.0f);
+		OriginPointAroundCamera(eyePos);
+		break;
+	case SCENE_PLAY:
+		// Bキーでカメラ切り替え(仮)
+		if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
 		{
-			cameraFlag = false;
-			ResetCamera();
+			if (cameraFlag == true)
+			{
+				cameraFlag = false;
+				ResetCamera();
+			}
+			else if (cameraFlag == false)
+			{
+				cameraFlag = true;
+				ResetCamera();
+			}
 		}
-		else if (cameraFlag == false)
+
+		// フラグに応じたカメラ管理
+		if (cameraFlag)
 		{
-			cameraFlag = true;
-			ResetCamera();
+			/*Vector3 target(player->GetPos());
+			target.y += player->GetHeight();
+			RunPlayerCamera(target, player->GetDirection());*/
+
+			/*Vector3 target(player->GetPos());
+			target.y += player->GetHeight();
+			MouseOperateCamera(target, player->GetDirection());*/
+
+			debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+			DebugCamera(debugPos);
 		}
-	}
-
-	// フラグに応じたカメラ管理
-	if (cameraFlag)
-	{
-		/*Vector3 target(player->GetPos());
-		target.y += player->GetHeight();
-		RunPlayerCamera(target, player->GetDirection());*/
-
-		/*Vector3 target(player->GetPos());
-		target.y += player->GetHeight();
-		MouseOperateCamera(target, player->GetDirection());*/
-
-		DebugCamera();
-	}
-	else
-	{
-		Vector3 target(player->GetPos());
-		target.y += player->GetHeight();
-		FollowPlayerCamera(target, player->GetDirection());
+		else
+		{
+			Vector3 target(player->GetPos());
+			target.y += player->GetHeight();
+			FollowPlayerCamera(target, player->GetDirection());
+		}
+		break;
+	case SCENE_RESULT:
+		debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+		DebugCamera(debugPos);
+		break;
 	}
 
 	return true;
@@ -100,21 +127,26 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 /// <summary>
 /// 原点を注視点にし、周りを周回するカメラ
 /// </summary>
-void GameCamera::OriginPointAroundCamera()
+void GameCamera::OriginPointAroundCamera(DirectX::SimpleMath::Vector3 eyePos)
 {
 	// カメラの位置設定(スタート位置)
-	Vector3 eye(20.0f, 8.0f, 0.0f);
+	Vector3 eye(/*20.0f, 8.0f, 0.0f*/eyePos);
 
 	// 注視点は(0,0,0)でカメラをY軸回転させる
 	m_aroundAngle += 0.5f;
+	if (m_aroundAngle > 360)m_aroundAngle = 0.0f;
 	Matrix rotY = Matrix::CreateRotationY(XMConvertToRadians(m_aroundAngle));
 	eye = Vector3::Transform(eye, rotY);
-	SetPositionTarget(eye, Vector3(0.0f, 0.0f, 0.0f));
+	//SetPositionTarget(eye, Vector3(0.0f, 0.0f, 0.0f));
+
+	m_eyePt = eye;
+	Vector3 target(0.0f, 0.0f, 0.0f);
+	m_targetPt = target;
 }
 /// <summary>
 /// デバッグ用カメラ
 /// </summary>
-void GameCamera::DebugCamera()
+void GameCamera::DebugCamera(DirectX::SimpleMath::Vector3 debugPos)
 {
 	// 相対モードなら何もしない
 	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
@@ -154,7 +186,7 @@ void GameCamera::DebugCamera()
 
 	Matrix rt = rotY * rotX;
 
-	Vector3 eye(0.0f, 5.0f, 5.0f);
+	Vector3 eye(debugPos);
 	Vector3 target(0.0f, 0.0f, 0.0f);
 	Vector3 up(0.0f, 1.0f, 0.0f);
 

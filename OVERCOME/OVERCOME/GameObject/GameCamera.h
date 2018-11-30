@@ -50,10 +50,10 @@ public:
 	bool Update(DX::StepTimer const & timer, Player* player);
 
 	// 原点を注視点にし、周りを周回するカメラ
-	void OriginPointAroundCamera();
+	void OriginPointAroundCamera(DirectX::SimpleMath::Vector3 eyePos);
 
 	// デバック用カメラ
-	void DebugCamera();
+	void DebugCamera(DirectX::SimpleMath::Vector3 debugPos);
 
 	// 走っているとき用カメラ
 	void RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);

@@ -131,11 +131,11 @@ void SceneManager::ChangeScene()
 	// 次のシーンを設定
 	switch (m_nextScene)
 	{
-	case SCENE_LOGO:          mp_scene = new SceneLogo(this);          break;
-	case SCENE_TITLE:         mp_scene = new SceneTitle(this);         break;
-	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(this);   break;
-	case SCENE_PLAY:          mp_scene = new ScenePlay(this);          break;
-	case SCENE_RESULT:        mp_scene = new SceneResult(this);        break;
+	case SCENE_LOGO:          mp_scene = new SceneLogo(this);          m_activeScene = SCENE_LOGO;          break;
+	case SCENE_TITLE:         mp_scene = new SceneTitle(this);         m_activeScene = SCENE_TITLE;         break;
+	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(this);   m_activeScene = SCENE_SELECTSTAGE;   break;
+	case SCENE_PLAY:          mp_scene = new ScenePlay(this);          m_activeScene = SCENE_PLAY;          break;
+	case SCENE_RESULT:        mp_scene = new SceneResult(this);        m_activeScene = SCENE_RESULT;        break;
 	}
 	
 	// 新たに活動中になったシーンを初期化する
