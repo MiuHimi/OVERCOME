@@ -30,8 +30,10 @@ class SceneManager
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
 public :
-	static int            m_stageID;                  // ステージ番号
+	static int            m_stageID;                   // ステージ番号
 	static bool           m_clearSceneState;           // リザルトシーンの状態を決める
+
+	static const int      m_maxStageNum = 2;           // 全ステージ数
 
 private:
 	// 他クラスへのポインタ

@@ -43,12 +43,14 @@ GameBulletManager::~GameBulletManager()
 /// </summary>
 void GameBulletManager::Initialize()
 {
+	// メモリーリーク
 	for (int i = 0; i < m_maxBulletNum; i++)
 	{
 		GameBullet* bullet = new GameBullet(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
 		// ブロックの情報を格納
 		mp_bullet.push_back(bullet);
 	}
+	// ここまで
 }
 /// <summary>
 /// 生成

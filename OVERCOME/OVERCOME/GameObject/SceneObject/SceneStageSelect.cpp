@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneStageSelect.cpp
 // Summary. SceneStageSelectClass
-// Date.    2018/08/15
+// Date.    2018/11/30
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -84,7 +84,7 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 	{
 		m_selectSceneID++;
 		m_showFlag = false;
-		if (m_selectSceneID > 2)m_selectSceneID = 0;
+		if (m_selectSceneID > SceneManager::m_maxStageNum)m_selectSceneID = 0;
 		SceneManager::SetStageNum(m_selectSceneID);
 	}
 
@@ -127,24 +127,9 @@ void SceneStageSelect::Render()
 	// デバッグ用
 	GameDebug::SingletonGetInstance().DebugRender("SceneStageSelect", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
 
+	// 表示するステージの選択
 	if (!m_showFlag)
 	{
-		/*switch (SceneManager::GetStageNum())
-		{
-		case 1:
-			LoadStage(m_selectSceneID);
-			GameDebug::SingletonGetInstance().DebugRender("Stage", float(SceneManager::GetStageNum()), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-			m_showFlag = true;
-			break;
-		case 2:
-			LoadStage(m_selectSceneID);
-			GameDebug::SingletonGetInstance().DebugRender("Stage", float(SceneManager::GetStageNum()), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-			m_showFlag = true;
-			break;
-		default:
-			GameDebug::SingletonGetInstance().DebugRender("StageNone", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-			break;
-		}*/
 		if (m_selectSceneID == 0)
 		{
 			GameDebug::SingletonGetInstance().DebugRender("StageNone", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
@@ -158,6 +143,8 @@ void SceneStageSelect::Render()
 	}
 	
 	GameDebug::SingletonGetInstance().Render();
+
+	// 選択されたステージの表示
 	if (m_showFlag)
 	{
 		ShowStage();
