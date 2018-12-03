@@ -27,6 +27,7 @@ private:
 
 	DirectX::SimpleMath::Vector2       m_angle;                           // 現在の回転角
 	DirectX::SimpleMath::Vector2       m_angleTmp;                        // 保存している回転角
+	const float                        m_angleMag = 3.0f;                 // マウスによるカメラ回転の倍率 
 
 	DirectX::SimpleMath::Vector3       m_cameraDir;                       // カメラの向きのベクトル
 

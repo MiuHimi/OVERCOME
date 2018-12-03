@@ -84,10 +84,6 @@ bool GameTimer::Update(DX::StepTimer const& timer)
 /// </summary>
 void GameTimer::Render()
 {
-	RECT rect;
-	HWND hDeskWnd = GetActiveWindow();  //この関数でデスクトップのハンドルを取得
-	GetWindowRect(hDeskWnd, &rect);     //デスクトップのハンドルからその(画面の)大きさを取得
-
 	// 桁ごとの位置設定
 	m_posCountDigit[e_minuteUpperDigit] = DirectX::SimpleMath::Vector2(m_posBackground.x + 5, m_posBackground.y + 8);
 	m_posCountDigit[e_minuteLowerDigit] = DirectX::SimpleMath::Vector2(m_posBackground.x + 50, m_posBackground.y + 8);
@@ -115,14 +111,4 @@ void GameTimer::Render()
 		//m_sprites->Draw(m_textureNum.Get(), m_posCountDigit[i], &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f, DirectX::SpriteEffects_None, 0.0f);
 	}
 
-
-	DirectX::SimpleMath::Vector2 leftTop;
-	leftTop.x = rect.left;
-	leftTop.y = rect.top;
-	DirectX::SimpleMath::Vector2 RightBottom;
-	RightBottom.x = rect.right;
-	RightBottom.y = rect.bottom;
-	GameDebug::SingletonGetInstance().DebugRender("windowLeftTop", leftTop, DirectX::SimpleMath::Vector2(10.0f, 300.0f));
-	GameDebug::SingletonGetInstance().DebugRender("windowRightBottom", RightBottom, DirectX::SimpleMath::Vector2(10.0f, 330.0f));
-	GameDebug::SingletonGetInstance().Render();
 }

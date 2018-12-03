@@ -108,14 +108,14 @@ bool Player::Update(DX::StepTimer const & timer)
 	if (mp_gameCamera->GetStartPosMouse())
 	{
 		// 加速度設定
-		m_accel -= 0.01f;
+		/*m_accel -= 0.01f;
 		if (m_accel < -0.05f)
 		{
 			m_accel = -0.05f;
-		}
+		}*/
 		// 速度初期化
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.1f + m_accel);
+		//m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.1f + m_accel);
 	}
 
 	// プレイヤーの向き設定

@@ -16,8 +16,6 @@
 #include "../Utility/InputManager.h"
 #include "../Utility/DeviceResources.h"
 
-#include "../Utility/GameDebug.h"
-
 // usingディレクトリ
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -101,12 +99,12 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 			target.y += player->GetHeight();
 			RunPlayerCamera(target, player->GetDirection());*/
 
-			/*Vector3 target(player->GetPos());
+			Vector3 target(player->GetPos());
 			target.y += player->GetHeight();
-			MouseOperateCamera(target, player->GetDirection());*/
+			MouseOperateCamera(target, player->GetDirection());
 
-			debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
-			DebugCamera(debugPos);
+			/*debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+			DebugCamera(debugPos);*/
 		}
 		else
 		{
@@ -255,6 +253,14 @@ void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float d
 /// </summary>
 void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float direction)
 {
+	RECT desktopWndRect;                         // デスクトップのサイズ
+	HWND desktopWnd = GetDesktopWindow();        // この関数でデスクトップのハンドルを取得
+	GetWindowRect(desktopWnd, &desktopWndRect);  // デスクトップのハンドルから画面の大きさを取得
+
+	RECT activeWndRect;                          // アクティブなウィンドウのサイズ
+	HWND activeWnd = GetActiveWindow();          // この関数でアクティブなウィンドウのハンドルを取得
+	GetWindowRect(activeWnd, &activeWndRect);    // アクティブなウィンドウのハンドルからその画面の大きさを取得
+
 	// 相対モードなら何もしない
 	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
 	// マウスの更新
@@ -281,37 +287,24 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float d
 		m_mousePos.x = 400.0f;
 		m_mousePos.y = 300.0f;
 
-		bool flag = false;
+		// 画面外に出たら画面の中心に戻す
+		if (InputManager::SingletonGetInstance().GetMouseState().x < 10 || InputManager::SingletonGetInstance().GetMouseState().x > 790 ||
+			InputManager::SingletonGetInstance().GetMouseState().y < 10 || InputManager::SingletonGetInstance().GetMouseState().y > 590)
+		{
+			// 現在の回転を保存
+			m_angle.x = m_angleTmp.x;
+			m_angle.y = m_angleTmp.y;
 
-		//if (InputManager::SingletonGetInstance().GetMouseState().x < 10 || InputManager::SingletonGetInstance().GetMouseState().x > 790 ||
-		//	InputManager::SingletonGetInstance().GetMouseState().y < 10 || InputManager::SingletonGetInstance().GetMouseState().y > 590)
-		//{
-		//	// 現在の回転を保存
-		//	m_angle.x = m_angleTmp.x;
-		//	m_angle.y = m_angleTmp.y;
-		//	flag = true;
-
-		//	m_mousePos.x = InputManager::SingletonGetInstance().GetMouseState().x;
-		//	m_mousePos.y = InputManager::SingletonGetInstance().GetMouseState().y;
-
-		//	SetCursorPos(400, 300);
-		//}
-
-		Vector2 mouseWhereabouts;
-		mouseWhereabouts.x = float(InputManager::SingletonGetInstance().GetMouseState().x);
-		mouseWhereabouts.y = float(InputManager::SingletonGetInstance().GetMouseState().y);
-
-		if (mouseWhereabouts.x < m_mousePos.x) { mouseWhereabouts.x = (m_mousePos.x)-((m_mousePos.x - InputManager::SingletonGetInstance().GetMouseState().x) * 10); }
-		if (mouseWhereabouts.x > m_mousePos.x) { mouseWhereabouts.x = (m_mousePos.x)+((InputManager::SingletonGetInstance().GetMouseState().x - m_mousePos.x) * 10); }
-		if (mouseWhereabouts.y < m_mousePos.y) { mouseWhereabouts.y = (m_mousePos.y)-((m_mousePos.y - InputManager::SingletonGetInstance().GetMouseState().y) * 10); }
-		if (mouseWhereabouts.y > m_mousePos.y) { mouseWhereabouts.y = (m_mousePos.y)+((InputManager::SingletonGetInstance().GetMouseState().y - m_mousePos.y) * 10); }
+			// デスクトップの値のため、ウィンドウ分のサイズ+画面の半分を足す(Yはタイトルバー分も足す)
+			SetCursorPos(int(activeWndRect.left + 400), int(activeWndRect.top + 300 + 50));
+		}
 
 		// 偏差分を移動
-	    Motion(int(mouseWhereabouts.x), int(mouseWhereabouts.y));
+	    Motion(int(InputManager::SingletonGetInstance().GetMouseState().x), int(InputManager::SingletonGetInstance().GetMouseState().y));
 
 		// ビュー行列を算出する
-		Matrix rotY = Matrix::CreateRotationY(-m_angleTmp.y + XMConvertToRadians(180.0f));
-		Matrix rotX = Matrix::CreateRotationX(-m_angleTmp.x);
+		Matrix rotY = Matrix::CreateRotationY((-m_angleTmp.y + XMConvertToRadians(180.0f))*m_angleMag);
+		Matrix rotX = Matrix::CreateRotationX((-m_angleTmp.x)*m_angleMag);
 		Matrix rt = rotY * rotX;
 
 		Vector3 eye(0.0f, 0.0f, -0.1f);

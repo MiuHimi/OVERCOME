@@ -283,5 +283,4 @@ void ScenePlay::Render()
 	// ƒXƒRƒA‚Ì•`‰æ
 	mp_gameScore->Render();
 
-	
 }
