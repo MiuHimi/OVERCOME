@@ -189,6 +189,55 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		if (hitObject == true) break;
 	}
 
+	// 的と弾の衝突判定
+	for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
+	{
+		for (int i = 0; i < mp_gameTarget->GetMaxFloorBlock(); i++)
+		{
+			// 的の状態取得
+			if (mp_gameTarget->GetState(j, i))
+			{
+				for (int k = 0; k < mp_player->GetBulletManager()->GetMaxBulletNum(); k++)
+				{
+					// 弾の状態取得
+					if (mp_player->GetBulletManager()->GetBulletState(k))
+					{
+						if (Collision::HitCheck_Sphere2Box(mp_player->GetBulletManager()->GetBulletCollide(k), mp_gameTarget->GetCollisionObject(j, i)->GetCollision()))
+						{
+							mp_gameTarget->SetState(j, i, false);
+							mp_player->GetBulletManager()->SetBulletState(k, false);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// 弾の表示限界の設定
+	SimpleMath::Vector3 pPos = mp_player->GetPos();
+	SimpleMath::Vector3 bPos[5];
+	for (int i = 0; i < mp_player->GetBulletManager()->GetMaxBulletNum(); i++)
+	{
+		// 発射されている弾のみ計測
+		if (!mp_player->GetBulletManager()->GetBulletState(i)) break;
+
+		// しきい値(100)
+		float length = 100.0f;
+		float len = 0.0f;
+		bPos[i] = mp_player->GetBulletManager()->GetPos(i);
+
+		// 弾とプレイヤーの距離を計測
+		len = ((pPos.x - bPos[i].x)*(pPos.x - bPos[i].x)) +
+			         ((pPos.y - bPos[i].y)*(pPos.y - bPos[i].y)) +
+			         ((pPos.z - bPos[i].z)*(pPos.z - bPos[i].z));
+
+		// 距離が100を超えたら弾を消す
+		if (length*length < len)
+		{
+			mp_player->GetBulletManager()->SetBulletState(i, false);
+		}
+	}
+
 	// ゲーム床の更新
 	mp_gameFloor->Update(timer);
 	// ゲーム道路の更新
@@ -282,5 +331,30 @@ void ScenePlay::Render()
 
 	// スコアの描画
 	mp_gameScore->Render();
+
+	/*int a = 0;
+	bool bState[5];
+	std::vector<bool> tState;
+	for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
+	{
+		for (int i = 0; i < mp_gameTarget->GetMaxFloorBlock(); i++)
+		{
+			if (mp_gameTarget->GetTargetObject(j, i).height != 0.0) break;
+			for (int k = 0; k < mp_player->GetBulletManager()->GetMaxBulletNum(); k++)
+			{
+				bState[k] = mp_player->GetBulletManager()->GetBulletState(k);
+
+				tState.push_back(mp_gameTarget->GetState(j, i));
+				GameDebug::SingletonGetInstance().DebugRender(float(tState.back()), DirectX::SimpleMath::Vector2(10.0, 100 + (a * 30)));
+			}
+			a++;
+		}
+	}
+	for (int k = 0; k < mp_player->GetBulletManager()->GetMaxBulletNum(); k++)
+	{
+		GameDebug::SingletonGetInstance().DebugRender(float(bState[k]), DirectX::SimpleMath::Vector2(10.0, 50 + (k * 30)));
+	}
+
+	GameDebug::SingletonGetInstance().Render();*/
 
 }

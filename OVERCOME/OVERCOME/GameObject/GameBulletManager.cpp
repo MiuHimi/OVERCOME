@@ -44,12 +44,14 @@ GameBulletManager::~GameBulletManager()
 void GameBulletManager::Initialize()
 {
 	// メモリーリーク
-	for (int i = 0; i < m_maxBulletNum; i++)
+	/*for (int i = 0; i < m_maxBulletNum; i++)
 	{
 		GameBullet* bullet = new GameBullet(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
-		// ブロックの情報を格納
+		// 弾の情報を格納
 		mp_bullet.push_back(bullet);
-	}
+	}*/
+
+	//mp_bullet.resize(m_maxBulletNum);
 	// ここまで
 }
 /// <summary>
@@ -57,25 +59,39 @@ void GameBulletManager::Initialize()
 /// </summary>
 void GameBulletManager::Create()
 {
-	// エフェクトファクトリー
-	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
-	// モデルのテクスチャの入っているフォルダを指定する
-	fx.SetDirectory(L"Resources\\Models");
-
-	for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it) 
+	/*for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
 	{
-		/*std::unique_ptr<Model> model;
-		model = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\bullet.cmo", fx);
-		(*it)->SetModel(model.get());
-		SetModel(model.get());*/
+		GameBullet* bullet = new GameBullet(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
+		// 弾の情報を格納
+		mp_bullet.push_back(bullet);
+	}*/
 
-		// モデルを作成
-		std::unique_ptr<Model> model;
-		model = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\bullet.cmo", fx);
-		// モデルをそれぞれ(要素)にセット
-		(*it)->SetModel(std::move(model));
-		// 衝突判定用モデル設定
-		SetModel(model.get());
+	for (int i = 0; i < m_maxBulletNum; i++)
+	{
+		mp_bullet[i] = new GameBullet(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
+	}
+
+	//for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
+	//{
+	//	/*std::unique_ptr<Model> model;
+	//	model = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\bullet.cmo", fx);
+	//	(*it)->SetModel(model.get());
+	//	SetModel(model.get());*/
+
+	//	/*// モデルを作成
+	//	std::unique_ptr<Model> model;
+	//	model = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\bullet.cmo", fx);
+	//	// モデルをそれぞれ(要素)にセット
+	//	(*it)->SetModel(std::move(model));
+	//	// 衝突判定用モデル設定
+	//	SetModel(model.get());*/
+
+	//	(*it)->Create();
+	//}
+
+	for (int i = 0; i < m_maxBulletNum; i++)
+	{
+		mp_bullet[i]->Create();
 	}
 }
 
@@ -86,48 +102,82 @@ void GameBulletManager::Create()
 /// <returns>終了状態</returns>
 bool GameBulletManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3 ShootPos, DirectX::SimpleMath::Vector3 cameraDir)
 {
-	//InputManager::SingletonGetInstance().Update();
+	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 
+	// 撃った直後からカウント開始
 	if (m_shootingFlag)
 	{
 		m_reloadTime++;
 	}
 
+	// 一秒経ったら再び射撃可能に
 	if (m_reloadTime >= m_needReloadTime)
 	{
 		m_reloadTime = 0;
 		m_shootingFlag = false;
 	}
 
-	for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
+	//for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
+	//{
+	//	if (!(*it)->GetState())
+	//	{
+	//		if (!m_shootingFlag)
+	//		{
+	//			if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	//			//if(InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Up))
+	//			{
+	//				// 残弾があったら発射準備
+	//				(*it)->SetState(true);
+	//				(*it)->SetPos(ShootPos);
+	//				(*it)->SetVel(cameraDir);
+	//				m_shootingFlag = true;
+	//				break;
+	//			}
+	//		}
+	//	}
+	//}
+
+	for (int i = 0; i < m_maxBulletNum; i++)
 	{
-		if (!(*it)->GetState())
+		if (!mp_bullet[i]->GetState())
 		{
 			if (!m_shootingFlag)
-			{
+			{				
 				if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
-				//if(InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Up))
 				{
 					// 残弾があったら発射準備
-					(*it)->SetState(true);
-					(*it)->SetPos(ShootPos);
-					(*it)->SetVel(cameraDir);
+					mp_bullet[i]->SetState(true);
+					mp_bullet[i]->SetPos(ShootPos);
+					mp_bullet[i]->SetVel(cameraDir);
 					m_shootingFlag = true;
 					break;
 				}
 			}
 		}
-		
 	}
 
-	for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
+	//for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
+	//{
+	//	// 発射できる弾の更新
+	//	if ((*it)->GetState())
+	//	{
+	//		(*it)->Update(timer);
+	//	}
+	//}
+
+	for (int i = 0; i < m_maxBulletNum; i++)
 	{
-		// 発射できる弾の更新
-		if ((*it)->GetState())
+		if (mp_bullet[i]->GetState())
 		{
-			(*it)->Update(timer);
+			mp_bullet[i]->Update(timer);
 		}
 	}
+
+	// 衝突判定情報の設定
+	/*for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
+	{
+		(*it)->SetCollision((*it)->GetCollide());
+	}*/
 
 	return true;
 }
@@ -136,15 +186,20 @@ bool GameBulletManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::
 /// </summary>
 void GameBulletManager::Render()
 {
-	int i = 0;
-	for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
+	/*for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
 	{
 		if ((*it)->GetState())
 		{
 			(*it)->Render();
 		}
+	}*/
 
-		i++;
+	for (int i = 0; i < m_maxBulletNum; i++)
+	{
+		if (mp_bullet[i]->GetState())
+		{
+			mp_bullet[i]->Render();
+		}
 	}
 }
 

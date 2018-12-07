@@ -46,7 +46,8 @@ private:
 	DirectX::SimpleMath::Matrix              m_world;                     // ワールド座標
 
 	std::unique_ptr<DirectX::Model>          m_modelPlayer;               // プレイヤーモデルオブジェクト
-	std::unique_ptr<GameBulletManager>       mp_bulletManager;
+	//std::unique_ptr<GameBulletManager>       mp_bulletManager;
+	GameBulletManager*                       mp_bulletManager;
 	std::unique_ptr<GameCamera>              mp_gameCamera;               // カメラポインター
 
 
@@ -91,6 +92,26 @@ public:
 	void SetRoadCollideState(bool flag)             { m_collideToRoad = flag; }
 	// 何にも触れずジャンプもしていない時にフラグが立つ
 	void SetNotTouchState(bool flag)                { m_noTouchObectFlag = flag; }
+
+	/*// 弾情報取得
+	const GameBulletManager& GetBulletManager() const
+	{
+		if (!mp_bulletManager)
+		{
+			throw std::domain_error("null pointer");
+		}
+		return *mp_bulletManager;
+	}
+	// 弾情報設定
+	void SetBulletManager(std::unique_ptr<GameBulletManager>&& newData)
+	{
+		mp_bulletManager = std::move(newData);
+	}*/
+
+	GameBulletManager* GetBulletManager()
+	{
+		return mp_bulletManager;
+	}
 
 private:
 

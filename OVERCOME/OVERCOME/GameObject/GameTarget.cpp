@@ -79,6 +79,7 @@ void GameTarget::Initialize()
 			// 二桁のうち、十の桁を道路の種類、一の桁を回転角に設定
 			m_targetObject[j][i].height = targetType / 10;
 			m_targetObject[j][i].rotaAngle = targetType % 10;
+			m_targetObject[j][i].state = false;
 			i++;
 		}
 		j++;
@@ -137,6 +138,15 @@ void GameTarget::Create()
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
 	box.r = DirectX::SimpleMath::Vector3(50.0f, 0.0f, 50.0f);    // 各半径
+
+	// 出現するマスの生存状態をtrueにしておく
+	for (int j = 0; j < m_maxFloorBlock; j++)
+	{
+		for (int i = 0; i < m_maxFloorBlock; i++)
+		{
+			if (m_targetObject[j][i].height != 0) m_targetObject[j][i].state = true;
+		}
+	}
 
 	// 道路の作成
 	for (int j = 0; j < m_maxFloorBlock; j++)
@@ -206,7 +216,7 @@ void GameTarget::Render()
 			auto& res = DX::DeviceResources::SingletonGetInstance();
 			// 描画道路選択
 			
-			if (m_targetObject[j][i].height != 0)m_modelTarget->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
+			if (m_targetObject[j][i].height != 0 && m_targetObject[j][i].state == true)m_modelTarget->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
 			// デバッグ道路描画
 			if(m_targetObject[j][i].height != 0)mp_targetCollideObject[j][i]->DrawDebugCollision();
 		}

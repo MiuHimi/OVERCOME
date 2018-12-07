@@ -54,7 +54,7 @@ void Player::Initialize()
 	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
 
 	mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
-	mp_bulletManager = std::make_unique<GameBulletManager>();
+	mp_bulletManager = /*std::make_unique<GameBulletManager>();*/new GameBulletManager();
 	mp_bulletManager->Initialize();
 }
 /// <summary>
@@ -98,24 +98,25 @@ bool Player::Update(DX::StepTimer const & timer)
 
 	// プレイヤー移動(ベクトル)
 	
-	//if (InputManager::SingletonGetInstance().GetKeyState().S/*mp_gameCamera->GetStartPosMouse()*/)
-	//{
-	//	// 加速度設定
-	//	m_accel += 0.001f;
-	//	// 速度初期化
-	//	m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.1f + m_accel);
-	//}
+	
 	if (mp_gameCamera->GetStartPosMouse())
 	{
 		// 加速度設定
-		/*m_accel -= 0.01f;
+		m_accel -= 0.01f;
 		if (m_accel < -0.05f)
 		{
 			m_accel = -0.05f;
-		}*/
+		}
 		// 速度初期化
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		//m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.1f + m_accel);
+		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.1f + m_accel);
+	}
+	if (InputManager::SingletonGetInstance().GetKeyState().S/*mp_gameCamera->GetStartPosMouse()*/)
+	{
+		// 加速度設定
+		//m_accel += 0.001f;
+		// 速度初期化
+		m_vel = /*SimpleMath::Vector3(0.0f, 0.0f, 0.1f + m_accel);*/SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	}
 
 	// プレイヤーの向き設定

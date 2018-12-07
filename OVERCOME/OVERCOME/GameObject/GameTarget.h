@@ -39,6 +39,7 @@ private:
 	{
 		DirectX::SimpleMath::Vector3       pos;           // “¹˜H‚ÌˆÊ’u
 		int                                height;        // “I‚Ì‚‚³
+		bool                               state;         // ¶‘¶ƒtƒ‰ƒO
 		int                                rotaAngle;     // ‰ñ“]Šp‚ğİ’è( (0 or 1 or 2 or 3) * 90.0f )
 	};
 
@@ -65,7 +66,9 @@ public:
 
 	int GetMaxFloorBlock() { return m_maxFloorBlock; }
 
-	target GetRoadObject(int j, int i) { return m_targetObject[j][i]; }
+	bool GetState(int j, int i) { return m_targetObject[j][i].state; }
+	void SetState(int j, int i, bool state) { m_targetObject[j][i].state = state; }
+	target GetTargetObject(int j, int i) { return m_targetObject[j][i]; }
 	CollisionBox* GetCollisionObject(int j, int i) { return mp_targetCollideObject[j][i]; }
 
 

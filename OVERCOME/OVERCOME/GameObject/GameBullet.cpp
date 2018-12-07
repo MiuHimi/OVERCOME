@@ -40,6 +40,23 @@ GameBullet::~GameBullet()
 {
 }
 
+void GameBullet::Create()
+{
+	// エフェクトファクトリー
+	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
+	// モデルのテクスチャの入っているフォルダを指定する
+	fx.SetDirectory(L"Resources\\Models");
+
+	// モデルを作成
+	mp_modelBullet = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\bullet.cmo", fx);
+	// 衝突判定用モデル設定
+	Obj3D::SetModel(mp_modelBullet.get());
+
+	m_sphere.c = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	m_sphere.r = 0.0f;
+	SetCollision(m_sphere);
+}
+
 /// <summary>
 /// 更新
 /// </summary>
@@ -51,6 +68,10 @@ bool GameBullet::Update(DX::StepTimer const & timer)
 
 	// ワールド行列の作成
 	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);
+
+	m_sphere.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y, m_pos.z);      // 境界球の中心
+	m_sphere.r = 1.0f;                                                         // 半径
+	SetCollision(m_sphere);
 
 	return true;
 }
