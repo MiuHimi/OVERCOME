@@ -204,8 +204,12 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 					{
 						if (Collision::HitCheck_Sphere2Box(mp_player->GetBulletManager()->GetBulletCollide(k), mp_gameTarget->GetCollisionObject(j, i)->GetCollision()))
 						{
+							// “I‚Æ’e‚Ìó‘Ô
 							mp_gameTarget->SetState(j, i, false);
 							mp_player->GetBulletManager()->SetBulletState(k, false);
+
+							// ‰Á“_
+							mp_gameScore->FluctuationScore(100);
 						}
 					}
 				}
