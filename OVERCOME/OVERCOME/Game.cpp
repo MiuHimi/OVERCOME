@@ -44,7 +44,7 @@ void Game::Initialize(HWND window, int width, int height)
 
 
 	// スタートシーンの設定
-	mp_sceneManager = std::make_unique<SceneManager>(SceneId::SCENE_SELECTSTAGE);
+	mp_sceneManager = std::make_unique<SceneManager>(SceneId::SCENE_LOGO);
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -120,7 +120,7 @@ void Game::Clear()
 	auto renderTarget = DX::DeviceResources::SingletonGetInstance().GetRenderTargetView();
 	auto depthStencil = DX::DeviceResources::SingletonGetInstance().GetDepthStencilView();
 
-    context->ClearRenderTargetView(renderTarget, Colors::DarkBlue);
+    context->ClearRenderTargetView(renderTarget, Colors::Black);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
 

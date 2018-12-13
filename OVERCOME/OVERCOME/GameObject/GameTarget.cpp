@@ -135,6 +135,9 @@ void GameTarget::Create()
 	// モデルをロードしてモデルハンドルを取得する
 	m_modelTarget = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\target.cmo", fx);
 	
+	// フォグの設定
+	SetFogEffectDistance(1.0f, 5.0f);
+
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
 	box.r = DirectX::SimpleMath::Vector3(50.0f, 0.0f, 50.0f);    // 各半径
@@ -218,7 +221,7 @@ void GameTarget::Render()
 			
 			if (m_targetObject[j][i].height != 0 && m_targetObject[j][i].state == true)m_modelTarget->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
 			// デバッグ道路描画
-			if(m_targetObject[j][i].height != 0)mp_targetCollideObject[j][i]->DrawDebugCollision();
+			//if(m_targetObject[j][i].height != 0)mp_targetCollideObject[j][i]->DrawDebugCollision();
 		}
 	}
 }
@@ -228,4 +231,24 @@ void GameTarget::Render()
 /// </summary>
 void GameTarget::Depose()
 {
+}
+
+/// <summary>
+/// フォグのスタートとエンドを設定
+/// </summary>
+/// <param name="start">効果がかかり始める距離</param>
+/// <param name="end">効果が完全にかかる距離</param>
+void GameTarget::SetFogEffectDistance(float start, float end)
+{
+	m_modelTarget->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(start); // assuming RH coordiantes
+			fog->SetFogEnd(end);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
 }

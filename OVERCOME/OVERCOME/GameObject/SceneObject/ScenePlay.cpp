@@ -9,9 +9,12 @@
 #include "SceneManager.h"
 #include "ScenePlay.h"
 
+#include "../Utility/CommonStateManager.h"
 #include "../Utility/DeviceResources.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"
+
+#include "../Utility/DrawManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -86,6 +89,9 @@ void ScenePlay::Initialize()
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
 	mp_gameScore->Create();
+
+	
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
 }
 
 /// <summary>
@@ -317,6 +323,14 @@ void ScenePlay::Render()
 	// 行列を設定
 	MatrixManager::SingletonGetInstance().SetViewProjection(view, projection);
 
+	// スプライトの描画
+	/*m_sprites->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+
+	m_sprites->Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
+	
+	m_sprites->End();*/
+
+	DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
 
 	// ゲーム床の描画
 	mp_gameFloor->Render();

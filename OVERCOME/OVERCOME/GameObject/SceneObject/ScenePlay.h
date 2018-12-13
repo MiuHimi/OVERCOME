@@ -50,6 +50,8 @@ private:
 	//bool m_hitPlayerToFloorFlag = false;
 	//bool m_hitPlayerToRoadFlag = false;
 
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;           // テクスチャハンドル(背景)
+
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ

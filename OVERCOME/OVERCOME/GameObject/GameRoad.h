@@ -79,6 +79,6 @@ public:
 
 
 private:
-
+	void SetFogEffectDistance(float start, float end);
 
 };

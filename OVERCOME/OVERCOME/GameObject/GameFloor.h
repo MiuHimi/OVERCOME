@@ -45,6 +45,6 @@ public:
 	void Depose();
 
 private:
-
+	void SetFogEffectDistance(float start, float end);
 
 };

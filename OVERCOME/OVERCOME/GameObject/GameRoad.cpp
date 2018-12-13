@@ -159,50 +159,7 @@ void GameRoad::Create()
 	m_modelRoadBranch = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_branch.cmo", fx);
 
 	// フォグの設定
-	m_modelRoadStraight->UpdateEffects([&](IEffect* effect)
-	{
-		auto fog = dynamic_cast<IEffectFog*>(effect);
-		if (fog)
-		{
-			fog->SetFogEnabled(true);
-			fog->SetFogStart(8); // assuming RH coordiantes
-			fog->SetFogEnd(30);
-			fog->SetFogColor(Colors::Black);
-		}
-	});
-	m_modelRoadStop->UpdateEffects([&](IEffect* effect)
-	{
-		auto fog = dynamic_cast<IEffectFog*>(effect);
-		if (fog)
-		{
-			fog->SetFogEnabled(true);
-			fog->SetFogStart(8); // assuming RH coordiantes
-			fog->SetFogEnd(30);
-			fog->SetFogColor(Colors::Black);
-		}
-	});
-	m_modelRoadCurve->UpdateEffects([&](IEffect* effect)
-	{
-		auto fog = dynamic_cast<IEffectFog*>(effect);
-		if (fog)
-		{
-			fog->SetFogEnabled(true);
-			fog->SetFogStart(8); // assuming RH coordiantes
-			fog->SetFogEnd(30);
-			fog->SetFogColor(Colors::Black);
-		}
-	});
-	m_modelRoadBranch->UpdateEffects([&](IEffect* effect)
-	{
-		auto fog = dynamic_cast<IEffectFog*>(effect);
-		if (fog)
-		{
-			fog->SetFogEnabled(true);
-			fog->SetFogStart(8); // assuming RH coordiantes
-			fog->SetFogEnd(30);
-			fog->SetFogColor(Colors::Black);
-		}
-	});
+	SetFogEffectDistance(8.0f, 15.0f);
 
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
@@ -323,4 +280,58 @@ void GameRoad::Render()
 /// </summary>
 void GameRoad::Depose()
 {
+}
+
+/// <summary>
+/// フォグのスタートとエンドを設定
+/// </summary>
+/// <param name="start">効果がかかり始める距離</param>
+/// <param name="end">効果が完全にかかる距離</param>
+void GameRoad::SetFogEffectDistance(float start, float end)
+{
+	// フォグの設定
+	m_modelRoadStraight->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(start); // assuming RH coordiantes
+			fog->SetFogEnd(end);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
+	m_modelRoadStop->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(start); // assuming RH coordiantes
+			fog->SetFogEnd(end);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
+	m_modelRoadCurve->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(start); // assuming RH coordiantes
+			fog->SetFogEnd(end);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
+	m_modelRoadBranch->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(start); // assuming RH coordiantes
+			fog->SetFogEnd(end);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
 }

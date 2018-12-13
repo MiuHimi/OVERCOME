@@ -63,6 +63,19 @@ void DrawManager::DrawRect(ID3D11ShaderResourceView * texture, DirectX::SimpleMa
 	m_sprites->Draw(texture, pos, sourceRectangle);
 	m_sprites->End();
 }
+/// <summary>
+/// スプライトの描画(透明度変更)
+/// </summary>
+/// <param name="texture"></param>
+/// <param name="pos"></param>
+/// <param name="color"></param>
+void DrawManager::DrawAlpha(ID3D11ShaderResourceView * texture, DirectX::SimpleMath::Vector2 pos, DirectX::SimpleMath::Color color)
+{
+	// スプライトの描画
+	m_sprites->Begin(DirectX::SpriteSortMode_Deferred, m_states->NonPremultiplied());
+	m_sprites->Draw(texture, pos, color);
+	m_sprites->End();
+}
 
 /// <summary>
 /// テクスチャの描画

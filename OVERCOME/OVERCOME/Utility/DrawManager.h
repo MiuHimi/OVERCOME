@@ -32,6 +32,7 @@ public:
 	// スプライトの描画
 	void Draw(ID3D11ShaderResourceView* texture, DirectX::SimpleMath::Vector2 pos);
 	void DrawRect(ID3D11ShaderResourceView* texture, DirectX::SimpleMath::Vector2 pos, RECT const* sourceRectangle);
+	void DrawAlpha(ID3D11ShaderResourceView* texture, DirectX::SimpleMath::Vector2 pos, DirectX::SimpleMath::Color color);
 
 	void Draw(char* textureName, DirectX::SimpleMath::Vector2 pos);
 	void DrawRect(char* textureName, DirectX::SimpleMath::Vector2 pos, RECT const* sourceRectangle);

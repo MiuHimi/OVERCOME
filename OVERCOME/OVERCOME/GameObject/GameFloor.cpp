@@ -47,6 +47,10 @@ void GameFloor::Create()
 	// モデルをロードしてモデルハンドルを取得する
 	m_modelLattice = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\floor01.cmo", fx);
 
+	// フォグの設定
+	SetFogEffectDistance(0.1f, 1.0f);
+
+	// 衝突判定用オブジェクト生成
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
 	box.r = DirectX::SimpleMath::Vector3(50.0f, 0.0f, 50.0f);    // 各半径0.5
@@ -85,4 +89,24 @@ void GameFloor::Render()
 /// </summary>
 void GameFloor::Depose()
 {
+}
+
+/// <summary>
+/// フォグのスタートとエンドを設定
+/// </summary>
+/// <param name="start">効果がかかり始める距離</param>
+/// <param name="end">効果が完全にかかる距離</param>
+void GameFloor::SetFogEffectDistance(float start, float end)
+{
+	m_modelLattice->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(start); // assuming RH coordiantes
+			fog->SetFogEnd(end);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
 }
