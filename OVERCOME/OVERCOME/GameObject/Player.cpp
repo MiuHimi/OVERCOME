@@ -269,11 +269,11 @@ bool Player::Update(DX::StepTimer const & timer)
 	}
 
 	// 床と接触すると止まる(真ん中をクリックするまで)
-	if (m_collideToFloor)
+	/*if (m_collideToFloor)
 	{
 		m_restartFlag = true;
 		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-	}
+	}*/
 
 	
 	// プレイヤーの向き設定

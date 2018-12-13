@@ -353,7 +353,7 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 
 		// 視点、上方向設定
 		//eye = Vector3::Transform(eye, rot);
-		eye = Vector3::Transform(eye, rotationY*rotationX);
+		eye = Vector3::Transform(eye, rotationX*rotationY);
 		eye += target;
 
 		// 視点、注視点決定
