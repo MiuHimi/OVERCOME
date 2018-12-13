@@ -18,6 +18,13 @@ class GameRoad : public CollisionBox
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
 public:
+	enum PosType
+	{
+		START,
+		GOAL,
+
+		NUM
+	};
 
 private:
 	std::unique_ptr<DirectX::Model> m_modelRoadStraight;   // 直線型道路
@@ -31,6 +38,9 @@ private:
 
 	static const int m_maxFloorBlock = 20;                 // ブロックごとに分けたフロアの幅(個数)
 	const int m_roadBlockSize = 5;                         // 単位ブロックの幅(設定[m])
+
+	
+	DirectX::SimpleMath::Vector2 m_posStartEnd[2];         // スタート位置とゴールの位置を記憶
 
 	struct road
 	{
@@ -61,6 +71,8 @@ public:
 	void Depose();
 
 	int GetMaxFloorBlock() { return m_maxFloorBlock; }
+
+	DirectX::SimpleMath::Vector2 GetPosType(int posType) { return m_posStartEnd[posType]; }
 
 	road GetRoadObject(int j, int i) { return m_roadObject[j][i]; }
 	CollisionBox* GetCollisionObject(int j, int i) { return mp_roadCollideObject[j][i]; }

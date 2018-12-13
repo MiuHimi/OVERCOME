@@ -16,6 +16,8 @@
 #include "../Utility/InputManager.h"
 #include "../Utility/DeviceResources.h"
 
+#include "../Utility/GameDebug.h"
+
 // usingディレクトリ
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -101,7 +103,7 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 
 			Vector3 target(player->GetPos());
 			target.y += player->GetHeight();
-			MouseOperateCamera(target, player->GetDirection());
+			MouseOperateCamera(target, player->GetAhead());
 
 			/*debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
 			DebugCamera(debugPos);*/
@@ -251,7 +253,7 @@ void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float d
 /// <summary>
 /// マウスで視点移動するカメラ
 /// </summary>
-void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float direction)
+void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 ahead)
 {
 	RECT desktopWndRect;                         // デスクトップのサイズ
 	HWND desktopWnd = GetDesktopWindow();        // この関数でデスクトップのハンドルを取得
@@ -260,6 +262,8 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float d
 	RECT activeWndRect;                          // アクティブなウィンドウのサイズ
 	HWND activeWnd = GetActiveWindow();          // この関数でアクティブなウィンドウのハンドルを取得
 	GetWindowRect(activeWnd, &activeWndRect);    // アクティブなウィンドウのハンドルからその画面の大きさを取得
+
+	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);   // タイトルバーの高さを取得
 
 	// 相対モードなら何もしない
 	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
@@ -283,7 +287,7 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float d
 
 	if(m_checkMousePos == true)
 	{
-		// 中心座標設定(移動量を三倍にするため中心座標も三倍に)
+		/*// 中心座標設定
 		m_mousePos.x = 400.0f;
 		m_mousePos.y = 300.0f;
 
@@ -296,41 +300,65 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float d
 			m_angle.y = m_angleTmp.y;
 
 			// デスクトップの値のため、ウィンドウ分のサイズ+画面の半分を足す(Yはタイトルバー分も足す)
-			SetCursorPos(int(activeWndRect.left + 400), int(activeWndRect.top + 300 + 50));
+			SetCursorPos(int(activeWndRect.left + 400), int(activeWndRect.top + 300 + titlebarHeight));
 		}
 
 		// 偏差分を移動
 	    Motion(int(InputManager::SingletonGetInstance().GetMouseState().x), int(InputManager::SingletonGetInstance().GetMouseState().y));
-
+		
 		// ビュー行列を算出する
-		Matrix rotY = Matrix::CreateRotationY((-m_angleTmp.y + XMConvertToRadians(180.0f))*m_angleMag);
+		Matrix rotY = Matrix::CreateRotationY(-m_angleTmp.y * m_angleMag);
 		Matrix rotX = Matrix::CreateRotationX((-m_angleTmp.x)*m_angleMag);
 		Matrix rt = rotY * rotX;
 
-		Vector3 eye(0.0f, 0.0f, -0.1f);
+		Vector3 eye(0.0f, 0.0f, 0.1f);
 		//Vector3 target(target);
 		//Vector3 up(0.0f, 1.0f, 0.0f);
 
 		// 視点、上方向設定
 		eye = Vector3::Transform(eye, rt);
 		eye += target;
-		//up = Vector3::Transform(up, rt.Invert());
+		//up = Vector3::Transform(up, rt.Invert());*/
+
+		// 中心座標設定
+		m_mousePos.x = 400.0f;
+		m_mousePos.y = 300.0f;
+
+		// 画面外に出たら画面の中心に戻す
+		if (InputManager::SingletonGetInstance().GetMouseState().x < 10 || InputManager::SingletonGetInstance().GetMouseState().x > 790 ||
+			InputManager::SingletonGetInstance().GetMouseState().y < 10 || InputManager::SingletonGetInstance().GetMouseState().y > 590)
+		{
+			// 現在の回転を保存
+			m_angle.x = m_angleTmp.x;
+			m_angle.y = m_angleTmp.y;
+
+			// デスクトップの値のため、ウィンドウ分のサイズ+画面の半分を足す(Yはタイトルバー分も足す)
+			SetCursorPos(int(activeWndRect.left + 400), int(activeWndRect.top + 300 + titlebarHeight));
+		}
+
+		float x = InputManager::SingletonGetInstance().GetMouseState().x - m_mousePos.x;
+		float y = InputManager::SingletonGetInstance().GetMouseState().y - m_mousePos.y;
+
+		SimpleMath::Quaternion rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x/100.0f));
+		SimpleMath::Quaternion rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y/100.0f));
+
+		// ビュー行列を算出する
+		Matrix rotY = SimpleMath::Matrix::CreateFromQuaternion(rotationY);
+		Matrix rotX = SimpleMath::Matrix::CreateFromQuaternion(rotationX);
+		Matrix rot = rotY * rotX;
+
+		Vector3 eye(0.0f, 0.0f, 0.1f);
+		//Vector3 target(target);
+		//Vector3 up(0.0f, 1.0f, 0.0f);
+
+		// 視点、上方向設定
+		//eye = Vector3::Transform(eye, rot);
+		eye = Vector3::Transform(eye, rotationY*rotationX);
+		eye += target;
 
 		// 視点、注視点決定
 		m_eyePt = eye;
 		m_targetPt = target;
-
-		/*//ベクトルの長さ
-		float lengthX = std::abs(eye.x - target.x);
-		float lengthY = std::abs(eye.y - target.y);
-		float lengthZ = std::abs(eye.z - target.z);
-
-		double length = pow((lengthX * lengthX) + (lengthY * lengthY), 0.5);
-
-		//XY各成分を長さで割る
-		Vector2D unit;
-		unit.x = v.x / length;
-		unit.y = v.y / length;*/
 
 		m_cameraDir.x = (target.x - eye.x);
 		m_cameraDir.y = (target.y - eye.y);

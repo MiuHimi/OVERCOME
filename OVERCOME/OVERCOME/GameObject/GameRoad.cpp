@@ -16,6 +16,8 @@
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
 
+#include "../Utility/GameDebug.h"
+
 // usingディレクトリ
 using namespace DirectX;
 
@@ -63,6 +65,24 @@ void GameRoad::Initialize()
 	{
 		// ファイル読み込み失敗
 		throw std::range_error("Read failure.");
+	}
+
+	// 初期値とゴールの位置の記憶
+	while (getline(ifs, line))
+	{
+		std::istringstream stream(line);
+		std::string buf;
+		int i = 0;
+		while (getline(stream, buf, ','))
+		{
+			int pos = std::atoi(buf.c_str());
+			m_posStartEnd[i].x = float(pos / 100);
+			m_posStartEnd[i].y = float(pos % 100);
+			i++;
+
+			if (i > 1) break;
+		}
+		if (i > 1) break;
 	}
 
 	int j = 0;
@@ -120,6 +140,8 @@ void GameRoad::Initialize()
 			}
 		}
 	}
+
+	
 }
 /// <summary>
 /// 生成処理
@@ -135,6 +157,52 @@ void GameRoad::Create()
 	m_modelRoadStop = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_stop.cmo", fx);
 	m_modelRoadCurve = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_curve.cmo", fx);
 	m_modelRoadBranch = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_branch.cmo", fx);
+
+	// フォグの設定
+	m_modelRoadStraight->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(8); // assuming RH coordiantes
+			fog->SetFogEnd(30);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
+	m_modelRoadStop->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(8); // assuming RH coordiantes
+			fog->SetFogEnd(30);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
+	m_modelRoadCurve->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(8); // assuming RH coordiantes
+			fog->SetFogEnd(30);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
+	m_modelRoadBranch->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(8); // assuming RH coordiantes
+			fog->SetFogEnd(30);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
 
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
@@ -195,6 +263,8 @@ void GameRoad::Create()
 			}
 		}
 	}
+
+
 }
 
 /// <summary>

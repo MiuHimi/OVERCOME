@@ -8,6 +8,7 @@
 // インクルードディレクトリ
 #include "../pch.h"
 #include "Player.h"
+#include "GameRoad.h"
 
 #include "../Utility/InputManager.h"
 #include "../Utility/DeviceResources.h"
@@ -23,10 +24,17 @@ using namespace DirectX;
 /// コンストラクタ
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
-Player::Player() : m_pos(22.5f, 2.0f, 7.5f),
-	               m_vel(0.0f, 0.0f, 0.0f),
-	               mp_gameCamera(nullptr),
-	               mp_bulletManager(nullptr)
+Player::Player()
+	: m_pos(0.0f, 2.0f, 0.0f),
+	  m_vel(0.0f, 0.0f, 0.0f),
+	  mp_gameCamera(nullptr),
+	  mp_bulletManager(nullptr),
+	  mp_gameRoad(nullptr),
+	  m_restartFlag(false),
+	  m_passedRoadPos(0.0f, 0.0f),
+	  m_nextPos(0.0f, 0.0f),
+	  m_ahead(0.0f, 0.0f, 0.0f),
+	  m_velFlag(false)
 {
 }
 /// <summary>
@@ -43,7 +51,6 @@ Player::~Player()
 void Player::Initialize()
 {
 	// 各変数初期化
-	m_accel        = 0.0f;                                        // 加速度
 	m_direction    = XMConvertToRadians(0.0f);                    // 向き(角度)
 	m_rotation     = DirectX::SimpleMath::Quaternion::Identity;   // 回転
 	m_height       = 1.75f;                                       // プレイヤー自身の高さ
@@ -53,9 +60,17 @@ void Player::Initialize()
 
 	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
 
+	// プレイヤーの進行ベクトルの設定
+	m_ahead = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -0.01f);
+	m_ahead.Normalize();
+
 	mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
 	mp_bulletManager = /*std::make_unique<GameBulletManager>();*/new GameBulletManager();
 	mp_bulletManager->Initialize();
+	mp_gameRoad = std::make_unique<GameRoad>();
+	mp_gameRoad->Initialize();
+	mp_gameRoad->Create();
+	
 }
 /// <summary>
 /// 生成処理
@@ -83,9 +98,9 @@ void Player::Create()
 /// <returns>終了状態</returns>
 bool Player::Update(DX::StepTimer const & timer)
 {
-	mp_gameCamera->Update(timer,this);
+	mp_gameRoad->Update(timer);
 
-	m_vel = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_accel);
+	mp_gameCamera->Update(timer,this);
 
 	if (mp_gameCamera->GetStartPosMouse())
 	{
@@ -97,28 +112,170 @@ bool Player::Update(DX::StepTimer const & timer)
 	}
 
 	// プレイヤー移動(ベクトル)
-	
-	
 	if (mp_gameCamera->GetStartPosMouse())
 	{
-		// 加速度設定
-		m_accel -= 0.01f;
-		if (m_accel < -0.05f)
+		const int OFFSETNUM = 8;
+		// 特定のマスの周囲八マス分の相対座標
+		SimpleMath::Vector2 OFFSET[OFFSETNUM] =
 		{
-			m_accel = -0.05f;
+			{ -1,-1 },{ 0,-1 },{ 1,-1 },
+			{ -1, 0 },{ 1, 0 },
+			{ -1, 1 },{ 0, 1 },{ 1, 1 }
+		};
+		
+		SimpleMath::Vector2 nowPos = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
+		if(abs(m_pos.x - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x) < 0.01f &&
+		   abs(m_pos.z - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z) < 0.01f)
+		{
+			m_pos.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x;
+			m_pos.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z;
+
+			if (abs(m_vel.x) > abs(m_vel.z))
+			{
+				if (m_vel.x < 0.00f)
+					m_passedRoadPos.x = m_nextPos.x + 1;
+				else if (m_vel.x > 0.00f)
+					m_passedRoadPos.x = m_nextPos.x - 1;
+				m_passedRoadPos.y = m_nextPos.y;
+			}
+			else if (abs(m_vel.x) < abs(m_vel.z))
+			{
+				if (m_vel.z < 0.00f)
+					m_passedRoadPos.y = m_nextPos.y + 1;
+				else if (m_vel.z > 0.00f)
+					m_passedRoadPos.y = m_nextPos.y - 1;
+				m_passedRoadPos.x = m_nextPos.x;
+			}
+			
+			SimpleMath::Vector2 now = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
+
+			// 次の行き先を決定
+			float distTmp = 0.0f;
+			for (int k = 0; k < OFFSETNUM; k++)
+			{
+				SimpleMath::Vector2 pos = nowPos;
+				pos += OFFSET[k];
+
+				if (distTmp == 0.0f)
+				{
+					// 仮の行き先登録
+					distTmp = (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x) +
+						(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z);
+				}
+
+				if (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).roadType != 0)
+				{
+					float dist = (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x) +
+						(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z);
+
+					if (dist <= distTmp)
+					{
+						int pX = (int)m_passedRoadPos.x;
+						int pY = (int)m_passedRoadPos.y;
+						SimpleMath::Vector2 p = SimpleMath::Vector2((float)pX, (float)pY);
+						
+						// 既に通過したところじゃなければ次の移動先に決定
+						if (p != pos && 
+							nowPos != pos)
+						{
+							m_nextPos = pos;
+
+							distTmp = dist;
+
+							//m_passedRoadPos = pos;
+						}
+					}
+				}
+			}
+			m_velFlag = false;
 		}
-		// 速度初期化
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, -0.1f + m_accel);
+		else
+		{
+			if (!m_velFlag)
+			{
+				// 次の行き先に近づくまで差分で移動し続ける
+				m_vel.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x;
+				m_vel.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z;
+
+				m_vel.Normalize();
+				m_vel.x /= 10.0f;
+				m_vel.y = 0.0f;
+				m_vel.z /= 10.0f;
+
+				m_velFlag = true;
+			}
+
+			// 通過済みの道路を記憶
+			//m_passedRoadPos = m_nextPos;
+			
+		}
 	}
-	if (InputManager::SingletonGetInstance().GetKeyState().S/*mp_gameCamera->GetStartPosMouse()*/)
+	else
 	{
-		// 加速度設定
-		//m_accel += 0.001f;
-		// 速度初期化
-		m_vel = /*SimpleMath::Vector3(0.0f, 0.0f, 0.1f + m_accel);*/SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+		const int OFFSETNUM = 8;
+		// 特定のマスの周囲八マス分の相対座標
+		SimpleMath::Vector2 OFFSET[OFFSETNUM] =
+		{
+			{ -1,-1 },{ 0,-1 },{ 1,-1 },
+			{ -1, 0 },{ 1, 0 },
+			{ -1, 1 },{ 0, 1 },{ 1, 1 }
+		};
+
+		// マウスでクリックするまでは初期位置で固定
+		if (mp_gameRoad->GetPosType(mp_gameRoad->START).x != m_pos.x ||
+			mp_gameRoad->GetPosType(mp_gameRoad->START).y != m_pos.z)
+		{
+			m_pos.x = mp_gameRoad->GetRoadObject((int)(mp_gameRoad->GetPosType(mp_gameRoad->START).y), (int)(mp_gameRoad->GetPosType(mp_gameRoad->START).x)).pos.x;
+			m_pos.z = mp_gameRoad->GetRoadObject((int)(mp_gameRoad->GetPosType(mp_gameRoad->START).y), (int)(mp_gameRoad->GetPosType(mp_gameRoad->START).x)).pos.z;
+		}
+
+		// 通過済みの道路を記憶
+		m_passedRoadPos = SimpleMath::Vector2(mp_gameRoad->GetPosType(mp_gameRoad->START).x,
+											  mp_gameRoad->GetPosType(mp_gameRoad->START).y);
+
+		// 次の行き先を決定
+		float distTmp = 0.0f;
+		for (int k = 0; k < OFFSETNUM; k++)
+		{
+			SimpleMath::Vector2 pos = SimpleMath::Vector2(m_passedRoadPos.x, m_passedRoadPos.y);
+			pos += OFFSET[k];
+
+			if (k == 0)
+			{
+				m_nextPos = pos;
+
+				// 仮の行き先登録
+				distTmp = (mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x) +
+					(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z);
+			}
+
+			if (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).roadType != 0)
+			{
+				float dist = (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x) +
+					(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z);
+
+				if (dist < distTmp)
+				{
+					// 既に通過したところじゃなければ次の移動先に決定
+					if (m_passedRoadPos != pos) m_nextPos = pos;
+
+					distTmp = dist;
+
+					// 通過済みの道路を記憶
+					//m_passedRoadPos = pos;
+				}
+			}
+		}
 	}
 
+	// 床と接触すると止まる(真ん中をクリックするまで)
+	if (m_collideToFloor)
+	{
+		m_restartFlag = true;
+		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	}
+
+	
 	// プレイヤーの向き設定
 	if (InputManager::SingletonGetInstance().GetKeyState().A)
 	{
@@ -127,15 +284,6 @@ bool Player::Update(DX::StepTimer const & timer)
 	if (InputManager::SingletonGetInstance().GetKeyState().D)
 	{
 		m_direction -= XMConvertToRadians(2.0f);
-	}
-	
-	
-	if (InputManager::SingletonGetInstance().GetKeyState().Up == false &&
-		InputManager::SingletonGetInstance().GetKeyState().Down == false &&
-		m_vel.z < 0.1f && m_vel.z > -0.1f)
-	{
-		// 移動が遅すぎる場合は停止する
-		m_vel.z = 0.0f;
 	}
 
 	// ジャンプ
@@ -204,6 +352,7 @@ void Player::Render()
 	//	           m_world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
 
 	mp_bulletManager->Render();
+
 }
 
 /// <summary>

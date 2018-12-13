@@ -20,6 +20,7 @@
 #include "GameCamera.h"
 
 class GameCamera;
+class GameRoad;
 class Player : public CollisionBox
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -28,7 +29,6 @@ public:
 private:
 	DirectX::SimpleMath::Vector3             m_pos;                       // 位置
 	DirectX::SimpleMath::Vector3             m_vel;                       // 速度(ベクトル)
-	float                                    m_accel;                     // 加速度
 	float                                    m_direction;                 // 向き(角度)
 	DirectX::SimpleMath::Quaternion          m_rotation;                  // 回転
 	float                                    m_height;                    // プレイヤー自身の高さ
@@ -41,7 +41,11 @@ private:
 	bool                                     m_collideToRoad    = false;  // 道路と接触したかを判定
 	bool                                     m_noTouchObectFlag = false;  // 何にも触れずジャンプもしていない時にフラグが立つ
 
+	bool                                     m_restartFlag;
+
 	bool   debugFlag = false;
+
+	DirectX::SimpleMath::Vector3             m_ahead;
 
 	DirectX::SimpleMath::Matrix              m_world;                     // ワールド座標
 
@@ -49,7 +53,11 @@ private:
 	//std::unique_ptr<GameBulletManager>       mp_bulletManager;
 	GameBulletManager*                       mp_bulletManager;
 	std::unique_ptr<GameCamera>              mp_gameCamera;               // カメラポインター
+	std::unique_ptr<GameRoad>                mp_gameRoad;                 // 道路ポインタ
+	DirectX::SimpleMath::Vector2             m_passedRoadPos;             // 通過済みの道路を記憶
+	DirectX::SimpleMath::Vector2             m_nextPos;                   // 次に向かう道路の座標を記憶
 
+	bool m_velFlag;
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -92,6 +100,9 @@ public:
 	void SetRoadCollideState(bool flag)             { m_collideToRoad = flag; }
 	// 何にも触れずジャンプもしていない時にフラグが立つ
 	void SetNotTouchState(bool flag)                { m_noTouchObectFlag = flag; }
+
+	// 進行ベクトルの取得
+	DirectX::SimpleMath::Vector3 GetAhead() { return m_ahead; }
 
 	/*// 弾情報取得
 	const GameBulletManager& GetBulletManager() const

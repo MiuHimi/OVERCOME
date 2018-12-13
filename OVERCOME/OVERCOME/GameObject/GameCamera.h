@@ -27,7 +27,7 @@ private:
 
 	DirectX::SimpleMath::Vector2       m_angle;                           // 現在の回転角
 	DirectX::SimpleMath::Vector2       m_angleTmp;                        // 保存している回転角
-	const float                        m_angleMag = 3.0f;                 // マウスによるカメラ回転の倍率 
+	const float                        m_angleMag = 10.0f;                 // マウスによるカメラ回転の倍率 
 
 	DirectX::SimpleMath::Vector3       m_cameraDir;                       // カメラの向きのベクトル
 
@@ -37,7 +37,6 @@ private:
 	bool                               m_checkMousePos;                   // マウスの初期位置指定用変数
 
 	int                                m_scrollWheelValue;                // スクロールホイール値
-
 
 // メンバー関数
 public:
@@ -62,7 +61,7 @@ public:
 	void FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
 
 	// マウスで視点移動するカメラ
-	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, float direction);
+	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 ahead);
 
 	/// <summary>
 	/// 画面サイズの設定関数

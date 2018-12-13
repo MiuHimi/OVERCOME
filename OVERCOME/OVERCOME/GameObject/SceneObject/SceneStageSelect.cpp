@@ -193,6 +193,9 @@ void SceneStageSelect::LoadStage(int stageID)
 		map[row].resize(mapColum);
 	}*/
 
+	// ˆês–Ú‚ğ“Ç‚İ”ò‚Î‚µ
+	getline(ifs, line);
+
 	// 
 	m_roadObject.resize(m_maxFloorBlock);
 	for (int j = 0; j < m_maxFloorBlock; j++)

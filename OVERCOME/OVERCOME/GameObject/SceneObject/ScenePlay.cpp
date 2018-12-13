@@ -175,7 +175,9 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 					hitObject = true;
 
 					// ƒS[ƒ‹‚É“ž’B‚µ‚½‚ç
-					if (SceneManager::GetStageNum() == 1 && i == 5 && j == 7 ||       // ƒXƒe[ƒW‚P‚ÌƒS[ƒ‹
+					if (SceneManager::GetStageNum() == 1 &&
+							i == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x &&
+							j == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y ||   // ƒXƒe[ƒW‚P‚ÌƒS[ƒ‹
 						SceneManager::GetStageNum() == 2 && i == 11 && j == 13 ||     // ƒXƒe[ƒW‚Q‚ÌƒS[ƒ‹(•ªŠò‚P)
 						SceneManager::GetStageNum() == 2 && i == 13 && j == 15)       // ƒXƒe[ƒW‚Q‚ÌƒS[ƒ‹(•ªŠò‚Q)
 					{
@@ -335,30 +337,5 @@ void ScenePlay::Render()
 
 	// ƒXƒRƒA‚Ì•`‰æ
 	mp_gameScore->Render();
-
-	/*int a = 0;
-	bool bState[5];
-	std::vector<bool> tState;
-	for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
-	{
-		for (int i = 0; i < mp_gameTarget->GetMaxFloorBlock(); i++)
-		{
-			if (mp_gameTarget->GetTargetObject(j, i).height != 0.0) break;
-			for (int k = 0; k < mp_player->GetBulletManager()->GetMaxBulletNum(); k++)
-			{
-				bState[k] = mp_player->GetBulletManager()->GetBulletState(k);
-
-				tState.push_back(mp_gameTarget->GetState(j, i));
-				GameDebug::SingletonGetInstance().DebugRender(float(tState.back()), DirectX::SimpleMath::Vector2(10.0, 100 + (a * 30)));
-			}
-			a++;
-		}
-	}
-	for (int k = 0; k < mp_player->GetBulletManager()->GetMaxBulletNum(); k++)
-	{
-		GameDebug::SingletonGetInstance().DebugRender(float(bState[k]), DirectX::SimpleMath::Vector2(10.0, 50 + (k * 30)));
-	}
-
-	GameDebug::SingletonGetInstance().Render();*/
 
 }
