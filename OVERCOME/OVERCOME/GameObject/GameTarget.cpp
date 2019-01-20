@@ -12,9 +12,11 @@
 
 #include "../pch.h"
 #include "GameTarget.h"
+
 #include "../Utility/DeviceResources.h"
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
+#include "../Utility/GameDebug.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -136,7 +138,7 @@ void GameTarget::Create()
 	m_modelTarget = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\target.cmo", fx);
 	
 	// フォグの設定
-	SetFogEffectDistance(1.0f, 5.0f);
+	SetFogEffectDistance(10.0f, 30.0f);
 
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心
@@ -191,7 +193,7 @@ bool GameTarget::Update(DX::StepTimer const & timer)
 /// <summary>
 /// 描画処理
 /// </summary>
-void GameTarget::Render()
+void GameTarget::Render(MatrixManager* matrixManager)
 {
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
@@ -219,7 +221,7 @@ void GameTarget::Render()
 			auto& res = DX::DeviceResources::SingletonGetInstance();
 			// 描画道路選択
 			
-			if (m_targetObject[j][i].height != 0 && m_targetObject[j][i].state == true)m_modelTarget->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
+			if (m_targetObject[j][i].height != 0 && m_targetObject[j][i].state == true)m_modelTarget->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, matrixManager->GetView(), matrixManager->GetProjection());
 			// デバッグ道路描画
 			//if(m_targetObject[j][i].height != 0)mp_targetCollideObject[j][i]->DrawDebugCollision();
 		}

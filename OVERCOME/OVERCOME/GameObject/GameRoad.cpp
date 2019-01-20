@@ -13,15 +13,16 @@
 #include "../pch.h"
 #include "SceneObject/SceneManager.h"
 #include "GameRoad.h"
+
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
-
 #include "../Utility/GameDebug.h"
 
 // usingƒfƒBƒŒƒNƒgƒŠ
 using namespace DirectX;
 
 int SceneManager::m_stageID;
+
 
 /// <summary>
 /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
@@ -236,7 +237,7 @@ bool GameRoad::Update(DX::StepTimer const & timer)
 /// <summary>
 /// •`‰æˆ—
 /// </summary>
-void GameRoad::Render()
+void GameRoad::Render(MatrixManager* matrixManager)
 {
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
@@ -264,10 +265,10 @@ void GameRoad::Render()
 			switch (roadType)
 			{
 			case 0: break;                                                                                                                  // ‰½‚à‚È‚µ
-			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());  break;   // ’¼ü“¹˜H
-			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());      break;   // ––’[“¹˜H
-			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());     break;   // ‹Èü“¹˜H
-			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());    break;   // •ªŠò“¹˜H
+			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, matrixManager->GetView(), matrixManager->GetProjection());  break;   // ’¼ü“¹˜H
+			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, matrixManager->GetView(), matrixManager->GetProjection());      break;   // ––’[“¹˜H
+			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, matrixManager->GetView(), matrixManager->GetProjection());     break;   // ‹Èü“¹˜H
+			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, matrixManager->GetView(), matrixManager->GetProjection());    break;   // •ªŠò“¹˜H
 			}
 			// ƒfƒoƒbƒO“¹˜H•`‰æ
 			//if(m_roadObject[j][i].roadType == 1 || m_roadObject[j][i].roadType == 2 || m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->DrawDebugCollision(view);

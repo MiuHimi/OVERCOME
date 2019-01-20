@@ -8,9 +8,12 @@
 #pragma once
 
 // インクルードディレクトリ
-#include <SpriteFont.h>
 #include "SceneBase.h"
+#include <SpriteBatch.h>
 
+#include "../ExclusiveGameObject/EffectManager.h"
+
+class MatrixManager;
 class SceneTitle : public SceneBase
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -18,6 +21,16 @@ public:
 
 private:
 	bool              m_toPlayMoveOnChecker;              // ロゴシーンに進めるかどうかのチェック
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureBackground;   // テクスチャハンドル(背景)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureTitle;        // テクスチャハンドル(タイトル)
+
+	EffectManager*	                                   mp_effectManager;      // エフェクト管理変数
+	MatrixManager*                                     mp_matrixManager;      // 行列管理変数
+
+	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;
+
+	float                                              m_color;
 
 // メンバー関数(関数、Getter、Setter)
 public:

@@ -10,6 +10,7 @@
 #include "../pch.h"
 
 class Game;
+class MatrixManager;
 class Obj3D
 {
 // メンバー変数
@@ -35,7 +36,7 @@ public:
 	// 更新
 	virtual bool Update(float elapsedTime);
 	// 描画
-	virtual void Render();
+	virtual void Render(MatrixManager* matrixManager);
 
 
 	// Setter

@@ -42,11 +42,11 @@ Collision::Sphere CollisionSphere::GetCollision()
 /// <summary>
 /// デバッグ用オブジェクト表示関数
 /// </summary>
-void CollisionSphere::DrawDebugCollision()
+void CollisionSphere::DrawDebugCollision(MatrixManager* matrixManager)
 {
 	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
 	// デバッグ用オブジェクトの表示
 	m_dbgObj->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(),
-		           world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
+		           world, matrixManager->GetView(), matrixManager->GetProjection());
 
 }

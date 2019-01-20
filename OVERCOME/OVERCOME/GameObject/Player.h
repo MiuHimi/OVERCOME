@@ -21,6 +21,7 @@
 
 class GameCamera;
 class GameRoad;
+class MatrixManager;
 class Player : public CollisionBox
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -42,8 +43,10 @@ private:
 	bool                                     m_noTouchObectFlag = false;  // 何にも触れずジャンプもしていない時にフラグが立つ
 
 	bool                                     m_restartFlag;
+	int                                      m_restartTime;
 
-	bool   debugFlag = false;
+	bool   m_playStartFlag;
+	int    m_playStartTime;
 
 	DirectX::SimpleMath::Vector3             m_ahead;
 
@@ -59,6 +62,15 @@ private:
 
 	bool m_velFlag;
 
+	DirectX::SimpleMath::Vector2                         m_posRestart;               // リスタート位置
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureRestart;           // テクスチャハンドル(リスタート)
+
+	const int                                            m_countUISize = 80;         // 数字のサイズ
+	DirectX::SimpleMath::Vector2                         m_posCount;                 // カウント位置
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureCount;             // テクスチャハンドル(カウント)
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_texturePointer;           // テクスチャハンドル(ポインター)
+
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
@@ -73,7 +85,7 @@ public:
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
-	void Render();
+	void Render(MatrixManager* matrixManager);
 	// 廃棄処理
 	void Depose();
 

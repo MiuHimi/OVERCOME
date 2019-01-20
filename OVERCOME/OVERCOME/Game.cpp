@@ -9,12 +9,17 @@
 #include "pch.h"
 #include "Game.h"
 
+#include "Utility/InputManager.h"
+#include "Utility/GameDebug.h"
+
+#include "../ExclusiveGameObject/ADX2Le.h"
+
 // デバッグ
-#if _DEBUG
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
+//#if _DEBUG
+//#define _CRTDBG_MAP_ALLOC
+//#include <crtdbg.h>
+//#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+//#endif
 
 // externディレクトリ
 extern void ExitGame();
@@ -42,6 +47,9 @@ void Game::Initialize(HWND window, int width, int height)
 	DX::DeviceResources::SingletonGetInstance().CreateWindowSizeDependentResources();
     CreateWindowSizeDependentResources();
 
+	// サウンド再生
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->Initialize(L"OVERCOME.acf");
 
 	// スタートシーンの設定
 	mp_sceneManager = std::make_unique<SceneManager>(SceneId::SCENE_LOGO);
@@ -70,13 +78,40 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
+	// Escキーでゲーム終了する
+	if (InputManager::SingletonGetInstance().GetKeyState().Escape)
+	{
+		bool closedGame = false;
+		// ゲームを終了
+		if (MessageBox(NULL, L"ゲームを終了しますか？", L"ゲームを閉じる", MB_YESNO) == IDYES)
+		{
+			closedGame = true;
+		}
+		else
+		{
+			closedGame = false;
+		}
+		
+		if (closedGame)
+		{
+			// シーンを削除
+			mp_sceneManager->DeleteScene();
+			// ゲームを終了する
+			mp_sceneManager->SetGameState(false);
+			ExitGame();
+		}
+	}
+
     float elapsedTime = float(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
     elapsedTime;
 
-	// アクティブなシーンを更新
-	mp_sceneManager->UpdateActiveScene(timer);
+	if (mp_sceneManager->GetGameState())
+	{
+		// アクティブなシーンを更新
+		mp_sceneManager->UpdateActiveScene(timer);
+	}
 }
 #pragma endregion
 
@@ -84,30 +119,33 @@ void Game::Update(DX::StepTimer const& timer)
 // Draws the scene.
 void Game::Render()
 {
-	// Don't try to render anything before the first Update.
-	if (m_timer.GetFrameCount() == 0)
+	if (mp_sceneManager->GetGameState())
 	{
-		return;
+		// Don't try to render anything before the first Update.
+		if (m_timer.GetFrameCount() == 0)
+		{
+			return;
+		}
+
+		Clear();
+
+		DX::DeviceResources::SingletonGetInstance().PIXBeginEvent(L"Render");
+		auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
+
+		// ここから描画処理を記述する
+
+		// アクティブなシーンを描画
+		mp_sceneManager->RenderActiveScene();
+
+		ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
+
+		// ここまで
+
+		DX::DeviceResources::SingletonGetInstance().PIXEndEvent();
+
+		// Show the new frame.
+		DX::DeviceResources::SingletonGetInstance().Present();
 	}
-
-	Clear();
-
-	DX::DeviceResources::SingletonGetInstance().PIXBeginEvent(L"Render");
-	auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
-
-	// ここから描画処理を記述する
-
-	// アクティブなシーンを描画
-	mp_sceneManager->RenderActiveScene();
-
-	ID3D11Device* device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
-
-	// ここまで
-
-	DX::DeviceResources::SingletonGetInstance().PIXEndEvent();
-
-    // Show the new frame.
-	DX::DeviceResources::SingletonGetInstance().Present();
 }
 
 // Helper method to clear the back buffers.

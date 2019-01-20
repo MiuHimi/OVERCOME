@@ -62,6 +62,16 @@
 
 #include <Model.h>
 
+// ƒTƒEƒ“ƒh
+//#include <dsound.h>
+#pragma comment ( lib, "dxguid.lib" )
+#pragma comment ( lib, "dsound.lib" )
+
+//#pragma comment(lib,"d3d11.lib")
+//#pragma comment(lib,"d3dCompiler.lib")
+//#pragma comment(lib,"winmm.lib")//timeGetTime
+//#pragma comment(lib,"mfplay.lib")
+
 //#include "ExclusiveGameObject/KeyManager.h"
 
 #ifdef _DEBUG

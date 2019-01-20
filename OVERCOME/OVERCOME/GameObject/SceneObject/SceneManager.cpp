@@ -6,6 +6,7 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
+#include "../../pch.h"
 #include "SceneManager.h"
 #include "SceneBase.h"
 #include "SceneLogo.h"
@@ -13,6 +14,8 @@
 #include "SceneStageSelect.h"
 #include "ScenePlay.h"
 #include "SceneResult.h"
+
+#include "../Utility/GameDebug.h"
 
 // usingディレクトリ
 
@@ -26,6 +29,7 @@ SceneManager::SceneManager(SceneId startSceneId)
 	: mp_scene(nullptr)
 	, m_nextScene(SceneId::SCENE_LOGO)
 	, m_requestSceneFlag(false)
+	, m_gameStateFlag(true)
 {
 	// 開始シーンの設定
 	RequestToChangeScene(startSceneId);
@@ -113,6 +117,20 @@ bool SceneManager::RequestToChangeScene(SceneId sceneId)
 	if (!m_nextScene) return false;
 	return true;
 
+}
+
+/// <summary>
+/// シーンの削除
+/// </summary>
+void SceneManager::DeleteScene()
+{
+	// 活動中のシーンを終了させる
+	if (mp_scene != nullptr)
+	{
+		mp_scene->Finalize();
+		delete mp_scene;
+		mp_scene = nullptr;
+	}
 }
 
 /// <summary>

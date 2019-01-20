@@ -8,7 +8,6 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../../pch.h"
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
 
@@ -43,6 +42,8 @@ private:
 	SceneId               m_nextScene;                 // 次に更新するシーンを決定
 	bool                  m_requestSceneFlag;          // シーン遷移を要求されたらフラグが立つ
 
+	bool                  m_gameStateFlag;             // ゲームを閉じたらフラグが立つ
+
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
@@ -56,6 +57,8 @@ public:
 	void RenderActiveScene();
 	// 遷移したいシーンを要求
 	bool RequestToChangeScene(SceneId sceneId);
+	// シーンを削除
+	void DeleteScene();
 
 	// ステージ番号の設定、取得
 	static void SetStageNum(int stageID) { m_stageID = stageID; }
@@ -67,6 +70,10 @@ public:
 
 	// アクティブなシーンの取得
 	static SceneId GetActiveScene() { return m_activeScene; }
+
+	// ゲームの更新の設定
+	void SetGameState(bool flag) { m_gameStateFlag = flag; }
+	bool GetGameState()          { return m_gameStateFlag; }
 
 private:
 	// シーンを遷移する

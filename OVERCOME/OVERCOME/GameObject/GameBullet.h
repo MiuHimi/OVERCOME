@@ -14,6 +14,7 @@
 
 #include "../ExclusiveGameObject/CollisionSphere.h"
 
+class MatrixManager;
 class GameBullet : public CollisionSphere
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -43,7 +44,7 @@ public:
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
-	void Render();
+	void Render(MatrixManager* matrixManager);
 
 	// 位置設定
 	void SetPos(DirectX::SimpleMath::Vector3 pos) { m_pos = pos; }
@@ -86,6 +87,7 @@ public:
 
 
 private:
-
+	// フォグの設定
+	void SetFogEffectDistance(float start, float end);
 
 };

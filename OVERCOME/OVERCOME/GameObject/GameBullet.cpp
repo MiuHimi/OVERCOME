@@ -9,10 +9,12 @@
 
 // インクルードディレクトリ
 #include "../pch.h"
+#include "GameBullet.h"
+
 #include "../Utility/DeviceResources.h"
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
-#include "GameBullet.h"
+#include "../Utility/GameDebug.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -46,11 +48,13 @@ void GameBullet::Create()
 	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
-
 	// モデルを作成
 	mp_modelBullet = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\bullet.cmo", fx);
 	// 衝突判定用モデル設定
 	Obj3D::SetModel(mp_modelBullet.get());
+
+	// フォグの設定
+	SetFogEffectDistance(10.0f, 30.0f);
 
 	m_sphere.c = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	m_sphere.r = 0.0f;
@@ -78,8 +82,28 @@ bool GameBullet::Update(DX::StepTimer const & timer)
 /// <summary>
 /// 描画
 /// </summary>
-void GameBullet::Render()
+void GameBullet::Render(MatrixManager* matrixManager)
 {
 	mp_modelBullet->Draw(DX::DeviceResources().SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(),
-		                 m_world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
+		                 m_world, matrixManager->GetView(), matrixManager->GetProjection());
+}
+
+/// <summary>
+/// フォグのスタートとエンドを設定
+/// </summary>
+/// <param name="start">効果がかかり始める距離</param>
+/// <param name="end">効果が完全にかかる距離</param>
+void GameBullet::SetFogEffectDistance(float start, float end)
+{
+	mp_modelBullet->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(start); // assuming RH coordiantes
+			fog->SetFogEnd(end);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
 }

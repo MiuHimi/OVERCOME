@@ -23,16 +23,13 @@ class GameScore
 public:
 
 private:
-	int                                                  m_score;                       // プレイヤーが得る得点
-	int                                                  m_timeCount;                   // プレイスタートからのカウント
-	int                                                  m_deductTimeCount;             // コースアウトからのカウント
+	static int                                           m_score;                       // プレイヤーが得る得点
 	bool                                                 m_deductOccurrence = false;    // コースアウトしているかを判定
 	int                                                  m_compareColum;                // プレイヤージャンプによる加点判定用変数
 	int                                                  m_compareLine;                 // プレイヤージャンプによる加点判定用変数
 	bool                                                 m_getPointChance = false;      // プレイヤージャンプによる加点判定用変数
 
-	std::unique_ptr<DirectX::SpriteBatch>                m_sprites;                     // スプライトバッチ
-	std::unique_ptr<DirectX::CommonStates>               m_states;                      // コモンステート
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBsckground;           // テクスチャハンドル
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_texture;                     // テクスチャハンドル
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureNum[10];              // テクスチャハンドル
 
@@ -54,8 +51,8 @@ public:
 	void AddPointChance(int j, int i);
 
 	// Getter,Setter
-	int GetScore()                           { return m_score; }
-	void SetScore(int score)                 { m_score = score; }
+	static int GetScore()                           { return m_score; }
+	static void SetScore(int score)                 { m_score = score; }
 	// 得点の増減
 	void FluctuationScore(int addscore)      { m_score += addscore; }
 	// プレイヤーがコースアウトしたらフラグが立つ

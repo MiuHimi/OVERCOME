@@ -8,10 +8,8 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../../pch.h"
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
-
 #include "../../Utility/InputManager.h"
 
 class SceneManager;

@@ -9,13 +9,12 @@
 
 // インクルードディレクトリ
 #include "../pch.h"
-#include "../Utility/DeviceResources.h"
-#include "../Utility/InputManager.h"
 #include "GameBulletManager.h"
 
+#include "../Utility/DeviceResources.h"
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
-
+#include "../Utility/InputManager.h"
 #include "../Utility/GameDebug.h"
 
 // usingディレクトリ
@@ -36,6 +35,11 @@ GameBulletManager::GameBulletManager()
 /// </summary>
 GameBulletManager::~GameBulletManager()
 {
+	for (int i = 0; i < m_maxBulletNum; i++)
+	{
+		delete mp_bullet[i];
+		mp_bullet[i] = nullptr;
+	}
 }
 
 /// <summary>
@@ -184,7 +188,7 @@ bool GameBulletManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::
 /// <summary>
 /// 描画
 /// </summary>
-void GameBulletManager::Render()
+void GameBulletManager::Render(MatrixManager* matrixManager)
 {
 	/*for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
 	{
@@ -198,7 +202,7 @@ void GameBulletManager::Render()
 	{
 		if (mp_bullet[i]->GetState())
 		{
-			mp_bullet[i]->Render();
+			mp_bullet[i]->Render(matrixManager);
 		}
 	}
 }

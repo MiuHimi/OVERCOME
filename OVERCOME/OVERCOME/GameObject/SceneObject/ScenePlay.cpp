@@ -6,15 +6,17 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
+#include "../../pch.h"
 #include "SceneManager.h"
 #include "ScenePlay.h"
 
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/DeviceResources.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/DeviceResources.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"
+#include "../../Utility/DrawManager.h"
 
-#include "../Utility/DrawManager.h"
+#include "../ExclusiveGameObject/ADX2Le.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -29,7 +31,8 @@ bool SceneManager::m_clearSceneState;
 /// </summary>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 ScenePlay::ScenePlay(SceneManager* sceneManager)
-	: SceneBase(sceneManager)
+	: SceneBase(sceneManager),
+   	  mp_matrixManager(nullptr)
 {
 }
 /// <summary>
@@ -77,10 +80,10 @@ void ScenePlay::Initialize()
 	mp_player->Create();
 
 	// スカイドームの生成
-	mp_skydome = std::make_unique<SkyDome>();
-	mp_skydome->Initialize();
+	//mp_skydome = std::make_unique<SkyDome>();
+	//mp_skydome->Initialize();
 	// スカイドームのモデルの読み込み
-	mp_skydome->Create();
+	//mp_skydome->Create();
 
 	// 制限時間の生成
 	mp_gameTimer = std::make_unique<GameTimer>();
@@ -90,8 +93,36 @@ void ScenePlay::Initialize()
 	mp_gameScore = std::make_unique<GameScore>();
 	mp_gameScore->Create();
 
-	
+	m_fadeInCount = 1;
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureFadeIn.GetAddressOf());
+
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
+
+	// 行列管理変数の初期化
+	mp_matrixManager = new MatrixManager();
+
+	// ビュー行列の作成
+	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+
+	float aspectRatio = float(size.right) / float(size.bottom);
+	// 画角を設定
+	float fovAngleY = XMConvertToRadians(45.0f);
+
+	// 射影行列を作成
+	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		200.0f
+	);
+
+	// 行列を設定
+	mp_matrixManager->SetViewProjection(view, projection);
+
+	// サウンド再生
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->LoadAcb(L"ScenePlay.acb", L"ScenePlay.awb");
+	adx2le->Play(0);
 }
 
 /// <summary>
@@ -99,6 +130,12 @@ void ScenePlay::Initialize()
 /// </summary>
 void ScenePlay::Finalize()
 {
+	if (mp_matrixManager != nullptr)
+	{
+		delete mp_matrixManager;
+		mp_matrixManager = nullptr;
+	}
+	
 }
 
 /// <summary>
@@ -107,6 +144,10 @@ void ScenePlay::Finalize()
 /// <param name="timer">時間情報</param>
 void ScenePlay::Update(DX::StepTimer const& timer)
 {
+	// フェードイン
+	m_fadeInCount -= 0.01f;
+	if (m_fadeInCount < 0.0f)m_fadeInCount = 0.0f;
+
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
 
@@ -288,10 +329,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	}
 
 	// シーン操作
-	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
-	{
-		m_toResultMoveOnChecker = true;
-	}
 	if (m_toResultMoveOnChecker == true)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_RESULT);
@@ -303,11 +340,20 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 /// </summary>
 void ScenePlay::Render()
 {
+	// スプライトの描画
+	/*m_sprites->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+
+	m_sprites->Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
+	
+	m_sprites->End();*/
+
+	DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
+
 	// ビュー行列の作成
 	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
-
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
 	float fovAngleY = XMConvertToRadians(45.0f);
@@ -321,35 +367,28 @@ void ScenePlay::Render()
 	);
 
 	// 行列を設定
-	MatrixManager::SingletonGetInstance().SetViewProjection(view, projection);
-
-	// スプライトの描画
-	/*m_sprites->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
-
-	m_sprites->Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
-	
-	m_sprites->End();*/
-
-	DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
+	mp_matrixManager->SetViewProjection(view, projection);
 
 	// ゲーム床の描画
-	mp_gameFloor->Render();
+	mp_gameFloor->Render(mp_matrixManager);
 	// ゲーム道路の描画
-	mp_gameRoad->Render();
+	mp_gameRoad->Render(mp_matrixManager);
 	// ゲーム的の描画
-	mp_gameTarget->Render();
+	mp_gameTarget->Render(mp_matrixManager);
 
 	// スカイドームの描画
-	mp_skydome->Render();
+	//mp_skydome->Render(mp_matrixManager);
 
 	// プレイヤーの描画
-	mp_player->Render();
+	mp_player->Render(mp_matrixManager);
 	//mp_player->DrawDebugCollision();
 
 	// 制限時間の描画
-	mp_gameTimer->Render();
+	//mp_gameTimer->Render();
 
 	// スコアの描画
 	mp_gameScore->Render();
 
+
+	DrawManager::SingletonGetInstance().DrawAlpha(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f), SimpleMath::Vector4(1.0, 1.0f, 1.0f, m_fadeInCount));
 }

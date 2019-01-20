@@ -6,10 +6,12 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
+#include "../pch.h"
 #include "GameTimer.h"
-#include "../Utility/DrawManager.h"
 
+#include "../Utility/DrawManager.h"
 #include "../Utility/GameDebug.h"
+
 
 /// <summary>
 /// コンストラクタ
@@ -93,7 +95,6 @@ void GameTimer::Render()
 	// スプライトの描画
 	// 制限時間背景の描画
 	DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), m_posBackground);
-	//m_sprites->Draw(m_textureBackground.Get(), m_posBackground);
 	// 制限時間数列の描画
 	for (int i = 0; i < e_numDigit; ++i)
 	{
@@ -107,8 +108,7 @@ void GameTimer::Render()
 		rect.right  = LONG(u + m_timeNumWidth);
 		rect.bottom = LONG(m_timeNumHeight);
 		
-		DrawManager::SingletonGetInstance().DrawRect(m_textureNum.Get(), m_posCountDigit[i], &rect);
-		//m_sprites->Draw(m_textureNum.Get(), m_posCountDigit[i], &rect, DirectX::Colors::White, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f, DirectX::SpriteEffects_None, 0.0f);
+		//DrawManager::SingletonGetInstance().DrawRect(m_textureNum.Get(), m_posCountDigit[i], &rect);
 	}
 
 }

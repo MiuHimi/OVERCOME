@@ -15,7 +15,6 @@
 
 #include "../Utility/InputManager.h"
 #include "../Utility/DeviceResources.h"
-
 #include "../Utility/GameDebug.h"
 
 // usingディレクトリ
@@ -39,7 +38,11 @@ GameCamera::GameCamera(int windowWidth, int windowHeight)
 	m_mousePos(0.0f, 0.0f),
 	m_dragUnit(0.0f, 0.0f),
 	m_checkMousePos(false),
-	m_scrollWheelValue(0)
+	m_scrollWheelValue(0),
+	m_rotationX(SimpleMath::Quaternion::Identity),
+	m_rotationY(SimpleMath::Quaternion::Identity),
+	m_rotationTmpX(SimpleMath::Quaternion::Identity),
+	m_rotationTmpY(SimpleMath::Quaternion::Identity)
 {
 	SetWindowSize(windowWidth, windowHeight);
 }
@@ -75,8 +78,10 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		DebugCamera(debugPos);
 		break;
 	case SCENE_SELECTSTAGE:      
-		eyePos = DirectX::SimpleMath::Vector3(0.0f, 30.0f, 70.0f);
-		OriginPointAroundCamera(eyePos);
+		//eyePos = DirectX::SimpleMath::Vector3(0.0f, 30.0f, 70.0f);
+		//OriginPointAroundCamera(eyePos);
+		debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+		DebugCamera(debugPos);
 		break;
 	case SCENE_PLAY:
 		// Bキーでカメラ切り替え(仮)
@@ -332,6 +337,9 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 			m_angle.x = m_angleTmp.x;
 			m_angle.y = m_angleTmp.y;
 
+			m_rotationTmpX = m_rotationX;
+			m_rotationTmpY = m_rotationY;
+
 			// デスクトップの値のため、ウィンドウ分のサイズ+画面の半分を足す(Yはタイトルバー分も足す)
 			SetCursorPos(int(activeWndRect.left + 400), int(activeWndRect.top + 300 + titlebarHeight));
 		}
@@ -339,21 +347,23 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 		float x = InputManager::SingletonGetInstance().GetMouseState().x - m_mousePos.x;
 		float y = InputManager::SingletonGetInstance().GetMouseState().y - m_mousePos.y;
 
-		SimpleMath::Quaternion rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x/100.0f));
-		SimpleMath::Quaternion rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y/100.0f));
+		m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x/50.0f));
+		m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y/50.0f));
 
 		// ビュー行列を算出する
-		Matrix rotY = SimpleMath::Matrix::CreateFromQuaternion(rotationY);
-		Matrix rotX = SimpleMath::Matrix::CreateFromQuaternion(rotationX);
+		Matrix rotY = SimpleMath::Matrix::CreateFromQuaternion(m_rotationY);
+		Matrix rotX = SimpleMath::Matrix::CreateFromQuaternion(m_rotationX);
 		Matrix rot = rotY * rotX;
 
 		Vector3 eye(0.0f, 0.0f, 0.1f);
 		//Vector3 target(target);
 		//Vector3 up(0.0f, 1.0f, 0.0f);
 
+		
+
 		// 視点、上方向設定
 		//eye = Vector3::Transform(eye, rot);
-		eye = Vector3::Transform(eye, rotationX*rotationY);
+		eye = Vector3::Transform(eye, (m_rotationX * m_rotationY)/* * m_rotationTmpY * m_rotationY*/);
 		eye += target;
 
 		// 視点、注視点決定

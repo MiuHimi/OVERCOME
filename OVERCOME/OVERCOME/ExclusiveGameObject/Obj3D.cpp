@@ -44,13 +44,13 @@ bool Obj3D::Update(float elapsedTime)
 /// <summary>
 /// •`‰æ
 /// </summary>
-void Obj3D::Render()
+void Obj3D::Render(MatrixManager* matrixManager)
 {
 	// ƒ‚ƒfƒ‹‚Ì•`‰æ
 	if (mp_model) // ƒ|ƒCƒ“ƒ^‚ªnull‚Å‚È‚¢ê‡(null‚Ìê‡if•¶‚É“ü‚ç‚È‚¢)
 	{
 		// ƒ‚ƒfƒ‹‚Ì•`‰æ
 		mp_model->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-			           m_world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
+			           m_world, matrixManager->GetView(), matrixManager->GetProjection());
 	}
 }

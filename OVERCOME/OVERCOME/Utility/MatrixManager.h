@@ -8,10 +8,8 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
-#include "SingletonBase.h"
 
-class MatrixManager : public SingletonBase<MatrixManager>
+class MatrixManager
 {
 // メンバー変数
 public:
@@ -22,15 +20,13 @@ private:
 
 // メンバー関数
 public:
+	// コンストラクタ
+	MatrixManager();
 	// デストラクタ
 	~MatrixManager();
 
-	// フレンド関数
-	friend SingletonBase<MatrixManager>;
-
 	// リセット
-	void ResetMatrix();
-	
+	void ResetMatrix();	
 
 	// Getter
 	DirectX::SimpleMath::Matrix& GetView()       { return m_view; }
@@ -40,7 +36,5 @@ public:
 	void SetViewProjection(DirectX::SimpleMath::Matrix& view, DirectX::SimpleMath::Matrix& projection) { m_view = view; m_projection = projection; }
 
 private:
-	// コンストラクタ
-	MatrixManager();
 
 };

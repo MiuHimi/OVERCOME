@@ -38,6 +38,12 @@ private:
 
 	int                                m_scrollWheelValue;                // スクロールホイール値
 
+	DirectX::SimpleMath::Quaternion    m_rotationX;                       // 回転
+	DirectX::SimpleMath::Quaternion    m_rotationY;                       // 回転
+
+	DirectX::SimpleMath::Quaternion    m_rotationTmpX;                    // 回転保存
+	DirectX::SimpleMath::Quaternion    m_rotationTmpY;                    // 回転保存
+
 // メンバー関数
 public:
 	// コンストラクタ

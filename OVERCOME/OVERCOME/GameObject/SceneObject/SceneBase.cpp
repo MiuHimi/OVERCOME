@@ -6,8 +6,11 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
+#include "../../pch.h"
 #include "SceneBase.h"
 #include "SceneManager.h"
+
+#include "../Utility/GameDebug.h"
 
 
 /// <summary>

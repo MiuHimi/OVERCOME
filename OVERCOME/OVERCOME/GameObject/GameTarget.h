@@ -17,6 +17,7 @@
 #include "../ExclusiveGameObject/CollisionBox.h"
 
 class Game;
+class MatrixManager;
 class GameTarget : public CollisionBox
 {
 	// メンバー変数(構造体、enum、列挙子 etc...)
@@ -60,7 +61,7 @@ public:
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
-	void Render();
+	void Render(MatrixManager* matrixManager);
 	// 廃棄処理
 	void Depose();
 

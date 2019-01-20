@@ -6,12 +6,17 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
+#include "../../pch.h"
 #include "SceneManager.h"
 #include "SceneStageSelect.h"
 
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/MatrixManager.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"
+#include "../../Utility/InputManager.h"
+#include "../../Utility/DrawManager.h"
+
+#include "../ExclusiveGameObject/ADX2Le.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -25,8 +30,10 @@ using namespace DirectX;
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneStageSelect::SceneStageSelect(SceneManager * sceneManager)
 	: SceneBase(sceneManager),
-	  m_showFlag(false),
-	  m_selectSceneID(0)
+	  m_selectSceneID(0),
+	  selectedStage(0),
+	  mp_matrixManager(nullptr),
+	  m_color(0.0f)
 {
 }
 /// <summary>
@@ -46,69 +53,35 @@ void SceneStageSelect::Initialize()
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 
-	// カメラオブジェクトの作成
-	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
-
-	// エフェクトファクトリー
-	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
-	// モデルのテクスチャの入っているフォルダを指定する
-	fx.SetDirectory(L"Resources\\Models");
-	// モデルをロードしてモデルハンドルを取得する
-	m_modelRoadStraight = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_straight.cmo", fx);
-	m_modelRoadStop = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_stop.cmo", fx);
-	m_modelRoadCurve = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_curve.cmo", fx);
-	m_modelRoadBranch = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_branch.cmo", fx);
-
-}
-
-/// <summary>
-/// ロゴシーンの終了処理
-/// </summary>
-void SceneStageSelect::Finalize()
-{
-}
-
-/// <summary>
-/// ステージ選択シーンの更新処理
-/// </summary>
-/// <param name="timer">時間情報</param>
-void SceneStageSelect::Update(DX::StepTimer const& timer)
-{
-	// カメラの更新(プレイヤー情報は無し)
-	mp_camera->Update(timer, nullptr);
-
-	// 入力情報を更新
-	InputManager::SingletonGetInstance().Update();
-
-	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Up))
+	// テクスチャのロード
+	for (int i = 0; i < stage::NUM; i++)
 	{
-		m_selectSceneID++;
-		m_showFlag = false;
-		if (m_selectSceneID > SceneManager::m_maxStageNum)m_selectSceneID = 0;
-		SceneManager::SetStageNum(m_selectSceneID);
+		DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\StageSelect\\stage_len.png", nullptr, m_textureStageIcon[i].GetAddressOf());
 	}
 
-	// キー入力
-	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
-	{
-		m_toPlayMoveOnChecker = true;
-	}
-	if (m_toPlayMoveOnChecker == true)
-	{
-		m_sceneManager->RequestToChangeScene(SCENE_PLAY);
-	}
-}
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\StageSelect\\stageselect_background_image.png", nullptr, m_textureBackground.GetAddressOf());
 
-/// <summary>
-/// ロゴシーンの描画処理
-/// </summary>
-void SceneStageSelect::Render()
-{
+	for (int i = 0; i < stage::NUM; i++)
+	{
+		m_posStageIcon[i] = SimpleMath::Vector2((i*30)+315.0f + i * m_stageIconSize, 360.0f);
+	}
+
+	for (int i = 0; i < stage::NUM; i++)
+	{
+		m_collideStageIcon[i].pos = SimpleMath::Vector2((i * 30) + 315.0f + i * m_stageIconSize, 360.0f);
+		m_collideStageIcon[i].width = 80.0f;
+		m_collideStageIcon[i].height = 80.0f;
+	}
+
+	// スプライトバッチの初期化
+	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+
+	// 行列管理変数の初期化
+	mp_matrixManager = new MatrixManager();
+
 	// ビュー行列の作成
-	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
+	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
 
-	// ウインドウサイズからアスペクト比を算出する
-	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
 	float fovAngleY = XMConvertToRadians(45.0f);
@@ -122,185 +95,106 @@ void SceneStageSelect::Render()
 	);
 
 	// 行列を設定
-	MatrixManager::SingletonGetInstance().SetViewProjection(view, projection);
+	mp_matrixManager->SetViewProjection(view, projection);
+	
+	// サウンド再生
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->LoadAcb(L"SceneStageSelect.acb", L"SceneStageSelect.awb");
+	adx2le->Play(0);
+}
 
-	// デバッグ用
-	GameDebug::SingletonGetInstance().DebugRender("SceneStageSelect", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
-
-	// 表示するステージの選択
-	if (!m_showFlag)
+/// <summary>
+/// ロゴシーンの終了処理
+/// </summary>
+void SceneStageSelect::Finalize()
+{
+	if (mp_matrixManager != nullptr)
 	{
-		if (m_selectSceneID == 0)
+		delete mp_matrixManager;
+		mp_matrixManager = nullptr;
+	}
+
+	// サウンドの停止
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->Stop();
+}
+
+/// <summary>
+/// ステージ選択シーンの更新処理
+/// </summary>
+/// <param name="timer">時間情報</param>
+void SceneStageSelect::Update(DX::StepTimer const& timer)
+{
+	InputManager::SingletonGetInstance().Update();
+	// マウスの更新
+	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
+
+	// サウンドの更新
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->Update();
+
+	// ステージの選択
+	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	{
+		SimpleMath::Vector2 mousePos = SimpleMath::Vector2(float(InputManager::SingletonGetInstance().GetMousePosX()), float(InputManager::SingletonGetInstance().GetMousePosY()));
+		for (int i = 0; i < stage::NUM; i++)
 		{
-			GameDebug::SingletonGetInstance().DebugRender("StageNone", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-		}
-		else
-		{
-			LoadStage(m_selectSceneID);
-			GameDebug::SingletonGetInstance().DebugRender("Stage", float(SceneManager::GetStageNum()), DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-			m_showFlag = true;
+			if (mousePos.x > m_posStageIcon[i].x && mousePos.x < m_posStageIcon[i].x + m_stageIconSize &&
+				mousePos.y > m_posStageIcon[i].y && mousePos.y < m_posStageIcon[i].y + m_stageIconSize)
+			{
+				selectedStage = i+1;
+				SceneManager::SetStageNum(selectedStage);
+				m_toPlayMoveOnChecker = true;
+				adx2le->Play(1);
+				break;
+			}
 		}
 	}
-	
-	GameDebug::SingletonGetInstance().Render();
 
-	// 選択されたステージの表示
-	if (m_showFlag)
+	if (m_toPlayMoveOnChecker == true)
 	{
-		ShowStage();
+		m_color += 0.01f;
+	}
+
+	if (m_toPlayMoveOnChecker == true && m_color > 1.0f)
+	{
+		m_sceneManager->RequestToChangeScene(SCENE_PLAY);
 	}
 }
 
 /// <summary>
-/// 選択しているステージを表示
+/// ロゴシーンの描画処理
 /// </summary>
-/// <param name="stageID">ステージID</param>
-void SceneStageSelect::LoadStage(int stageID)
+void SceneStageSelect::Render()
 {
-	// ステージマップの読み込み
-	std::string filePath = "Resources\\StageMap\\Stage";
-	std::ostringstream os;
-	int stageNum = m_selectSceneID;
-	os << stageNum;
-	filePath += os.str() + ".csv";
+	// 切り取る場所を設定
+	RECT rectBG;
+	rectBG.top = LONG(0.0f);
+	rectBG.left = LONG(0.0f);
+	rectBG.right = LONG(800.0f);
+	rectBG.bottom = LONG(600.0f);
 
-	// ステージマップの取得
-	std::ifstream ifs(filePath);
-	std::string line;
-	if (!ifs)
+	// タイトルの描画
+	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+
+	// BG
+	mp_sprite->Draw(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectBG, SimpleMath::Vector4(1.0f - m_color, 1.0f - m_color, 1.0f - m_color, 1.0f), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+
+	// アイコン
+	for (int i = 0; i < stage::NUM; i++)
 	{
-		// ファイル読み込み失敗
-		throw std::range_error("Read failure.");
+		// 切り取る場所を設定
+		RECT rect;
+		rect.top = LONG(0.0f);
+		rect.left = LONG(i*m_stageIconSize);
+		rect.right = LONG(i*m_stageIconSize + m_stageIconSize);
+		rect.bottom = LONG(m_stageIconSize);
+
+		mp_sprite->Draw(m_textureStageIcon[i].Get(), m_posStageIcon[i], &rect, SimpleMath::Vector4(1.0f - m_color, 1.0f - m_color, 1.0f - m_color, 1.0f), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	}
 
-	/*// マップの行数を読み込む
-	while (getline(ifs, line))
-	{
-		std::istringstream stream(line);
-		std::string buf;
-		// マップの列数を読み込む
-		while (getline(wifs, line))
-		{
-
-		}
-	}
+	mp_sprite->End();
 	
-	// 行配列を確保する
-	map.resize(mapRow);
-	// 列配列を確保する
-	for (int row = 0; row < mapRow; row++)
-	{
-		map[row].resize(mapColum);
-	}*/
-
-	// 一行目を読み飛ばし
-	getline(ifs, line);
-
-	// 
-	m_roadObject.resize(m_maxFloorBlock);
-	for (int j = 0; j < m_maxFloorBlock; j++)
-	{
-		for (int i = 0; i < m_maxFloorBlock; i++)
-		{
-			m_roadObject[i].resize(m_maxFloorBlock);
-		}
-	}
-
-
-	int j = 0;
-	while (getline(ifs, line))
-	{
-		std::istringstream stream(line);
-		std::string buf;
-		int i = 0;
-		while (getline(stream, buf, ','))
-		{
-			// 文字を数値に変換
-			int roadType = std::atoi(buf.c_str());
-			// 二桁のうち、十の桁を道路の種類、一の桁を回転角に設定
-			m_roadObject[j][i].roadType = roadType / 10;
-			m_roadObject[j][i].rotaAngle = roadType % 10;
-			i++;
-		}
-		j++;
-	}
-
-	// 道路の座標設定
-	for (int j = 0; j < m_maxFloorBlock; j++)
-	{
-		for (int i = 0; i < m_maxFloorBlock; i++)
-		{
-			// X座標設定
-			int x = i;
-			if (i >= 0 && i < 10)
-			{
-				// 座標が[x < 0]の場合
-				m_roadObject[j][i].pos.x = float((m_maxFloorWidth / 2) - m_roadBlockSize * x - m_roadBlockSize / 2);
-				m_roadObject[j][i].pos.x *= -1.0f;
-			}
-			else if (i >= 10)
-			{
-				// 座標が[x > 0]の場合
-				x -= 10;
-				m_roadObject[j][i].pos.x = float(m_roadBlockSize * x + m_roadBlockSize / 2);
-			}
-			// Y座標設定
-			m_roadObject[j][i].pos.y = 0.0f;
-			// Z座標設定
-			int z = j;
-			if (j >= 0 && j < 10)
-			{
-				// 座標が[z < 0]の場合
-				m_roadObject[j][i].pos.z = float((m_maxFloorHeight / 2) - m_roadBlockSize * z - m_roadBlockSize / 2);
-				m_roadObject[j][i].pos.z *= -1.0f;
-			}
-			else if (j >= 10)
-			{
-				// 座標が[z > 0]の場合
-				z -= 10;
-				m_roadObject[j][i].pos.z = float(m_roadBlockSize * z + m_roadBlockSize / 2);
-			}
-		}
-	}
-}
-/// <summary>
-/// 選択しているステージを表示
-/// </summary>
-void SceneStageSelect::ShowStage()
-{
-	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
-	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
-	SimpleMath::Matrix rot = SimpleMath::Matrix::Identity;
-
-	for (int j = 0; j < m_maxFloorBlock; j++)
-	{
-		for (int i = 0; i < m_maxFloorBlock; i++)
-		{
-			// 座標確定
-			trans = SimpleMath::Matrix::CreateTranslation(SimpleMath::Vector3(m_roadObject[j][i].pos.x, m_roadObject[j][i].pos.y, m_roadObject[j][i].pos.z));
-
-			// 回転設定
-			float angle = float(m_roadObject[j][i].rotaAngle * 90.0f);  // 回転角を設定( (0 or 1 or 2 or 3) * 90.0f )
-			// 回転確定
-			rot = SimpleMath::Matrix::CreateFromQuaternion(SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 1.0f, 0.0f), XMConvertToRadians(angle)));
-
-			// 行列確定
-			world = SimpleMath::Matrix::Identity;
-			world *= rot * trans;
-
-			auto& res = DX::DeviceResources::SingletonGetInstance();
-			// 描画道路選択
-			int roadType = m_roadObject[j][i].roadType;
-			switch (roadType)
-			{
-			case 0: break;                                                                                                                  // 何もなし
-			case 1: m_modelRoadStraight->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());  break;   // 直線道路
-			case 2: m_modelRoadStop->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());      break;   // 末端道路
-			case 3: m_modelRoadCurve->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());     break;   // 曲線道路
-			case 4: m_modelRoadBranch->Draw(res.GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());    break;   // 分岐道路
-			}
-		}
-	}
-
 
 }
+

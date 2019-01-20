@@ -10,6 +10,7 @@
 #include "DebugSphere.h"
 
 // 球衝突判定クラス
+class MatrixManager;
 class CollisionSphere : public Obj3D
 {
 private:
@@ -31,6 +32,6 @@ public:
 	//---//
 
 	// デバッグ用オブジェクト表示関数
-	void DrawDebugCollision();
+	void DrawDebugCollision(MatrixManager* matrixManager);
 
 };

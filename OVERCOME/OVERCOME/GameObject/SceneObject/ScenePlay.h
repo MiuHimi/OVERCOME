@@ -8,7 +8,6 @@
 #pragma once
 
 // インクルードディレクトリ
-#include <SpriteFont.h>
 #include "SceneBase.h"
 
 #include "../../Game.h"
@@ -20,11 +19,12 @@
 #include "../GameRoad.h"
 #include "../GameTarget.h"
 
-#include "../SkyDome.h"
+//#include "../SkyDome.h"
 
 #include "../GameTimer.h"
 #include "../GameScore.h"
 
+class MatrixManager;
 class ScenePlay : public SceneBase
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -42,7 +42,7 @@ private:
 
 	static std::unique_ptr<Player> mp_player;     // プレイヤーオブジェクト
 
-	std::unique_ptr<SkyDome> mp_skydome;          // スカイドームオブジェクト
+	//std::unique_ptr<SkyDome> mp_skydome;          // スカイドームオブジェクト
 
 	std::unique_ptr<GameTimer> mp_gameTimer;      // 制限時間オブジェクト
 	std::unique_ptr<GameScore> mp_gameScore;      // スコアオブジェクト
@@ -50,7 +50,11 @@ private:
 	//bool m_hitPlayerToFloorFlag = false;
 	//bool m_hitPlayerToRoadFlag = false;
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;           // テクスチャハンドル(背景)
+	float m_fadeInCount;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;        // テクスチャハンドル(背景)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureFadeIn;            // テクスチャハンドル(フェードイン)
+
+	MatrixManager*                                       mp_matrixManager;      // 行列管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:

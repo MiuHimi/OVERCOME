@@ -13,6 +13,7 @@
 #include "DebugBox.h"
 
 // 箱衝突判定クラス
+class MatrixManager;
 class CollisionBox : public Obj3D
 {
 // メンバー変数
@@ -26,7 +27,7 @@ private:
 // メンバー関数
 public:
 	// デバッグ用オブジェクト表示関数
-	void DrawDebugCollision();
+	void DrawDebugCollision(MatrixManager* matrixManager);
 
 	// 衝突判定情報の設定
 	void SetCollision(Collision::Box box);

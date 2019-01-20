@@ -17,11 +17,14 @@
     <Filter Include="Game\ExclusiveGameObject">
       <UniqueIdentifier>{d3f9a130-60db-462a-8885-880bff20490e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\GameObject\SceneObject">
-      <UniqueIdentifier>{6f8554a6-a995-423d-829b-2794a9b49d52}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game\Utility">
       <UniqueIdentifier>{2819183e-a7f0-49ed-b9f8-5082919775c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Utility\Sounds">
+      <UniqueIdentifier>{ef3fc2f5-d9a1-41d8-b843-25ea278a0cd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\GameObject\SceneObject">
+      <UniqueIdentifier>{1f50bc19-a4fa-43bc-8e26-67cca673fe81}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,27 +42,6 @@
     <ClInclude Include="GameObject\Player.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject\SceneObject\SceneBase.h">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\SceneObject\SceneLogo.h">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\SceneObject\SceneManager.h">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\SceneObject\SceneTitle.h">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\SceneObject\ScenePlay.h">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\SceneObject\SceneResult.h">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\SceneObject\SceneStageSelect.h">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClInclude>
     <ClInclude Include="ExclusiveGameObject\Collision.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
@@ -71,9 +53,6 @@
     </ClInclude>
     <ClInclude Include="ExclusiveGameObject\Obj3D.h">
       <Filter>Game\ExclusiveGameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\SkyDome.h">
-      <Filter>Game\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="GameObject\GameTimer.h">
       <Filter>Game\GameObject</Filter>
@@ -102,9 +81,6 @@
     <ClInclude Include="Utility\CommonStateManager.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\MatrixManager.h">
-      <Filter>Game\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\GameBullet.h">
       <Filter>Game\GameObject</Filter>
     </ClInclude>
@@ -126,6 +102,39 @@
     <ClInclude Include="Utility\DrawManager.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\ADX2Le.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\BinaryFile.h" />
+    <ClInclude Include="ExclusiveGameObject\EffectManager.h" />
+    <ClInclude Include="ExclusiveGameObject\Myeffect.h" />
+    <ClInclude Include="ExclusiveGameObject\Collision2D.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\MatrixManager.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneBase.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneLogo.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneManager.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\ScenePlay.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneResult.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneStageSelect.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\SceneObject\SceneTitle.h">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -143,27 +152,6 @@
     <ClCompile Include="GameObject\Player.cpp">
       <Filter>Game\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\SceneObject\SceneBase.cpp">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\SceneObject\SceneLogo.cpp">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\SceneObject\SceneManager.cpp">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\SceneObject\SceneTitle.cpp">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\SceneObject\ScenePlay.cpp">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\SceneObject\SceneResult.cpp">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\SceneObject\SceneStageSelect.cpp">
-      <Filter>Game\GameObject\SceneObject</Filter>
-    </ClCompile>
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
@@ -172,9 +160,6 @@
     </ClCompile>
     <ClCompile Include="ExclusiveGameObject\Obj3D.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\SkyDome.cpp">
-      <Filter>Game\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="GameObject\GameTimer.cpp">
       <Filter>Game\GameObject</Filter>
@@ -197,9 +182,6 @@
     <ClCompile Include="Utility\CommonStateManager.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\MatrixManager.cpp">
-      <Filter>Game\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject\GameBullet.cpp">
       <Filter>Game\GameObject</Filter>
     </ClCompile>
@@ -220,6 +202,36 @@
     </ClCompile>
     <ClCompile Include="Utility\DrawManager.cpp">
       <Filter>Game\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\ADX2Le.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp" />
+    <ClCompile Include="ExclusiveGameObject\EffectManager.cpp" />
+    <ClCompile Include="ExclusiveGameObject\MyEffect.cpp" />
+    <ClCompile Include="Utility\MatrixManager.cpp">
+      <Filter>Game\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneBase.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneLogo.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneManager.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\ScenePlay.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneResult.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneStageSelect.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SceneObject\SceneTitle.cpp">
+      <Filter>Game\GameObject\SceneObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -263,5 +275,13 @@
     <MeshContentTask Include="..\FBX\target.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ExclusiveGameObject\ParticleGS.hlsl" />
+    <FxCompile Include="ExclusiveGameObject\ParticlePS.hlsl" />
+    <FxCompile Include="ExclusiveGameObject\ParticleVS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ExclusiveGameObject\Particle.hlsli" />
   </ItemGroup>
 </Project>

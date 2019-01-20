@@ -8,24 +8,26 @@
 #pragma once
 
 // インクルードディレクトリ
-#include <SpriteFont.h>
 #include "SceneBase.h"
 
+class MatrixManager;
 class SceneLogo : public SceneBase
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
 public:
 
 private:
-	bool                                               m_toTitleMoveOnChecker;  // タイトルシーンに進めるかどうかのチェック
+	bool                                               m_toTitleMoveOnChecker;        // タイトルシーンに進めるかどうかのチェック
 
-	int                                                m_fadeoutNeedTime;       // フェードアウトし始める秒数
-	int                                                m_changeSceneNeedTime;   // シーン遷移に必要な秒数
+	int                                                m_fadeoutNeedTime;             // フェードアウトし始める秒数
+	static const int                                   m_sceneChangeNeedSecond = 4;   // シーン遷移に必要な秒数
 
-	float                                              fadeoutCount;            // α値を変更
+	float                                              fadeoutCount;                  // α値を変更
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureBackground;     // テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureLogo;           // テクスチャハンドル
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureBackground;           // テクスチャハンドル
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureLogo;                 // テクスチャハンドル
+
+	MatrixManager*                                     mp_matrixManager;              // 行列管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:

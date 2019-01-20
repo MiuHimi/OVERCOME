@@ -6,12 +6,15 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
+#include "../pch.h"
 #include "MatrixManager.h"
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 MatrixManager::MatrixManager()
+	: m_view(DirectX::SimpleMath::Matrix::Identity)
+	, m_projection(DirectX::SimpleMath::Matrix::Identity)
 {
 }
 /// <summary>

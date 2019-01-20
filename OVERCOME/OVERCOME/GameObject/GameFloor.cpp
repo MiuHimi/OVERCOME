@@ -8,11 +8,14 @@
 // インクルードディレクトリ
 #include "../pch.h"
 #include "GameFloor.h"
+
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
+#include "../Utility/GameDebug.h"
 
 // usingディレクトリ
 using namespace DirectX;
+
 
 /// <summary>
 /// コンストラクタ
@@ -48,7 +51,7 @@ void GameFloor::Create()
 	m_modelLattice = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\floor01.cmo", fx);
 
 	// フォグの設定
-	SetFogEffectDistance(0.1f, 1.0f);
+	SetFogEffectDistance(10.0f, 30.0f);
 
 	// 衝突判定用オブジェクト生成
 	Collision::Box box;
@@ -72,7 +75,7 @@ bool GameFloor::Update(DX::StepTimer const & timer)
 /// <summary>
 /// 描画処理
 /// </summary>
-void GameFloor::Render()
+void GameFloor::Render(MatrixManager* matrixManager)
 {
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
@@ -81,7 +84,7 @@ void GameFloor::Render()
 	// 床の描画
 	world = SimpleMath::Matrix::Identity;
 	m_modelLattice->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-		                 world, MatrixManager::SingletonGetInstance().GetView(), MatrixManager::SingletonGetInstance().GetProjection());
+		                 world, matrixManager->GetView(), matrixManager->GetProjection());
 }
 
 /// <summary>

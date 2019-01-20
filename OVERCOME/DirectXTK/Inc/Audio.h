@@ -37,16 +37,16 @@
 #pragma comment(lib,"xaudio2.lib")
 #else
 // Using XAudio 2.7 requires the DirectX SDK
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\comdecl.h>
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xaudio2.h>
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xaudio2fx.h>
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xapofx.h>
+//#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\comdecl.h>
+//#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xaudio2.h>
+//#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xaudio2fx.h>
+//#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xapofx.h>
 #pragma warning(push)
 #pragma warning( disable : 4005 )
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\x3daudio.h>
+//#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\x3daudio.h>
 #pragma warning(pop)
-#pragma comment(lib,"x3daudio.lib")
-#pragma comment(lib,"xapofx.lib")
+//#pragma comment(lib,"x3daudio.lib")
+//#pragma comment(lib,"xapofx.lib")
 #endif
 
 #include <DirectXMath.h>
@@ -211,7 +211,7 @@ namespace DirectX
             // Master volume property for all sounds
 
         void __cdecl SetReverb(AUDIO_ENGINE_REVERB reverb);
-        void __cdecl SetReverb(_In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native);
+        //void __cdecl SetReverb(_In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native);
             // Sets environmental reverb for 3D positional audio (if active)
 
         void __cdecl SetMasteringLimit(int release, int loudness);
@@ -247,19 +247,19 @@ namespace DirectX
             // Releases any currently unused voices
 
         // Internal-use functions
-        void __cdecl AllocateVoice(_In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
+        //void __cdecl AllocateVoice(_In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
 
-        void __cdecl DestroyVoice(_In_ IXAudio2SourceVoice* voice);
+        //void __cdecl DestroyVoice(_In_ IXAudio2SourceVoice* voice);
             // Should only be called for instance voices, not one-shots
 
         void __cdecl RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdate);
         void __cdecl UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate);
 
         // XAudio2 interface access
-        IXAudio2* __cdecl GetInterface() const;
+        /*IXAudio2* __cdecl GetInterface() const;
         IXAudio2MasteringVoice* __cdecl GetMasterVoice() const;
         IXAudio2SubmixVoice* __cdecl GetReverbVoice() const;
-        X3DAUDIO_HANDLE& __cdecl Get3DHandle() const;
+        X3DAUDIO_HANDLE& __cdecl Get3DHandle() const;*/
 
         // Static functions
         struct RendererDetail
@@ -319,7 +319,7 @@ namespace DirectX
         int __cdecl Find(_In_z_ const char* name) const;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ )
-        bool __cdecl FillSubmitBuffer(int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
+        //bool __cdecl FillSubmitBuffer(int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
 #else
         void __cdecl FillSubmitBuffer(int index, _Out_ XAUDIO2_BUFFER& buffer) const;
 #endif
@@ -385,7 +385,7 @@ namespace DirectX
         const WAVEFORMATEX* __cdecl GetFormat() const;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
-        bool __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
+        //bool __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
 #else
         void __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const;
 #endif
@@ -404,7 +404,7 @@ namespace DirectX
 
 
     //----------------------------------------------------------------------------------
-    struct AudioListener : public X3DAUDIO_LISTENER
+    /*struct AudioListener : public X3DAUDIO_LISTENER
     {
         AudioListener()
         {
@@ -482,11 +482,11 @@ namespace DirectX
                 XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Position), newPos);
             }
         }
-    };
+    };*/
 
 
     //----------------------------------------------------------------------------------
-    struct AudioEmitter : public X3DAUDIO_EMITTER
+    /*struct AudioEmitter : public X3DAUDIO_EMITTER
     {
         float       EmitterAzimuths[XAUDIO2_MAX_AUDIO_CHANNELS];
 
@@ -575,7 +575,7 @@ namespace DirectX
                 XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Position), newPos);
             }
         }
-    };
+    };*/
 
 
     //----------------------------------------------------------------------------------
@@ -599,7 +599,7 @@ namespace DirectX
         void __cdecl SetPitch(float pitch);
         void __cdecl SetPan(float pan);
 
-        void __cdecl Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords = true);
+        //void __cdecl Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords = true);
 
         bool __cdecl IsLooped() const;
 
@@ -648,7 +648,7 @@ namespace DirectX
         void __cdecl SetPitch(float pitch);
         void __cdecl SetPan(float pan);
 
-        void __cdecl Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords = true);
+        //void __cdecl Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords = true);
 
         void __cdecl SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, size_t audioBytes);
         void __cdecl SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes);

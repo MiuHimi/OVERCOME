@@ -74,14 +74,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\DirectXTK\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\DirectXTK\Bin\Desktop_2015\Win32\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\s172179\Documents\git\OVERCOME\OVERCOME\DirectXTK\Inc;C:\Users\s172179\Documents\git\OVERCOME\OVERCOME\OVERCOME\Utility\Sounds\include;C:\DirectXTK\Inc;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\s172179\Documents\git\OVERCOME\OVERCOME\OVERCOME\Utility\Sounds\lib;C:\DirectXTK\Bin\Desktop_2015\Win32\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\DirectXTK\Inc;C:\Users\s172179\Documents\git\OVERCOME\OVERCOME\DirectXTK\Inc;$(IncludePath)</IncludePath>
+    <LibraryWPath>C:\DirectXTK\Bin\Desktop_2015\Win32\Release;$(LibraryWPath)</LibraryWPath>
+    <LibraryPath>C:\DirectXTK\Bin\Desktop_2015\Win32\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -122,7 +125,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -130,13 +133,14 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;directxtk.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,11 +163,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ExclusiveGameObject\ADX2Le.h" />
+    <ClInclude Include="ExclusiveGameObject\BinaryFile.h" />
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
+    <ClInclude Include="ExclusiveGameObject\Collision2D.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionBox.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionSphere.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
     <ClInclude Include="ExclusiveGameObject\DebugSphere.h" />
+    <ClInclude Include="ExclusiveGameObject\EffectManager.h" />
+    <ClInclude Include="ExclusiveGameObject\Myeffect.h" />
     <ClInclude Include="ExclusiveGameObject\Obj3D.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
@@ -184,7 +193,6 @@
     <ClInclude Include="GameObject\SceneObject\SceneResult.h" />
     <ClInclude Include="GameObject\SceneObject\SceneStageSelect.h" />
     <ClInclude Include="GameObject\SceneObject\SceneTitle.h" />
-    <ClInclude Include="GameObject\SkyDome.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Utility\CommonStateManager.h" />
@@ -196,10 +204,14 @@
     <ClInclude Include="Utility\MatrixManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ExclusiveGameObject\ADX2Le.cpp" />
+    <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />
+    <ClCompile Include="ExclusiveGameObject\EffectManager.cpp" />
+    <ClCompile Include="ExclusiveGameObject\MyEffect.cpp" />
     <ClCompile Include="ExclusiveGameObject\Obj3D.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject\Camera.cpp" />
@@ -219,7 +231,6 @@
     <ClCompile Include="GameObject\SceneObject\SceneResult.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneStageSelect.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneTitle.cpp" />
-    <ClCompile Include="GameObject\SkyDome.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -271,6 +282,24 @@
     <MeshContentTask Include="..\FBX\target.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ExclusiveGameObject\Particle.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ExclusiveGameObject\ParticleGS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.1</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="ExclusiveGameObject\ParticlePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="ExclusiveGameObject\ParticleVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
