@@ -207,7 +207,7 @@ void EffectManager::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath:
 {
 	auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
 
-	RenderModel();
+	//RenderModel();
 
 	context->VSSetShader(nullptr, nullptr, 0);
 	context->GSSetShader(nullptr, nullptr, 0);
@@ -277,6 +277,9 @@ void EffectManager::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath:
 	m_batch->Draw(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST, &m_vertex[0], m_vertex.size());
 	m_batch->End();
 
+	context->VSSetShader(nullptr, nullptr, 0);
+	context->GSSetShader(nullptr, nullptr, 0);
+	context->PSSetShader(nullptr, nullptr, 0);
 }
 /// <summary>
 /// •`‰æ(3Dƒ‚ƒfƒ‹)

@@ -148,7 +148,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneTitle::Render()
 {
-	//mp_effectManager->Render();
+	mp_effectManager->Render();
 
 	// ƒ^ƒCƒgƒ‹‚Ì•`‰æ
 	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
