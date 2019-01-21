@@ -193,6 +193,7 @@
     <ClInclude Include="GameObject\SceneObject\SceneResult.h" />
     <ClInclude Include="GameObject\SceneObject\SceneStageSelect.h" />
     <ClInclude Include="GameObject\SceneObject\SceneTitle.h" />
+    <ClInclude Include="GameObject\SkyDome.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Utility\CommonStateManager.h" />
@@ -231,6 +232,7 @@
     <ClCompile Include="GameObject\SceneObject\SceneResult.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneStageSelect.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneTitle.cpp" />
+    <ClCompile Include="GameObject\SkyDome.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

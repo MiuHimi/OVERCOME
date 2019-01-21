@@ -135,6 +135,9 @@
     <ClInclude Include="GameObject\SceneObject\SceneTitle.h">
       <Filter>Game\GameObject\SceneObject</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\SkyDome.h">
+      <Filter>Game\GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="GameObject\SceneObject\SceneTitle.cpp">
       <Filter>Game\GameObject\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\SkyDome.cpp">
+      <Filter>Game\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
