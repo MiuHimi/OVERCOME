@@ -26,6 +26,12 @@
     <Filter Include="Game\GameObject\SceneObject">
       <UniqueIdentifier>{1f50bc19-a4fa-43bc-8e26-67cca673fe81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\ExclusiveGameObject\Sound">
+      <UniqueIdentifier>{af6613d5-4c7c-47e2-a788-e0b4411d7a95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\ExclusiveGameObject\Shader">
+      <UniqueIdentifier>{b8a9fb91-d43b-4cc5-941d-8636d307d819}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -102,12 +108,6 @@
     <ClInclude Include="Utility\DrawManager.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="ExclusiveGameObject\ADX2Le.h">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="ExclusiveGameObject\BinaryFile.h" />
-    <ClInclude Include="ExclusiveGameObject\EffectManager.h" />
-    <ClInclude Include="ExclusiveGameObject\Myeffect.h" />
     <ClInclude Include="ExclusiveGameObject\Collision2D.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
@@ -137,6 +137,18 @@
     </ClInclude>
     <ClInclude Include="GameObject\SkyDome.h">
       <Filter>Game\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\ADX2Le.h">
+      <Filter>Game\ExclusiveGameObject\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\EffectManager.h">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\Myeffect.h">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\BinaryFile.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -206,12 +218,6 @@
     <ClCompile Include="Utility\DrawManager.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="ExclusiveGameObject\ADX2Le.cpp">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp" />
-    <ClCompile Include="ExclusiveGameObject\EffectManager.cpp" />
-    <ClCompile Include="ExclusiveGameObject\MyEffect.cpp" />
     <ClCompile Include="Utility\MatrixManager.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
@@ -238,6 +244,18 @@
     </ClCompile>
     <ClCompile Include="GameObject\SkyDome.cpp">
       <Filter>Game\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\ADX2Le.cpp">
+      <Filter>Game\ExclusiveGameObject\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\EffectManager.cpp">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\MyEffect.cpp">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,11 +301,19 @@
     </MeshContentTask>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ExclusiveGameObject\ParticleGS.hlsl" />
-    <FxCompile Include="ExclusiveGameObject\ParticlePS.hlsl" />
-    <FxCompile Include="ExclusiveGameObject\ParticleVS.hlsl" />
+    <FxCompile Include="ExclusiveGameObject\ParticleGS.hlsl">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ExclusiveGameObject\ParticlePS.hlsl">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ExclusiveGameObject\ParticleVS.hlsl">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ExclusiveGameObject\Particle.hlsli" />
+    <None Include="ExclusiveGameObject\Particle.hlsli">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
