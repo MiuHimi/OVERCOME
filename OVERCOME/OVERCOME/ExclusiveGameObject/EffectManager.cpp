@@ -269,7 +269,6 @@ void EffectManager::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath:
 	context->PSSetShaderResources(0, 1, m_texture1.GetAddressOf());
 	context->PSSetShaderResources(1, 1, m_texture2.GetAddressOf());
 
-
 	context->IASetInputLayout(m_inputLayout.Get());
 
 	// 半透明部分を描画
@@ -277,6 +276,7 @@ void EffectManager::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath:
 	m_batch->Draw(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST, &m_vertex[0], m_vertex.size());
 	m_batch->End();
 
+	// セットしたものをクリアする
 	context->VSSetShader(nullptr, nullptr, 0);
 	context->GSSetShader(nullptr, nullptr, 0);
 	context->PSSetShader(nullptr, nullptr, 0);
