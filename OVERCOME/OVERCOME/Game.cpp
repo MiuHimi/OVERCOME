@@ -170,6 +170,16 @@ void Game::Clear()
 
 	DX::DeviceResources::SingletonGetInstance().PIXEndEvent();
 }
+
+// CloseGame
+// 閉じるボタンを押した際に実行される
+void Game::CloseGame()
+{
+	// シーンを削除
+	mp_sceneManager->DeleteScene();
+	// ゲームを終了する
+	mp_sceneManager->SetGameState(false);
+}
 #pragma endregion
 
 #pragma region Message Handlers

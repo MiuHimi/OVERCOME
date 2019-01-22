@@ -53,6 +53,9 @@ public:
     // Properties
     void GetDefaultSize( int& width, int& height ) const;
 
+	// CloseGame
+	void CloseGame();
+
 private:
     void Update(DX::StepTimer const& timer);
     void Render();
