@@ -64,7 +64,7 @@ void Player::Initialize()
 	m_rotation     = DirectX::SimpleMath::Quaternion::Identity;   // 回転
 	m_height       = 1.75f;                                       // プレイヤー自身の高さ
 	m_jumpForce    = 0.0f;                                        // ジャンプ力
-	m_gravity      = 0.03f;                                       // 重力
+	m_gravity      = 0.1f;                                        // 重力
 	m_fallingPower = 0.0f;                                        // そのまま落ちる時の力
 
 	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
@@ -123,6 +123,7 @@ bool Player::Update(DX::StepTimer const & timer)
 	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 
+	// マウスが初期位置についてからのカウントダウン
 	if (!m_playStartFlag)
 	{
 		if (mp_gameCamera->GetStartPosMouse())
@@ -137,6 +138,7 @@ bool Player::Update(DX::StepTimer const & timer)
 		}
 	}
 	
+	// ゲームスタートしてからの行動
 	if (m_playStartFlag)
 	{
 		// 弾の更新
@@ -294,12 +296,12 @@ bool Player::Update(DX::StepTimer const & timer)
 		}
 
 		// ジャンプ
-		if (InputManager::SingletonGetInstance().GetKeyState().W && m_isJump == false ||
-			InputManager::SingletonGetInstance().GetKeyState().W && m_collideToRoad == true && m_pos.y >= 0.95f)
+		if (InputManager::SingletonGetInstance().GetKeyState().Space && m_isJump == false ||
+			InputManager::SingletonGetInstance().GetKeyState().Space && m_collideToRoad == true && m_pos.y >= 0.95f)
 		{
 			m_isJump = true;
 			m_vel.y = 0.0f;
-			m_jumpForce = 0.2f;
+			m_jumpForce = 0.4f;
 		}
 
 		// ジャンプ力調整
@@ -385,9 +387,6 @@ bool Player::Update(DX::StepTimer const & timer)
 					if (m_passedRoadPos != pos) m_nextPos = pos;
 
 					distTmp = dist;
-
-					// 通過済みの道路を記憶
-					//m_passedRoadPos = pos;
 				}
 			}
 		}

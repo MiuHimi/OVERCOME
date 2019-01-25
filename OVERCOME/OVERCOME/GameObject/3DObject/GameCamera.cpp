@@ -11,7 +11,7 @@
 
 #include "../pch.h"
 #include "GameCamera.h"
-#include "SceneObject/SceneManager.h"
+#include "../SceneObject/SceneManager.h"
 
 #include "../Utility/InputManager.h"
 #include "../Utility/DeviceResources.h"
@@ -85,7 +85,7 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		break;
 	case SCENE_PLAY:
 		// Bキーでカメラ切り替え(仮)
-		if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
+		/*if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
 		{
 			if (cameraFlag == true)
 			{
@@ -97,7 +97,7 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 				cameraFlag = true;
 				ResetCamera();
 			}
-		}
+		}*/
 
 		// フラグに応じたカメラ管理
 		if (cameraFlag)

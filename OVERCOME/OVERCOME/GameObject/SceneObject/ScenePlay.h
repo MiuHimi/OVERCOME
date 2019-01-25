@@ -12,17 +12,17 @@
 
 #include "../../Game.h"
 
-#include "../Player.h"
-#include "../GameCamera.h"
+#include "../3DObject/Player.h"
+#include "../3DObject/GameCamera.h"
 
-#include "../GameFloor.h"
-#include "../GameRoad.h"
-#include "../GameTarget.h"
+#include "../3DObject/GameFloor.h"
+#include "../3DObject/GameRoad.h"
+#include "../3DObject/GameTarget.h"
 
 //#include "../SkyDome.h"
 
-#include "../GameTimer.h"
-#include "../GameScore.h"
+#include "../2DObject/GameTimer.h"
+#include "../2DObject/GameScore.h"
 
 class MatrixManager;
 class ScenePlay : public SceneBase

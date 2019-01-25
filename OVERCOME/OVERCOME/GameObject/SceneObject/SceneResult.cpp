@@ -9,7 +9,7 @@
 #include "../../pch.h"
 #include "SceneManager.h"
 #include "SceneResult.h"
-#include "../GameScore.h"
+#include "../2DObject/GameScore.h"
 
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/GameDebug.h"

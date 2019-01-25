@@ -12,8 +12,6 @@
 #include "../Utility/DeviceResources.h"
 #include "../Utility/StepTimer.h"
 
-#include "../Game.h"
-
 #include "../ExclusiveGameObject/CollisionBox.h"
 
 #include "GameBulletManager.h"
