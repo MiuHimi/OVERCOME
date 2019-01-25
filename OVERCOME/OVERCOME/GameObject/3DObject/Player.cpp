@@ -26,23 +26,17 @@ using namespace DirectX;
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 Player::Player()
-	: m_pos(0.0f, 2.0f, 0.0f),
-	  m_vel(0.0f, 0.0f, 0.0f),
-	  mp_gameCamera(nullptr),
-	  mp_bulletManager(nullptr),
-	  mp_gameRoad(nullptr),
-	  m_restartFlag(false),
-	  m_playStartFlag(false),
-	  m_playStartTime(0),
-	  m_restartTime(0),
-	  m_passedRoadPos(0.0f, 0.0f),
-	  m_nextPos(0.0f, 0.0f),
-	  m_ahead(0.0f, 0.0f, 0.0f),
-	  m_velFlag(false),
-	  m_posRestart(0.0f, 0.0f),
-	  m_textureRestart(nullptr),
-	  m_posCount(0.0f, 0.0f),
-	  m_textureCount(nullptr)
+	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f),
+	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_fallingPower(0.0f),
+	  m_jumpFlag(false), m_collideToFloorFlag(false), m_collideToRoadFlag(false), m_noTouchObectFlag(false),
+	  m_playStartFlag(false), m_playStartTime(0),
+	  m_restartFlag(false), m_restartTime(0),
+	  m_passedRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
+	  m_world(SimpleMath::Matrix::Identity),
+	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
+	  m_posRestartUI(0.0f, 0.0f), m_textureRestart(nullptr),
+	  m_posCountUI(0.0f, 0.0f), m_textureCount(nullptr),
+	  m_texturePointer(nullptr)
 {
 }
 /// <summary>
@@ -60,8 +54,6 @@ Player::~Player()
 void Player::Initialize()
 {
 	// 各変数初期化
-	m_direction    = XMConvertToRadians(0.0f);                    // 向き(角度)
-	m_rotation     = DirectX::SimpleMath::Quaternion::Identity;   // 回転
 	m_height       = 1.75f;                                       // プレイヤー自身の高さ
 	m_jumpForce    = 0.0f;                                        // ジャンプ力
 	m_gravity      = 0.1f;                                        // 重力
@@ -69,12 +61,9 @@ void Player::Initialize()
 
 	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
 
-	// プレイヤーの進行ベクトルの設定
-	m_ahead = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -0.01f);
-	m_ahead.Normalize();
-
+	// 他オブジェクトの初期化
 	mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
-	mp_bulletManager = /*std::make_unique<GameBulletManager>();*/new GameBulletManager();
+	mp_bulletManager = new GameBulletManager();
 	mp_bulletManager->Initialize();
 	mp_gameRoad = std::make_unique<GameRoad>();
 	mp_gameRoad->Initialize();
@@ -99,11 +88,11 @@ void Player::Create()
 	mp_bulletManager->Create();
 
 	// リスタートUIの設定
-	m_posRestart = SimpleMath::Vector2(175.0f, 450.0f);
+	m_posRestartUI = SimpleMath::Vector2(175.0f, 450.0f);
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\clicktostart.png", nullptr, m_textureRestart.GetAddressOf());
 
 	// カウント数字の設定
-	m_posCount = SimpleMath::Vector2(360.0f, 260.0f);
+	m_posCountUI = SimpleMath::Vector2(360.0f, 260.0f);
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\count\\count_len.png", nullptr, m_textureCount.GetAddressOf());
 	
 	// ポインターの設定
@@ -246,7 +235,7 @@ bool Player::Update(DX::StepTimer const & timer)
 		
 		bool stopPlayer = false;
 		// 床と接触すると止まる(真ん中をクリックするまで)
-		if (m_collideToFloor)
+		if (m_collideToFloorFlag)
 		{
 			stopPlayer = true;
 			m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
@@ -284,40 +273,29 @@ bool Player::Update(DX::StepTimer const & timer)
 			m_velFlag = false;
 		}
 
-
-		// プレイヤーの向き設定
-		if (InputManager::SingletonGetInstance().GetKeyState().A)
-		{
-			m_direction += XMConvertToRadians(2.0f);
-		}
-		if (InputManager::SingletonGetInstance().GetKeyState().D)
-		{
-			m_direction -= XMConvertToRadians(2.0f);
-		}
-
 		// ジャンプ
-		if (InputManager::SingletonGetInstance().GetKeyState().Space && m_isJump == false ||
-			InputManager::SingletonGetInstance().GetKeyState().Space && m_collideToRoad == true && m_pos.y >= 0.95f)
+		if (InputManager::SingletonGetInstance().GetKeyState().Space && m_jumpFlag == false ||
+			InputManager::SingletonGetInstance().GetKeyState().Space && m_collideToRoadFlag == true && m_pos.y >= 0.95f)
 		{
-			m_isJump = true;
+			m_jumpFlag = true;
 			m_vel.y = 0.0f;
 			m_jumpForce = 0.4f;
 		}
 
 		// ジャンプ力調整
-		if (m_isJump == true && m_collideToRoad == false || m_isJump == true && m_collideToRoad == true && m_pos.y >= 0.85f)
+		if (m_jumpFlag == true && m_collideToRoadFlag == false || m_jumpFlag == true && m_collideToRoadFlag == true && m_pos.y >= 0.85f)
 		{
 			m_vel.y += m_jumpForce;
 			if (m_vel.y < -1.0f) m_vel.y = -1.0f;
 			m_jumpForce -= m_gravity;
 		}
-		else if (m_isJump == true && m_collideToRoad == true)
+		else if (m_jumpFlag == true && m_collideToRoadFlag == true)
 		{
 			m_vel.y = 0.0f;
 		}
 
 		// 何のオブジェクトにも触れず、かつジャンプもしていないときの処理
-		if (m_isJump == false && m_collideToRoad == false && m_collideToFloor == false && m_noTouchObectFlag == false)
+		if (m_jumpFlag == false && m_collideToRoadFlag == false && m_collideToFloorFlag == false && m_noTouchObectFlag == false)
 		{
 			m_fallingPower = 0;
 			m_noTouchObectFlag = true;
@@ -393,12 +371,10 @@ bool Player::Update(DX::StepTimer const & timer)
 	}
 	
 	// プレイヤー移動(座標)
-	m_rotation = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), m_direction);
-	m_vel = SimpleMath::Vector3::Transform(m_vel, m_rotation);
 	m_pos += m_vel;
 
 	// ワールド行列の作成
-	m_world = SimpleMath::Matrix::CreateFromQuaternion(m_rotation) * SimpleMath::Matrix::CreateTranslation(m_pos);
+	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);
 
 	// 衝突判定用の仮想オブジェクト生成
 	Collision::Box box;
@@ -428,11 +404,11 @@ void Player::Render(MatrixManager* matrixManager)
 			// 切り取る場所を設定
 			RECT rect;
 			rect.top = LONG(0.0f);
-			rect.left = LONG((2 * m_countUISize) - (m_playStartTime/60 * m_countUISize));
-			rect.right = LONG(2 * m_countUISize) - (m_playStartTime / 60 * m_countUISize) + m_countUISize;
-			rect.bottom = LONG(m_countUISize);
+			rect.left = LONG((2 * COUNTUISIZE) - (m_playStartTime/60 * COUNTUISIZE));
+			rect.right = LONG(2 * COUNTUISIZE) - (m_playStartTime / 60 * COUNTUISIZE) + COUNTUISIZE;
+			rect.bottom = LONG(COUNTUISIZE);
 
-			DrawManager::SingletonGetInstance().DrawRect(m_textureCount.Get(), m_posCount, &rect);
+			DrawManager::SingletonGetInstance().DrawRect(m_textureCount.Get(), m_posCountUI, &rect);
 		}
 	}
 	// リスタートカウントの描画
@@ -441,19 +417,19 @@ void Player::Render(MatrixManager* matrixManager)
 		// 取る場所を設定
 		RECT rect;
 		rect.top = LONG(0.0f);
-		rect.left = LONG((2 * m_countUISize) - (m_restartTime / 60 * m_countUISize));
-		rect.right = LONG(2 * m_countUISize) - (m_restartTime / 60 * m_countUISize) + m_countUISize;
-		rect.bottom = LONG(m_countUISize);
+		rect.left = LONG((2 * COUNTUISIZE) - (m_restartTime / 60 * COUNTUISIZE));
+		rect.right = LONG(2 * COUNTUISIZE) - (m_restartTime / 60 * COUNTUISIZE) + COUNTUISIZE;
+		rect.bottom = LONG(COUNTUISIZE);
 
-		DrawManager::SingletonGetInstance().DrawRect(m_textureCount.Get(), m_posCount, &rect);
+		DrawManager::SingletonGetInstance().DrawRect(m_textureCount.Get(), m_posCountUI, &rect);
 	}
 
 	// リスタートUIの描画
-	if (m_collideToFloor)
-		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestart);
+	if (m_collideToFloorFlag)
+		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestartUI);
 
 	if (!m_playStartFlag)
-		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestart);
+		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestartUI);
 
 	// ポインターの描画
 	if (mp_gameCamera->GetStartPosMouse() && m_playStartFlag)
