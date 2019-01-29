@@ -1,15 +1,13 @@
 //////////////////////////////////////////////////////////////
 // File.    GameCamera.h
 // Summary. GameCameraClass
-// Date.    2018/10/05
+// Date.    2019/01/29
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
-
 #include "Camera.h"
 
 #include "Player.h"
@@ -54,26 +52,14 @@ public:
 	// 更新(主にカメラの切り替えを行う)
 	bool Update(DX::StepTimer const & timer, Player* player);
 
-	// 原点を注視点にし、周りを周回するカメラ
-	void OriginPointAroundCamera(DirectX::SimpleMath::Vector3 eyePos);
+	//-----------------------------------Getter-----------------------------------//
 
-	// デバック用カメラ
-	void DebugCamera(DirectX::SimpleMath::Vector3 debugPos);
-
-	// 走っているとき用カメラ
-	void RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
-	// 後ろから追いかけるカメラ
-	void FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
-
-	// マウスで視点移動するカメラ
-	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target);
-
-	
 	// カメラの向きのベクトルを取得
 	DirectX::SimpleMath::Vector3 GetCameraAngle() { return m_cameraDir; }
 
 	// マウスが初期位置に配置されたらtrue
-	bool GetStartPosMouse() { return m_checkMousePos; }
+	bool GetStartPosMouse()                       { return m_checkMousePos; }
+	//----------------------------------------------------------------------------//
 
 private:
 	/// <summary>
@@ -90,4 +76,33 @@ private:
 	/// <param name="y">現在のポインタのY座標</param>
 	void Motion(int x, int y);
 
+	/// <summary>
+	/// 原点を注視点にし、周りを周回するカメラ
+	/// </summary>
+	/// <param name="eyePos">注視点</param>
+	void OriginPointAroundCamera(DirectX::SimpleMath::Vector3 eyePos);
+	/// <summary>
+	/// デバック用カメラ
+	/// </summary>
+	/// <param name="debugPos"></param>
+	void DebugCamera(DirectX::SimpleMath::Vector3 debugPos);
+
+	/// <summary>
+	/// 走っているとき用カメラ
+	/// </summary>
+	/// <param name="target">注視点</param>
+	/// <param name="direction">進行方向</param>
+	void RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
+	/// <summary>
+	/// 後ろから追いかけるカメラ
+	/// </summary>
+	/// <param name="target">注視点</param>
+	/// <param name="direction">進行方向</param>
+	void FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
+
+	/// <summary>
+	/// マウスで視点移動するカメラ
+	/// </summary>
+	/// <param name="target">注視点</param>
+	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target);
 };

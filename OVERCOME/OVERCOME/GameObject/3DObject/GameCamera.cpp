@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    GameCamera.cpp
 // Summary. GameCameraClass
-// Date.    2018/10/05
+// Date.    2019/01/29
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -20,9 +20,10 @@
 // usingディレクトリ
 using namespace DirectX;
 
+// constantディレクトリ
 const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
 const float GameCamera::ROTATE_MAG = 300.0f;
-SceneId SceneManager::m_activeScene;
+
 
 /// <summary>
 /// コンストラクタ
@@ -61,10 +62,6 @@ GameCamera::~GameCamera()
 /// <returns>終了状態</returns>
 bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 {
-	// カメラの切り替えを決めるフラグ
-	static bool cameraFlag = true;
-
-	SimpleMath::Vector3 eyePos = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	SimpleMath::Vector3 debugPos = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	SceneId scene = SceneManager::GetActiveScene();
 	switch (scene)
@@ -77,48 +74,16 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
 		DebugCamera(debugPos);
 		break;
-	case SCENE_SELECTSTAGE:      
-		//eyePos = SimpleMath::Vector3(0.0f, 30.0f, 70.0f);
-		//OriginPointAroundCamera(eyePos);
+	case SCENE_SELECTSTAGE:
 		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
 		DebugCamera(debugPos);
 		break;
 	case SCENE_PLAY:
-		// Bキーでカメラ切り替え(仮)
-		/*if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::B))
-		{
-			if (cameraFlag == true)
-			{
-				cameraFlag = false;
-				ResetCamera();
-			}
-			else if (cameraFlag == false)
-			{
-				cameraFlag = true;
-				ResetCamera();
-			}
-		}*/
-
-		// フラグに応じたカメラ管理
-		if (cameraFlag)
-		{
-			/*SimpleMath::Vector3 target(player->GetPos());
-			target.y += player->GetHeight();
-			RunPlayerCamera(target, player->GetDirection());*/
-
-			SimpleMath::Vector3 target(player->GetPos());
-			target.y += player->GetHeight();
-			MouseOperateCamera(target);
-
-			/*debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
-			DebugCamera(debugPos);*/
-		}
-		else
-		{
-			SimpleMath::Vector3 target(player->GetPos());
-			target.y += player->GetHeight();
-			//FollowPlayerCamera(target, player->GetDirection());
-		}
+		// マウス操作のカメラ
+		SimpleMath::Vector3 target(player->GetPos());
+		target.y += player->GetHeight();
+		// 注視点はプレイヤーの目線の位置
+		MouseOperateCamera(target);
 		break;
 	case SCENE_RESULT:
 		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
