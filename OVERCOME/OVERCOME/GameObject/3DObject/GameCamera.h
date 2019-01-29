@@ -27,7 +27,7 @@ private:
 
 	DirectX::SimpleMath::Vector2       m_angle;                           // 現在の回転角
 	DirectX::SimpleMath::Vector2       m_angleTmp;                        // 保存している回転角
-	const float                        m_angleMag = 10.0f;                 // マウスによるカメラ回転の倍率 
+	const float                        m_angleMag = 10.0f;                // マウスによるカメラ回転の倍率 
 
 	DirectX::SimpleMath::Vector3       m_cameraDir;                       // カメラの向きのベクトル
 
@@ -67,8 +67,16 @@ public:
 	void FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
 
 	// マウスで視点移動するカメラ
-	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 ahead);
+	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target);
 
+	
+	// カメラの向きのベクトルを取得
+	DirectX::SimpleMath::Vector3 GetCameraAngle() { return m_cameraDir; }
+
+	// マウスが初期位置に配置されたらtrue
+	bool GetStartPosMouse() { return m_checkMousePos; }
+
+private:
 	/// <summary>
 	/// 画面サイズの設定関数
 	/// </summary>
@@ -76,18 +84,11 @@ public:
 	/// <param name="windowHeight">ウインドウサイズ（高さ）</param>
 	void SetWindowSize(int windowWidth, int windowHeight);
 
-	// カメラの向きのベクトルを取得
-	DirectX::SimpleMath::Vector3 GetCameraAngle() { return m_cameraDir; }
-
-	// 回転角の設定、取得
-	DirectX::SimpleMath::Vector2 SetAngle(DirectX::SimpleMath::Vector2 angle) { m_angleTmp = angle; }
-	DirectX::SimpleMath::Vector2 GetAngle()                                   { return m_angleTmp; }
-
-	// マウスが初期位置に配置されたらtrue
-	bool GetStartPosMouse() { return m_checkMousePos; }
-
-private:
-
+	/// <summary>
+	/// マウスポインタの位置のドラッグ開始位置からの変位 (相対値)
+	/// </summary>
+	/// <param name="x">現在のポインタのX座標</param>
+	/// <param name="y">現在のポインタのY座標</param>
 	void Motion(int x, int y);
 
 };

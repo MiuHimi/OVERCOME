@@ -370,6 +370,9 @@ bool Player::Update(DX::StepTimer const & timer)
 		}
 	}
 	
+	//デバッグ
+	m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+
 	// プレイヤー移動(座標)
 	m_pos += m_vel;
 

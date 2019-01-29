@@ -19,7 +19,6 @@
 
 // usingディレクトリ
 using namespace DirectX;
-using namespace DirectX::SimpleMath;
 
 const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
 SceneId SceneManager::m_activeScene;
@@ -64,23 +63,23 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 	// カメラの切り替えを決めるフラグ
 	static bool cameraFlag = true;
 
-	DirectX::SimpleMath::Vector3 eyePos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-	DirectX::SimpleMath::Vector3 debugPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	SimpleMath::Vector3 eyePos = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	SimpleMath::Vector3 debugPos = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	SceneId scene = SceneManager::GetActiveScene();
 	switch (scene)
 	{
 	case SCENE_LOGO:
-		debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
 		DebugCamera(debugPos);
 		break;
 	case SCENE_TITLE:
-		debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
 		DebugCamera(debugPos);
 		break;
 	case SCENE_SELECTSTAGE:      
-		//eyePos = DirectX::SimpleMath::Vector3(0.0f, 30.0f, 70.0f);
+		//eyePos = SimpleMath::Vector3(0.0f, 30.0f, 70.0f);
 		//OriginPointAroundCamera(eyePos);
-		debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
 		DebugCamera(debugPos);
 		break;
 	case SCENE_PLAY:
@@ -102,26 +101,26 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		// フラグに応じたカメラ管理
 		if (cameraFlag)
 		{
-			/*Vector3 target(player->GetPos());
+			/*SimpleMath::Vector3 target(player->GetPos());
 			target.y += player->GetHeight();
 			RunPlayerCamera(target, player->GetDirection());*/
 
-			Vector3 target(player->GetPos());
+			SimpleMath::Vector3 target(player->GetPos());
 			target.y += player->GetHeight();
-			MouseOperateCamera(target, player->GetAhead());
+			MouseOperateCamera(target);
 
-			/*debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+			/*debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
 			DebugCamera(debugPos);*/
 		}
 		else
 		{
-			Vector3 target(player->GetPos());
+			SimpleMath::Vector3 target(player->GetPos());
 			target.y += player->GetHeight();
-			FollowPlayerCamera(target, player->GetDirection());
+			//FollowPlayerCamera(target, player->GetDirection());
 		}
 		break;
 	case SCENE_RESULT:
-		debugPos = DirectX::SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
+		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
 		DebugCamera(debugPos);
 		break;
 	}
@@ -135,17 +134,17 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 void GameCamera::OriginPointAroundCamera(DirectX::SimpleMath::Vector3 eyePos)
 {
 	// カメラの位置設定(スタート位置)
-	Vector3 eye(/*20.0f, 8.0f, 0.0f*/eyePos);
+	SimpleMath::Vector3 eye(/*20.0f, 8.0f, 0.0f*/eyePos);
 
 	// 注視点は(0,0,0)でカメラをY軸回転させる
 	m_aroundAngle += 0.5f;
 	if (m_aroundAngle > 360)m_aroundAngle = 0.0f;
-	Matrix rotY = Matrix::CreateRotationY(XMConvertToRadians(m_aroundAngle));
-	eye = Vector3::Transform(eye, rotY);
-	//SetPositionTarget(eye, Vector3(0.0f, 0.0f, 0.0f));
+	SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(m_aroundAngle));
+	eye = SimpleMath::Vector3::Transform(eye, rotY);
+	//SetPositionTarget(eye, SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
 
 	m_eyePt = eye;
-	Vector3 target(0.0f, 0.0f, 0.0f);
+	SimpleMath::Vector3 target(0.0f, 0.0f, 0.0f);
 	m_targetPt = target;
 }
 /// <summary>
@@ -186,18 +185,18 @@ void GameCamera::DebugCamera(DirectX::SimpleMath::Vector3 debugPos)
 	}
 
 	// ビュー行列を算出する
-	Matrix rotY = Matrix::CreateRotationY(m_angleTmp.y);
-	Matrix rotX = Matrix::CreateRotationX(m_angleTmp.x);
+	SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(m_angleTmp.y);
+	SimpleMath::Matrix rotX = SimpleMath::Matrix::CreateRotationX(m_angleTmp.x);
 
-	Matrix rt = rotY * rotX;
+	SimpleMath::Matrix rt = rotY * rotX;
 
-	Vector3 eye(debugPos);
-	Vector3 target(0.0f, 0.0f, 0.0f);
-	Vector3 up(0.0f, 1.0f, 0.0f);
+	SimpleMath::Vector3 eye(debugPos);
+	SimpleMath::Vector3 target(0.0f, 0.0f, 0.0f);
+	SimpleMath::Vector3 up(0.0f, 1.0f, 0.0f);
 
-	eye = Vector3::Transform(eye, rt.Invert());
+	eye = SimpleMath::Vector3::Transform(eye, rt.Invert());
 	eye *= (DEFAULT_CAMERA_DISTANCE - m_scrollWheelValue / 100);
-	up = Vector3::Transform(up, rt.Invert());
+	up = SimpleMath::Vector3::Transform(up, rt.Invert());
 
 	m_eyePt = eye;
 	m_targetPt = target;
@@ -219,10 +218,10 @@ void GameCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float dire
 	float verticalAxis = (sin(wave) + 1.0f) / 500.0f;
 
 	// 視点設定
-	Vector3 eye(/*horizontalAxis*/0.0f, /*verticalAxis*/0.0f, -0.1f);
+	SimpleMath::Vector3 eye(/*horizontalAxis*/0.0f, /*verticalAxis*/0.0f, -0.1f);
 
-	Matrix rotY = Matrix::CreateRotationY(direction);
-	eye = Vector3::Transform(eye, rotY);
+	SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(direction);
+	eye = SimpleMath::Vector3::Transform(eye, rotY);
 	eye += target;
 
 	// 補間する場合
@@ -241,10 +240,10 @@ void GameCamera::RunPlayerCamera(DirectX::SimpleMath::Vector3 target, float dire
 void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction)
 {
 	// 視点設定
-	Vector3 eye(0.0f, 0.3f, -4.0f);
+	SimpleMath::Vector3 eye(0.0f, 0.3f, -4.0f);
 
-	Matrix rotY = Matrix::CreateRotationY(direction);
-	eye = Vector3::Transform(eye, rotY);
+	SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(direction);
+	eye = SimpleMath::Vector3::Transform(eye, rotY);
 	eye += target;
 
 	// 補間する場合
@@ -258,7 +257,7 @@ void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float d
 /// <summary>
 /// マウスで視点移動するカメラ
 /// </summary>
-void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 ahead)
+void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target)
 {
 	RECT desktopWndRect;                         // デスクトップのサイズ
 	HWND desktopWnd = GetDesktopWindow();        // この関数でデスクトップのハンドルを取得
@@ -292,78 +291,36 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 
 	if(m_checkMousePos == true)
 	{
-		/*// 中心座標設定
-		m_mousePos.x = 400.0f;
-		m_mousePos.y = 300.0f;
-
-		// 画面外に出たら画面の中心に戻す
-		if (InputManager::SingletonGetInstance().GetMouseState().x < 10 || InputManager::SingletonGetInstance().GetMouseState().x > 790 ||
-			InputManager::SingletonGetInstance().GetMouseState().y < 10 || InputManager::SingletonGetInstance().GetMouseState().y > 590)
-		{
-			// 現在の回転を保存
-			m_angle.x = m_angleTmp.x;
-			m_angle.y = m_angleTmp.y;
-
-			// デスクトップの値のため、ウィンドウ分のサイズ+画面の半分を足す(Yはタイトルバー分も足す)
-			SetCursorPos(int(activeWndRect.left + 400), int(activeWndRect.top + 300 + titlebarHeight));
-		}
-
-		// 偏差分を移動
-	    Motion(int(InputManager::SingletonGetInstance().GetMouseState().x), int(InputManager::SingletonGetInstance().GetMouseState().y));
+		// 中心座標(相対値)設定
+		SimpleMath::Vector2 centerPos(400.0f, 300.0f);
 		
-		// ビュー行列を算出する
-		Matrix rotY = Matrix::CreateRotationY(-m_angleTmp.y * m_angleMag);
-		Matrix rotX = Matrix::CreateRotationX((-m_angleTmp.x)*m_angleMag);
-		Matrix rt = rotY * rotX;
+		// 中心点からの偏差を求める
+		float x = InputManager::SingletonGetInstance().GetMouseState().x - centerPos.x;
+		float y = InputManager::SingletonGetInstance().GetMouseState().y - centerPos.y;
 
-		Vector3 eye(0.0f, 0.0f, 0.1f);
-		//Vector3 target(target);
-		//Vector3 up(0.0f, 1.0f, 0.0f);
-
-		// 視点、上方向設定
-		eye = Vector3::Transform(eye, rt);
-		eye += target;
-		//up = Vector3::Transform(up, rt.Invert());*/
-
-		// 中心座標設定
-		m_mousePos.x = 400.0f;
-		m_mousePos.y = 300.0f;
-
-		// 画面外に出たら画面の中心に戻す
+		// 画面外に出たらカーソルを画面の中心に戻す
 		if (InputManager::SingletonGetInstance().GetMouseState().x < 10 || InputManager::SingletonGetInstance().GetMouseState().x > 790 ||
 			InputManager::SingletonGetInstance().GetMouseState().y < 10 || InputManager::SingletonGetInstance().GetMouseState().y > 590)
 		{
 			// 現在の回転を保存
-			m_angle.x = m_angleTmp.x;
-			m_angle.y = m_angleTmp.y;
-
 			m_rotationTmpX = m_rotationX;
 			m_rotationTmpY = m_rotationY;
 
 			// デスクトップの値のため、ウィンドウ分のサイズ+画面の半分を足す(Yはタイトルバー分も足す)
-			SetCursorPos(int(activeWndRect.left + 400), int(activeWndRect.top + 300 + titlebarHeight));
+			SetCursorPos(int(activeWndRect.left + centerPos.x), int(activeWndRect.top + centerPos.y + titlebarHeight));
 		}
 
-		float x = InputManager::SingletonGetInstance().GetMouseState().x - m_mousePos.x;
-		float y = InputManager::SingletonGetInstance().GetMouseState().y - m_mousePos.y;
-
-		m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x/50.0f));
-		m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y/50.0f));
-
-		// ビュー行列を算出する
-		Matrix rotY = SimpleMath::Matrix::CreateFromQuaternion(m_rotationY);
-		Matrix rotX = SimpleMath::Matrix::CreateFromQuaternion(m_rotationX);
-		Matrix rot = rotY * rotX;
-
-		Vector3 eye(0.0f, 0.0f, 0.1f);
-		//Vector3 target(target);
-		//Vector3 up(0.0f, 1.0f, 0.0f);
-
+		// 偏差分の回転
+		m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x/500.0f));
+		m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y/500.0f));
 		
+		// 画面外に出ていたら保存していた分も回転させる
+		m_rotationX *= m_rotationTmpX;
+		m_rotationY *= m_rotationTmpY;
 
 		// 視点、上方向設定
-		//eye = Vector3::Transform(eye, rot);
-		eye = Vector3::Transform(eye, (m_rotationX * m_rotationY)/* * m_rotationTmpY * m_rotationY*/);
+		SimpleMath::Vector3 eye(0.0f, 0.0f, 0.1f);
+		eye = SimpleMath::Vector3::Transform(eye, (m_rotationX * m_rotationY));
 		eye += target;
 
 		// 視点、注視点決定
@@ -383,10 +340,10 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 	else
 	{
 		// 視点設定
-		Vector3 eye(0.0f, 0.0f, -0.1f);
+		SimpleMath::Vector3 eye(0.0f, 0.0f, -0.1f);
 
-		Matrix rotY = Matrix::CreateRotationY(XMConvertToRadians(180.0f));
-		eye = Vector3::Transform(eye, rotY);
+		SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(180.0f));
+		eye = SimpleMath::Vector3::Transform(eye, rotY);
 		eye += target;
 
 		m_eyePt = eye;
