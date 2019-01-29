@@ -25,8 +25,6 @@ private:
 
 	int selectedStage;                            // 選択されたステージ
 
-	int m_selectSceneID;
-
 	enum stage
 	{
 		ONE,
