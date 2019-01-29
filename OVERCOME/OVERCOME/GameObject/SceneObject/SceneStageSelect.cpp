@@ -30,6 +30,7 @@ using namespace DirectX;
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneStageSelect::SceneStageSelect(SceneManager * sceneManager)
 	: SceneBase(sceneManager),
+	  m_selectSceneID(0),
 	  selectedStage(0),
 	  mp_matrixManager(nullptr),
 	  m_color(0.0f)
