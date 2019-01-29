@@ -21,28 +21,27 @@ class GameCamera : public Camera
 public:
 
 private:
-	static const float                 DEFAULT_CAMERA_DISTANCE;           // カメラの距離
+	static const float                DEFAULT_CAMERA_DISTANCE;   // カメラの距離
+	static const float                ROTATE_MAG;                // 回転倍率(100～500がベスト)
 
-	float                              m_aroundAngle;                     // 回転角
+	float                             m_aroundAngle;             // 回転角
 
-	DirectX::SimpleMath::Vector2       m_angle;                           // 現在の回転角
-	DirectX::SimpleMath::Vector2       m_angleTmp;                        // 保存している回転角
-	const float                        m_angleMag = 10.0f;                // マウスによるカメラ回転の倍率 
+	DirectX::SimpleMath::Vector2      m_angle;                   // 現在の回転角
+	DirectX::SimpleMath::Vector2      m_angleTmp;                // 保存している回転角
 
-	DirectX::SimpleMath::Vector3       m_cameraDir;                       // カメラの向きのベクトル
+	DirectX::SimpleMath::Vector3      m_cameraDir;               // カメラの向きのベクトル
 
-	DirectX::SimpleMath::Vector2       m_mousePos;                        // 二次元上の絶対値(座標)
+	DirectX::SimpleMath::Vector2      m_mousePos;                // 二次元上の座標
 
-	DirectX::SimpleMath::Vector2       m_dragUnit;                        // ドラッグされた座標
-	bool                               m_checkMousePos;                   // マウスの初期位置指定用変数
+	DirectX::SimpleMath::Vector2      m_dragUnit;                // ドラッグされた座標
+	bool                              m_checkMousePos;           // マウスの初期位置指定用変数
 
-	int                                m_scrollWheelValue;                // スクロールホイール値
+	int                               m_scrollWheelValue;        // スクロールホイール値
 
-	DirectX::SimpleMath::Quaternion    m_rotationX;                       // 回転
-	DirectX::SimpleMath::Quaternion    m_rotationY;                       // 回転
-
-	DirectX::SimpleMath::Quaternion    m_rotationTmpX;                    // 回転保存
-	DirectX::SimpleMath::Quaternion    m_rotationTmpY;                    // 回転保存
+	DirectX::SimpleMath::Quaternion   m_rotationX;               // 回転(クォータニオン)
+	DirectX::SimpleMath::Quaternion   m_rotationY;               // 回転(クォータニオン)
+	DirectX::SimpleMath::Quaternion   m_rotationTmpX;            // 回転保存(クォータニオン)
+	DirectX::SimpleMath::Quaternion   m_rotationTmpY;            // 回転保存(クォータニオン)
 
 // メンバー関数
 public:

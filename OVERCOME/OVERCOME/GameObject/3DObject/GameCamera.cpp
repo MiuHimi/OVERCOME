@@ -21,6 +21,7 @@
 using namespace DirectX;
 
 const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
+const float GameCamera::ROTATE_MAG = 300.0f;
 SceneId SceneManager::m_activeScene;
 
 /// <summary>
@@ -33,7 +34,7 @@ GameCamera::GameCamera(int windowWidth, int windowHeight)
 	: m_aroundAngle(0.0f),
 	m_angle(0.0f, 0.0f),
 	m_angleTmp(0.0f, 0.0f),
-	//m_cameraDir(0.0f, 0.0f, 0.0f),
+	m_cameraDir(0.0f, 0.0f, 0.0f),
 	m_mousePos(0.0f, 0.0f),
 	m_dragUnit(0.0f, 0.0f),
 	m_checkMousePos(false),
@@ -311,8 +312,8 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target)
 		}
 
 		// ïŒç∑ï™ÇÃâÒì]
-		m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x/500.0f));
-		m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y/500.0f));
+		m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x/ROTATE_MAG));
+		m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y/ROTATE_MAG));
 		
 		// âÊñ äOÇ…èoÇƒÇ¢ÇΩÇÁï€ë∂ÇµÇƒÇ¢ÇΩï™Ç‡âÒì]Ç≥ÇπÇÈ
 		m_rotationX *= m_rotationTmpX;
