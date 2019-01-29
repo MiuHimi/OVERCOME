@@ -13,6 +13,7 @@
 #include "Player.h"
 
 class Player;
+class SceneManager;
 class GameCamera : public Camera
 {
 // ƒƒ“ƒo[•Ï”
