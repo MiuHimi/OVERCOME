@@ -24,6 +24,7 @@ using namespace DirectX;
 const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
 const float GameCamera::ROTATE_MAG = 300.0f;
 
+SceneId SceneManager::m_activeScene;
 
 /// <summary>
 /// コンストラクタ
