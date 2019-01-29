@@ -51,9 +51,6 @@
     <ClInclude Include="ExclusiveGameObject\DebugBox.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
-    <ClInclude Include="ExclusiveGameObject\Obj3D.h">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClInclude>
     <ClInclude Include="Utility\GameDebug.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
@@ -156,6 +153,15 @@
     <ClInclude Include="GameObject\2DObject\GameScore.h">
       <Filter>Game\GameObject\2DObject</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\3DObject\Obj3D.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\2DObject\Obj2D.h">
+      <Filter>Game\GameObject\2DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\2DObject\String.h">
+      <Filter>Game\GameObject\2DObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -165,9 +171,6 @@
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="ExclusiveGameObject\Obj3D.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
     <ClCompile Include="Utility\GameDebug.cpp">
@@ -261,6 +264,15 @@
       <Filter>Game\GameObject\2DObject</Filter>
     </ClCompile>
     <ClCompile Include="GameObject\2DObject\GameScore.cpp">
+      <Filter>Game\GameObject\2DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\3DObject\Obj3D.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\2DObject\Obj2D.cpp">
+      <Filter>Game\GameObject\2DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\2DObject\String.cpp">
       <Filter>Game\GameObject\2DObject</Filter>
     </ClCompile>
   </ItemGroup>

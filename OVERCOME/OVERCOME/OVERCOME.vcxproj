@@ -173,11 +173,12 @@
     <ClInclude Include="ExclusiveGameObject\DebugSphere.h" />
     <ClInclude Include="ExclusiveGameObject\EffectManager.h" />
     <ClInclude Include="ExclusiveGameObject\Myeffect.h" />
-    <ClInclude Include="ExclusiveGameObject\Obj3D.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject\2DObject\GameScore.h" />
     <ClInclude Include="GameObject\2DObject\GameTimer.h" />
+    <ClInclude Include="GameObject\2DObject\Obj2D.h" />
+    <ClInclude Include="GameObject\2DObject\String.h" />
     <ClInclude Include="GameObject\3DObject\Camera.h" />
     <ClInclude Include="GameObject\3DObject\GameBullet.h" />
     <ClInclude Include="GameObject\3DObject\GameBulletManager.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="GameObject\3DObject\GameFloor.h" />
     <ClInclude Include="GameObject\3DObject\GameRoad.h" />
     <ClInclude Include="GameObject\3DObject\GameTarget.h" />
+    <ClInclude Include="GameObject\3DObject\Obj3D.h" />
     <ClInclude Include="GameObject\3DObject\Player.h" />
     <ClInclude Include="GameObject\3DObject\SkyDome.h" />
     <ClInclude Include="GameObject\SceneObject\SceneBase.h" />
@@ -213,10 +215,11 @@
     <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\EffectManager.cpp" />
     <ClCompile Include="ExclusiveGameObject\MyEffect.cpp" />
-    <ClCompile Include="ExclusiveGameObject\Obj3D.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject\2DObject\GameScore.cpp" />
     <ClCompile Include="GameObject\2DObject\GameTimer.cpp" />
+    <ClCompile Include="GameObject\2DObject\Obj2D.cpp" />
+    <ClCompile Include="GameObject\2DObject\String.cpp" />
     <ClCompile Include="GameObject\3DObject\Camera.cpp" />
     <ClCompile Include="GameObject\3DObject\GameBullet.cpp" />
     <ClCompile Include="GameObject\3DObject\GameBulletManager.cpp" />
@@ -224,6 +227,7 @@
     <ClCompile Include="GameObject\3DObject\GameFloor.cpp" />
     <ClCompile Include="GameObject\3DObject\GameRoad.cpp" />
     <ClCompile Include="GameObject\3DObject\GameTarget.cpp" />
+    <ClCompile Include="GameObject\3DObject\Obj3D.cpp" />
     <ClCompile Include="GameObject\3DObject\Player.cpp" />
     <ClCompile Include="GameObject\3DObject\SkyDome.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneBase.cpp" />

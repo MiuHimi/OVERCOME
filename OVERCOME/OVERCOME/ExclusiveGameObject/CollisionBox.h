@@ -8,7 +8,7 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "Obj3D.h"
+#include "../GameObject/3DObject/Obj3D.h"
 #include "Collision.h"
 #include "DebugBox.h"
 

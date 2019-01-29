@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "Obj3D.h"
+#include "../GameObject/3DObject/Obj3D.h"
 #include "Collision.h"
 #include "DebugSphere.h"
 
