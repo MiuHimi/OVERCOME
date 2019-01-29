@@ -62,7 +62,8 @@ GameCamera::~GameCamera()
 /// <returns>終了状態</returns>
 bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 {
-	SimpleMath::Vector3 debugPos = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	SimpleMath::Vector3 target(0.0f, 0.0f, 0.0f);
+	SimpleMath::Vector3 debugPos(0.0f, 0.0f, 0.0f);
 	SceneId scene = SceneManager::GetActiveScene();
 	switch (scene)
 	{
@@ -80,7 +81,7 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		break;
 	case SCENE_PLAY:
 		// マウス操作のカメラ
-		SimpleMath::Vector3 target(player->GetPos());
+		target = player->GetPos();
 		target.y += player->GetHeight();
 		// 注視点はプレイヤーの目線の位置
 		MouseOperateCamera(target);
