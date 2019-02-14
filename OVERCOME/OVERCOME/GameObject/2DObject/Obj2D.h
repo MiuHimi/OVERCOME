@@ -34,6 +34,8 @@ public:
 	// •`‰æ
 	virtual void Render();
 
+	// •`‰æ—p‚ÉˆÊ’u‚ğŠp‚Éİ’è‚·‚é
+	void CenteringToCornerPos(DirectX::SimpleMath::Vector2 &pos, float width, float height);
 
 	//-----------------------------------Setter-----------------------------------//
 

@@ -24,6 +24,9 @@
 #include "../2DObject/GameTimer.h"
 #include "../2DObject/GameScore.h"
 
+#include "../ExclusiveGameObject/CollisionMesh.h"
+#include "../ExclusiveGameObject/EffectManager.h"
+
 class MatrixManager;
 class ScenePlay : public SceneBase
 {
@@ -55,6 +58,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureFadeIn;            // テクスチャハンドル(フェードイン)
 
 	MatrixManager*                                       mp_matrixManager;      // 行列管理変数
+
+	std::unique_ptr<CollisionMesh>                       m_box;
+	EffectManager*	                                     mp_effectManager;      // エフェクト管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:

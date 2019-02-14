@@ -98,6 +98,10 @@ void ScenePlay::Initialize()
 
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
 
+	// メッシュ衝突判定
+	m_box = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"ExclusiveGameObject\\slope_oc.obj");
+
+
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
 
@@ -119,6 +123,14 @@ void ScenePlay::Initialize()
 	// 行列を設定
 	mp_matrixManager->SetViewProjection(view, projection);
 
+	// エフェクトマネージャーの初期化
+	mp_effectManager = nullptr;
+	mp_effectManager = new EffectManager();
+	mp_effectManager->Create();
+	mp_effectManager->Initialize(5, SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3(0, 0, 0));
+	mp_effectManager->SetRenderState(view, projection);
+
+
 	// サウンド再生
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->LoadAcb(L"ScenePlay.acb", L"ScenePlay.awb");
@@ -136,6 +148,11 @@ void ScenePlay::Finalize()
 		mp_matrixManager = nullptr;
 	}
 	
+	if (mp_effectManager != nullptr) {
+		mp_effectManager->Lost();
+		delete mp_effectManager;
+		mp_effectManager = nullptr;
+	}
 }
 
 /// <summary>
@@ -147,6 +164,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// フェードイン
 	m_fadeInCount -= 0.01f;
 	if (m_fadeInCount < 0.0f)m_fadeInCount = 0.0f;
+
+	//mp_effectManager->Update(timer);
 
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
@@ -174,6 +193,17 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		{
 			mp_player->SetHeightPos(0.0f);
 		}
+	}
+
+	int id;
+	SimpleMath::Vector3 s;
+	SimpleMath::Vector3 playerPos = mp_player->GetPos();
+	SimpleMath::Vector3 v[2] = { SimpleMath::Vector3(playerPos.x, 100.0f, playerPos.z), SimpleMath::Vector3(playerPos.x, -100.0f, playerPos.z) };
+	// 道路とプレイヤーの当たり判定を行う
+	if (m_box->HitCheck_Segment(v[0], v[1], &id, &s) == true)
+	{
+		// ボールの位置を設定する
+		mp_player->SetHeightPos(s.y);
 	}
 
 	// 道路とプレイヤーの衝突判定
@@ -379,12 +409,16 @@ void ScenePlay::Render()
 	// スカイドームの描画
 	//mp_skydome->Render(mp_matrixManager);
 
+	//m_box->DrawCollision(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), mp_matrixManager->GetView(), mp_matrixManager->GetProjection());
+
 	// プレイヤーの描画
 	mp_player->Render(mp_matrixManager);
 	//mp_player->DrawDebugCollision();
 
 	// 制限時間の描画
 	//mp_gameTimer->Render();
+
+	mp_effectManager->Render();
 
 	// スコアの描画
 	mp_gameScore->Render();

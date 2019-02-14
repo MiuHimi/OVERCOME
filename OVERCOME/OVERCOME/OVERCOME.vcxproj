@@ -168,6 +168,7 @@
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
     <ClInclude Include="ExclusiveGameObject\Collision2D.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionBox.h" />
+    <ClInclude Include="ExclusiveGameObject\CollisionMesh.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionSphere.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
     <ClInclude Include="ExclusiveGameObject\DebugSphere.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="ExclusiveGameObject\ADX2Le.cpp" />
     <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
+    <ClCompile Include="ExclusiveGameObject\CollisionMesh.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />

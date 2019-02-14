@@ -203,7 +203,13 @@ float2 mod(float2 a, float2 b)
 float4 main(PS_INPUT input) : SV_TARGET
 {
 
-	float4 base = tex.Sample(samLinear, input.Tex);
+	float4 base = float4(1.0f, 1.0f, 1.0f, 0.5f);
+
+	float2 center = float2(0.5f, 0.5f);
+	float dist = distance(center, input.Tex);
+
+	base.a = 1.0f - (dist * 4.0f);
+
 	return base;
 
 }

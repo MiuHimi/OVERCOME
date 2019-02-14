@@ -160,7 +160,7 @@ void GameRoad::Create()
 	m_modelRoadBranch = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\road_branch.cmo", fx);
 
 	// フォグの設定
-	SetFogEffectDistance(8.0f, 15.0f);
+	SetFogEffectDistance(15.0f, 20.0f);
 
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);      // 境界箱の中心

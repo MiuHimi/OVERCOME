@@ -162,6 +162,9 @@
     <ClInclude Include="GameObject\2DObject\String.h">
       <Filter>Game\GameObject\2DObject</Filter>
     </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\CollisionMesh.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -274,6 +277,9 @@
     </ClCompile>
     <ClCompile Include="GameObject\2DObject\String.cpp">
       <Filter>Game\GameObject\2DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\CollisionMesh.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

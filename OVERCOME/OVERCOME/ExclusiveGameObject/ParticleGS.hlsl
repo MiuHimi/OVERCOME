@@ -21,7 +21,7 @@ void main(
 		PS_INPUT element;
 
 		// ×2にすると画面全体にエフェクトが表示される(x,yのみ)
-		element.Pos = input[0].Pos + float4(offset_array[i].x, offset_array[i].y, offset_array[i].z, offset_array[i].w);
+		element.Pos = input[0].Pos + float4(offset_array[i].x*2, offset_array[i].y*2, offset_array[i].z, offset_array[i].w);
 
 		/*element.Pos = mul(element.Pos, matWorld);
 		element.Pos = mul(element.Pos, matView);
