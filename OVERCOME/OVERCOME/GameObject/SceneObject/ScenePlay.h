@@ -19,6 +19,8 @@
 #include "../3DObject/GameRoad.h"
 #include "../3DObject/GameTarget.h"
 
+#include "../3DObject/GameMap.h"
+
 //#include "../SkyDome.h"
 
 #include "../2DObject/GameTimer.h"
@@ -42,6 +44,8 @@ private:
 	std::unique_ptr<GameFloor> mp_gameFloor;	  // ゲーム床オブジェクト
 	std::unique_ptr<GameRoad>  mp_gameRoad;	      // ゲーム道路オブジェクト
 	std::unique_ptr<GameTarget> mp_gameTarget;    // ゲーム標的オブジェクト
+
+	std::unique_ptr<GameMap>   mp_gameMap;    // ゲームマップオブジェクト
 
 	static std::unique_ptr<Player> mp_player;     // プレイヤーオブジェクト
 

@@ -26,7 +26,7 @@ using namespace DirectX;
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 Player::Player()
-	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f),
+	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f), m_dir(0.0f, 0.0f, 0.0f),
 	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_fallingPower(0.0f),
 	  m_jumpFlag(false), m_collideToFloorFlag(false), m_collideToRoadFlag(false), m_noTouchObectFlag(false),
 	  m_playStartFlag(false), m_playStartTime(0),
@@ -124,6 +124,8 @@ bool Player::Update(DX::StepTimer const & timer)
 		{
 			m_playStartTime = 0;
 			m_playStartFlag = true;
+			// マウスカーソルの非表示
+			//ShowCursor(FALSE);
 		}
 	}
 	
@@ -221,9 +223,20 @@ bool Player::Update(DX::StepTimer const & timer)
 
 					m_vel.Normalize();
 					m_vel.x /= 10.0f;
+					if (m_vel.x > 1.0f || m_vel.x < -1.0f)
+					{
+						m_vel.x = 0.0f;
+					}/*if (m_vel.x > 0.01f)m_vel.x = 0.1f;
+					else if(m_vel.x < -0.01f)m_vel.x = -0.1f;
+					else m_vel.x = 0.0f; */
 					m_vel.y = 0.0f;
 					m_vel.z /= 10.0f;
-
+					if (m_vel.z > 1.0f || m_vel.z < -1.0f)
+					{
+						m_vel.z = 0.0f;
+					}/*if (m_vel.z > 0.01f)m_vel.z = 0.1f;
+					else if (m_vel.z < -0.01f)m_vel.z = -0.1f;
+					else m_vel.z = 0.0f;*/
 					m_velFlag = true;
 				}
 
@@ -373,8 +386,14 @@ bool Player::Update(DX::StepTimer const & timer)
 	//デバッグ
 	//m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
+	// 移動前の座標を記憶
+	SimpleMath::Vector3 nowPos = m_pos;
 	// プレイヤー移動(座標)
 	m_pos += m_vel;
+	// 移動後の座標との偏差から移動方向を算出
+	m_dir = m_pos - nowPos;
+	m_dir.Normalize();
+
 
 	// ワールド行列の作成
 	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);

@@ -73,6 +73,12 @@ void ScenePlay::Initialize()
 	// ゲーム道路のモデル読み込み
 	mp_gameTarget->Create();
 
+	// ゲーム道路の生成
+	mp_gameMap = std::make_unique<GameMap>();
+	mp_gameMap->Initialize();
+	// ゲーム道路のモデル読み込み
+	mp_gameMap->Create();
+
 	// プレイヤーの生成
 	mp_player = std::make_unique<Player>();
 	mp_player->Initialize();
@@ -99,7 +105,7 @@ void ScenePlay::Initialize()
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
 
 	// メッシュ衝突判定
-	m_box = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"ExclusiveGameObject\\slope_oc.obj");
+	m_box = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"ExclusiveGameObject\\stage01.obj");
 
 
 	// 行列管理変数の初期化
@@ -260,6 +266,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 					{
 						m_toResultMoveOnChecker = true;
 						SceneManager::SetResultSceneState(true);
+						// マウスカーソルの表示
+						ShowCursor(TRUE);
 					}
 				}
 			}
@@ -377,7 +385,12 @@ void ScenePlay::Render()
 	
 	m_sprites->End();*/
 
-	DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
+	//DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
+
+	// 角度のデバッグ
+	//GameDebug::SingletonGetInstance().DebugRender(mp_camera->GetAngle(), SimpleMath::Vector2(10.0f, 30.0f));
+	//GameDebug::SingletonGetInstance().DebugRender(mp_camera->GetAngleDbg(), SimpleMath::Vector2(10.0f, 50.0f));
+	//GameDebug::SingletonGetInstance().Render();
 
 	// ビュー行列の作成
 	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
@@ -402,9 +415,12 @@ void ScenePlay::Render()
 	// ゲーム床の描画
 	mp_gameFloor->Render(mp_matrixManager);
 	// ゲーム道路の描画
-	mp_gameRoad->Render(mp_matrixManager);
+	//mp_gameRoad->Render(mp_matrixManager);
 	// ゲーム的の描画
 	mp_gameTarget->Render(mp_matrixManager);
+
+	// マップの描画
+	mp_gameMap->Render(mp_matrixManager);
 
 	// スカイドームの描画
 	//mp_skydome->Render(mp_matrixManager);
@@ -418,7 +434,7 @@ void ScenePlay::Render()
 	// 制限時間の描画
 	//mp_gameTimer->Render();
 
-	mp_effectManager->Render();
+	//mp_effectManager->Render();
 
 	// スコアの描画
 	mp_gameScore->Render();

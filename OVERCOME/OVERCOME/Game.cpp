@@ -35,6 +35,13 @@ Game::Game()
 {
 	DX::DeviceResources::SingletonGetInstance().RegisterDeviceNotify(this);
 }
+// Destructor
+Game::~Game()
+{
+	// サウンド終了
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->Finalize();
+}
 
 // Initialize the Direct3D resources required to run.
 void Game::Initialize(HWND window, int width, int height)
@@ -82,6 +89,9 @@ void Game::Update(DX::StepTimer const& timer)
 	if (InputManager::SingletonGetInstance().GetKeyState().Escape)
 	{
 		bool closedGame = false;
+		// マウスカーソルの表示
+		ShowCursor(TRUE);
+
 		// ゲームを終了
 		if (MessageBox(NULL, L"ゲームを終了しますか？", L"ゲームを閉じる", MB_YESNO) == IDYES)
 		{
@@ -89,6 +99,8 @@ void Game::Update(DX::StepTimer const& timer)
 		}
 		else
 		{
+			// マウスカーソルの表示
+			ShowCursor(FALSE);
 			closedGame = false;
 		}
 		

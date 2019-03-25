@@ -41,6 +41,11 @@ private:
 	DirectX::SimpleMath::Quaternion   m_rotationY;               // 回転(クォータニオン)
 	DirectX::SimpleMath::Quaternion   m_rotationTmpX;            // 回転保存(クォータニオン)
 	DirectX::SimpleMath::Quaternion   m_rotationTmpY;            // 回転保存(クォータニオン)
+	DirectX::SimpleMath::Quaternion   m_toScreenOutRotaX;        // 画面外での回転保存(クォータニオン)
+	DirectX::SimpleMath::Quaternion   m_toScreenOutRotaY;        // 画面外での回転保存(クォータニオン)
+
+	DirectX::SimpleMath::Quaternion   m_reformRota;              // 矯正用回転(クォータニオン)
+	DirectX::SimpleMath::Vector2      m_mousePosDbg;             // 二次元上の座標
 
 // メンバー関数
 public:
@@ -60,6 +65,8 @@ public:
 
 	// マウスが初期位置に配置されたらtrue
 	bool GetStartPosMouse()                       { return m_checkMousePos; }
+
+	float GetAngle() { return m_rotationY.y; }
 	//----------------------------------------------------------------------------//
 
 private:
@@ -105,5 +112,5 @@ private:
 	/// マウスで視点移動するカメラ
 	/// </summary>
 	/// <param name="target">注視点</param>
-	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target);
+	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player* player);
 };

@@ -165,6 +165,9 @@
     <ClInclude Include="ExclusiveGameObject\CollisionMesh.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\3DObject\GameMap.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -281,6 +284,9 @@
     <ClCompile Include="ExclusiveGameObject\CollisionMesh.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject\3DObject\GameMap.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -321,6 +327,9 @@
       <Filter>Models</Filter>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\target.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\Map\wood_map01.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
   </ItemGroup>

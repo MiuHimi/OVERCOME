@@ -27,7 +27,6 @@ int SceneManager::m_stageID;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-/// <param name="game">ゲームオブジェクト</param>
 GameRoad::GameRoad()
 {
 }

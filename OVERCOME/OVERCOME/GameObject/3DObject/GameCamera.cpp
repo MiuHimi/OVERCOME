@@ -44,7 +44,8 @@ GameCamera::GameCamera(int windowWidth, int windowHeight)
 	m_rotationX(SimpleMath::Quaternion::Identity),
 	m_rotationY(SimpleMath::Quaternion::Identity),
 	m_rotationTmpX(SimpleMath::Quaternion::Identity),
-	m_rotationTmpY(SimpleMath::Quaternion::Identity)
+	m_rotationTmpY(SimpleMath::Quaternion::Identity),
+	m_reformRota(SimpleMath::Quaternion::Identity)
 {
 	SetWindowSize(windowWidth, windowHeight);
 }
@@ -85,7 +86,7 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		target = player->GetPos();
 		target.y += player->GetHeight();
 		// 注視点はプレイヤーの目線の位置
-		MouseOperateCamera(target);
+		MouseOperateCamera(target, player);
 		break;
 	case SCENE_RESULT:
 		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
@@ -225,7 +226,7 @@ void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float d
 /// <summary>
 /// マウスで視点移動するカメラ
 /// </summary>
-void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target)
+void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player* player)
 {
 	RECT desktopWndRect;                         // デスクトップのサイズ
 	HWND desktopWnd = GetDesktopWindow();        // この関数でデスクトップのハンドルを取得
@@ -259,33 +260,86 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target)
 
 	if(m_checkMousePos == true)
 	{
+		// ベクトルの長さを求める
+		double lengthA = pow((m_cameraDir.x * m_cameraDir.x) + (m_cameraDir.z * m_cameraDir.z), 0.5);
+		double lengthB = pow(((player->GetDir().x / 2.0f) * (player->GetDir().x / 2.0f)) +
+			                 ((player->GetDir().z / 2.0f) * (player->GetDir().z / 2.0f)), 0.5);
+		// 内積とベクトルの長さを使ってcosθを求める
+		double cos_sita = m_cameraDir.x * (player->GetDir().x / 2.0f) + m_cameraDir.z * (player->GetDir().z / 2.0f) / (lengthA * lengthB);
+
+		// cosθからθを求める
+		double sita = acos(cos_sita);
+		// デグリーで求める
+		sita = sita * 180.0 / double(XM_PI);
+
+		// 正の値なら右回転、負の値なら左回転
+		float s = (player->GetDir().x / 2.0f) * m_cameraDir.z -
+			      (player->GetDir().z / 2.0f) * m_cameraDir.x;
+
+		// 回転制限
+		// 進行方向より20度以上先を見ていたら制限範囲内に戻す
+		if (s > 0 && sita > 90.0f)
+		{
+			m_reformRota *= SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), 0.01f);
+		}
+		else if (s < 0 && sita > 90.0f)
+		{
+			m_reformRota *= SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -0.01f);
+		}
+		else if(sita <= 90.0f)
+		{
+			m_reformRota = SimpleMath::Quaternion::Identity;
+		}
+
 		// 中心座標(相対値)設定
 		SimpleMath::Vector2 centerPos(400.0f, 300.0f);
-		
-		// 中心点からの偏差を求める
+
+		// 中心点からの差分を求める
 		float x = InputManager::SingletonGetInstance().GetMouseState().x - centerPos.x;
 		float y = InputManager::SingletonGetInstance().GetMouseState().y - centerPos.y;
 
-		// 画面外に出たらカーソルを画面の中心に戻す
-		if (InputManager::SingletonGetInstance().GetMouseState().x < 10 || InputManager::SingletonGetInstance().GetMouseState().x > 790 ||
-			InputManager::SingletonGetInstance().GetMouseState().y < 10 || InputManager::SingletonGetInstance().GetMouseState().y > 590)
+		if (sita <= 90)
 		{
-			// 現在の回転を保存
+			// 矯正範囲外だったら偏差分の回転
+			m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y / ROTATE_MAG));
+			m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x / ROTATE_MAG));
+
+			// カーソルがウィンドウ外に行ったときは元々回転していた分も回転させる
+			m_rotationX *= m_toScreenOutRotaX;
+			m_rotationY *= m_toScreenOutRotaY;
+
+			// 矯正範囲内にいったとき用に回転を保存
 			m_rotationTmpX = m_rotationX;
 			m_rotationTmpY = m_rotationY;
+		}
+		else
+		{
+			// 矯正範囲内だったら保存しておいた分の回転のみ行う
+			m_rotationX = m_rotationTmpX;
+			m_rotationY = m_rotationTmpY;
+
+			// カーソルがウィンドウ外に行ったときは元々回転していた分も回転させる
+			m_rotationX *= m_toScreenOutRotaX;
+			m_rotationY *= m_toScreenOutRotaY;
+		}
+
+		if (sita > 90.0f)
+		{
+			m_rotationY *= m_reformRota;
+		}
+		
+		// 画面外に出たらカーソルを画面の中心に戻す
+		if (InputManager::SingletonGetInstance().GetMouseState().x < 50 || InputManager::SingletonGetInstance().GetMouseState().x > 750 ||
+			InputManager::SingletonGetInstance().GetMouseState().y < 50 || InputManager::SingletonGetInstance().GetMouseState().y > 550)
+		{
+			// 現在の回転を保存
+			m_toScreenOutRotaX = m_rotationX;
+			m_toScreenOutRotaY = m_rotationY;
 
 			// デスクトップの値のため、ウィンドウ分のサイズ+画面の半分を足す(Yはタイトルバー分も足す)
 			SetCursorPos(int(activeWndRect.left + centerPos.x), int(activeWndRect.top + centerPos.y + titlebarHeight));
 		}
-
-		// 偏差分の回転
-		m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x/ROTATE_MAG));
-		m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y/ROTATE_MAG));
 		
-		// 画面外に出ていたら保存していた分も回転させる
-		m_rotationX *= m_rotationTmpX;
-		m_rotationY *= m_rotationTmpY;
-
 		// 視点、上方向設定
 		SimpleMath::Vector3 eye(0.0f, 0.0f, 0.1f);
 		eye = SimpleMath::Vector3::Transform(eye, (m_rotationX * m_rotationY));

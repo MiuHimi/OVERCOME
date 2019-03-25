@@ -27,6 +27,7 @@ public:
 private:
 	DirectX::SimpleMath::Vector3             m_pos;                       // 位置
 	DirectX::SimpleMath::Vector3             m_vel;                       // 速度(ベクトル)
+	DirectX::SimpleMath::Vector3             m_dir;                       // 移動方向(ベクトル)
 	float                                    m_height;                    // プレイヤー自身の高さ
 	float                                    m_jumpForce;                 // ジャンプ力
 	float                                    m_gravity;                   // 重力
@@ -89,6 +90,8 @@ public:
 
 	// プレイヤーの位置を取得
 	DirectX::SimpleMath::Vector3 GetPos()           { return m_pos; }
+	// プレイヤーの移動方向を取得
+	DirectX::SimpleMath::Vector3 GetDir()           { return m_dir; }
 	// プレイヤーの高さを取得
 	float GetHeight()                               { return m_height; }
 	// プレイヤーがジャンプ中であるかを取得
