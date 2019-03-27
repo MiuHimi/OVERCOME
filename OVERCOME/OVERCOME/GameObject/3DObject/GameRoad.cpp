@@ -16,7 +16,6 @@
 
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
-#include "../Utility/GameDebug.h"
 
 // usingディレクトリ
 using namespace DirectX;

@@ -38,8 +38,6 @@ private:
 	bool                                     m_restartFlag;               // リスタートする条件が揃ったらフラグが立つ
 	int                                      m_restartTime;               // リスタートするまでの時間
 
-	bool                                     m_jumpFlag;                  // ジャンプしたかを判定
-	bool                                     m_collideToFloorFlag;        // 床と接触したかを判定
 	bool                                     m_collideToRoadFlag;         // 道路と接触したかを判定
 	bool                                     m_noTouchObectFlag;          // 何にも触れずジャンプもしていない時にフラグが立つ
 
@@ -94,8 +92,8 @@ public:
 	DirectX::SimpleMath::Vector3 GetDir()           { return m_dir; }
 	// プレイヤーの高さを取得
 	float GetHeight()                               { return m_height; }
-	// プレイヤーがジャンプ中であるかを取得
-	bool GetJumpState()                             { return m_jumpFlag; }
+	// プレイヤーが動き出したかどうか
+	bool GetPlaying()								{ return m_playStartFlag; }
 	// プレイヤー情報の取得
 	Player* GetPlayer();
 	// プレイヤー情報の取得
@@ -106,13 +104,8 @@ public:
 
 	// プレイヤーの高さのみの位置を設定
 	void SetHeightPos(float pos)                    { m_pos.y = pos; }
-	// ジャンプモーションを終了させる(ためのフラグ設定)
-	void SetJumpState(bool flag)                    { m_jumpFlag = flag; }
 	// 床、道路との衝突判定のフラグ設定
-	void SetFloorCollideState(bool flag)            { m_collideToFloorFlag = flag; }
 	void SetRoadCollideState(bool flag)             { m_collideToRoadFlag = flag; }
-	// 何にも触れずジャンプもしていない時にフラグが立つ
-	void SetNotTouchState(bool flag)                { m_noTouchObectFlag = flag; }
 	//----------------------------------------------------------------------------//
 
 	/*// 弾情報取得

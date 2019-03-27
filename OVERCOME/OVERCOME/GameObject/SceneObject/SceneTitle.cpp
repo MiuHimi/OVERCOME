@@ -11,7 +11,6 @@
 #include "SceneTitle.h"
 
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/GameDebug.h"
 #include "../../Utility/InputManager.h"
 #include "../../Utility/CommonStateManager.h"
 

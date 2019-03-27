@@ -14,7 +14,6 @@
 #include "../Utility/DeviceResources.h"
 #include "../Utility/CommonStateManager.h"
 #include "../Utility/MatrixManager.h"
-#include "../Utility/GameDebug.h"
 #include "../Utility/DrawManager.h"
 
 // usingディレクトリ
@@ -28,7 +27,7 @@ using namespace DirectX;
 Player::Player()
 	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f), m_dir(0.0f, 0.0f, 0.0f),
 	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_fallingPower(0.0f),
-	  m_jumpFlag(false), m_collideToFloorFlag(false), m_collideToRoadFlag(false), m_noTouchObectFlag(false),
+	  m_collideToRoadFlag(false),
 	  m_playStartFlag(false), m_playStartTime(0),
 	  m_restartFlag(false), m_restartTime(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
@@ -205,8 +204,6 @@ bool Player::Update(DX::StepTimer const & timer)
 								m_nextPos = pos;
 
 								distTmp = dist;
-
-								//m_passedRoadPos = pos;
 							}
 						}
 					}
@@ -226,42 +223,18 @@ bool Player::Update(DX::StepTimer const & timer)
 					if (m_vel.x > 1.0f || m_vel.x < -1.0f)
 					{
 						m_vel.x = 0.0f;
-					}/*if (m_vel.x > 0.01f)m_vel.x = 0.1f;
-					else if(m_vel.x < -0.01f)m_vel.x = -0.1f;
-					else m_vel.x = 0.0f; */
+					}
 					m_vel.y = 0.0f;
 					m_vel.z /= 10.0f;
 					if (m_vel.z > 1.0f || m_vel.z < -1.0f)
 					{
 						m_vel.z = 0.0f;
-					}/*if (m_vel.z > 0.01f)m_vel.z = 0.1f;
-					else if (m_vel.z < -0.01f)m_vel.z = -0.1f;
-					else m_vel.z = 0.0f;*/
+					}
 					m_velFlag = true;
 				}
-
-				// 通過済みの道路を記憶
-				//m_passedRoadPos = m_nextPos;
-
 			}
 		}
 		
-		bool stopPlayer = false;
-		// 床と接触すると止まる(真ん中をクリックするまで)
-		if (m_collideToFloorFlag)
-		{
-			stopPlayer = true;
-			m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		}
-		if (stopPlayer)
-		{
-			// マウスポインターが画面中央に来たらリスタートの準備を開始する
-			if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
-			{
-				m_restartFlag = true;
-			}
-		}
-
 		// リスタートの準備
 		if (m_restartFlag)
 		{
@@ -284,45 +257,6 @@ bool Player::Update(DX::StepTimer const & timer)
 			m_restartTime = 0;
 			m_restartFlag = false;
 			m_velFlag = false;
-		}
-
-		// ジャンプ
-		if (InputManager::SingletonGetInstance().GetKeyState().Space && m_jumpFlag == false ||
-			InputManager::SingletonGetInstance().GetKeyState().Space && m_collideToRoadFlag == true && m_pos.y >= 0.95f)
-		{
-			m_jumpFlag = true;
-			m_vel.y = 0.0f;
-			m_jumpForce = 0.4f;
-		}
-
-		// ジャンプ力調整
-		if (m_jumpFlag == true && m_collideToRoadFlag == false || m_jumpFlag == true && m_collideToRoadFlag == true && m_pos.y >= 0.85f)
-		{
-			m_vel.y += m_jumpForce;
-			if (m_vel.y < -1.0f) m_vel.y = -1.0f;
-			m_jumpForce -= m_gravity;
-		}
-		else if (m_jumpFlag == true && m_collideToRoadFlag == true)
-		{
-			m_vel.y = 0.0f;
-		}
-
-		// 何のオブジェクトにも触れず、かつジャンプもしていないときの処理
-		if (m_jumpFlag == false && m_collideToRoadFlag == false && m_collideToFloorFlag == false && m_noTouchObectFlag == false)
-		{
-			m_fallingPower = 0;
-			m_noTouchObectFlag = true;
-		}
-		if (m_noTouchObectFlag == true)
-		{
-			m_fallingPower -= m_gravity;
-			m_vel.y += m_fallingPower;
-		}
-
-		// 速度上限
-		if (m_vel.y < -0.3f)
-		{
-			m_vel.y = -0.3f;
 		}
 
 	}
@@ -383,9 +317,6 @@ bool Player::Update(DX::StepTimer const & timer)
 		}
 	}
 	
-	//デバッグ
-	//m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-
 	// 移動前の座標を記憶
 	SimpleMath::Vector3 nowPos = m_pos;
 	// プレイヤー移動(座標)
@@ -445,10 +376,6 @@ void Player::Render(MatrixManager* matrixManager)
 
 		DrawManager::SingletonGetInstance().DrawRect(m_textureCount.Get(), m_posCountUI, &rect);
 	}
-
-	// リスタートUIの描画
-	if (m_collideToFloorFlag)
-		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestartUI);
 
 	if (!m_playStartFlag)
 		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestartUI);

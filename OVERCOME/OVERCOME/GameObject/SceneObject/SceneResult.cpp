@@ -12,7 +12,6 @@
 #include "../2DObject/GameScore.h"
 
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/GameDebug.h"
 #include "../../Utility/DrawManager.h"
 
 // usingディレクトリ

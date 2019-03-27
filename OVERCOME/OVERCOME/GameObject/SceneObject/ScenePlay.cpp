@@ -13,7 +13,6 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/GameDebug.h"
 #include "../../Utility/DrawManager.h"
 
 #include "../ExclusiveGameObject/ADX2Le.h"
@@ -79,6 +78,12 @@ void ScenePlay::Initialize()
 	// ゲーム道路のモデル読み込み
 	mp_gameMap->Create();
 
+	// ゲーム敵管理の生成
+	mp_gameEnemyManager = std::make_unique<GameEnemyManager>();
+	mp_gameEnemyManager->Initialize();
+	// ゲーム敵管理のモデル読み込み
+	mp_gameEnemyManager->Create();
+
 	// プレイヤーの生成
 	mp_player = std::make_unique<Player>();
 	mp_player->Initialize();
@@ -90,10 +95,6 @@ void ScenePlay::Initialize()
 	//mp_skydome->Initialize();
 	// スカイドームのモデルの読み込み
 	//mp_skydome->Create();
-
-	// 制限時間の生成
-	mp_gameTimer = std::make_unique<GameTimer>();
-	mp_gameTimer->Create();
 
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
@@ -179,42 +180,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// カメラの更新
 	mp_camera->Update(timer, mp_player->GetPlayer());
 
-	// 床とプレイヤーの衝突判定
-	//m_hitPlayerToFloorFlag = false;
-	mp_player->SetFloorCollideState(false);
-	if (Collision::HitCheck_Box2Box(mp_gameFloor->GetCollision(), mp_player->GetCollision()) == true)
-	{
-		// 当たったら床との衝突フラグを立てる
-		//m_hitPlayerToFloorFlag = true;
-
-		// ジャンプモーションを終了させる(ためのフラグを立てる)
-		mp_player->SetJumpState(false);
-		// 床との衝突フラグを立てる
-		mp_player->SetFloorCollideState(true);
-		// オブジェクトに接触したためフラグを伏せる
-		mp_player->SetNotTouchState(false);
-
-		// 地面にめり込まないようにする
-		if (mp_player->GetPos().y < 0.0f)
-		{
-			mp_player->SetHeightPos(0.0f);
-		}
-	}
-
-	int id;
-	SimpleMath::Vector3 s;
-	SimpleMath::Vector3 playerPos = mp_player->GetPos();
-	SimpleMath::Vector3 v[2] = { SimpleMath::Vector3(playerPos.x, 100.0f, playerPos.z), SimpleMath::Vector3(playerPos.x, -100.0f, playerPos.z) };
-	// 道路とプレイヤーの当たり判定を行う
-	if (m_box->HitCheck_Segment(v[0], v[1], &id, &s) == true)
-	{
-		// ボールの位置を設定する
-		mp_player->SetHeightPos(s.y);
-	}
-
 	// 道路とプレイヤーの衝突判定
-	//m_hitPlayerToRoadFlag = false;
-	mp_player->SetRoadCollideState(false);
+	/*mp_player->SetRoadCollideState(false);
 	bool hitObject = false;
 	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
 	{
@@ -224,14 +191,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			{
 				if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollisionObject(j, i)->GetCollision(), mp_player->GetCollision()) == true)
 				{
-					//m_hitPlayerToRoadFlag = true;
-
-					// ジャンプモーションを終了させる(ためのフラグを立てる)
-					mp_player->SetJumpState(false);
 					// 道路との衝突フラグを立てる
 					mp_player->SetRoadCollideState(true);
-					// オブジェクトに接触したためフラグを伏せる
-					mp_player->SetNotTouchState(false);
 
 					// プレイヤーに加点のチャンス、飛ぶ時のために道路座標を取得
 					if (mp_gameScore->GetPointChance() == false && mp_gameRoad->GetRoadObject(j, i).roadType == 2)
@@ -274,10 +235,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			if (hitObject == true) break;
 		}
 		if (hitObject == true) break;
-	}
+	}*/
 
 	// 的と弾の衝突判定
-	for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
+	/*for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
 	{
 		for (int i = 0; i < mp_gameTarget->GetMaxFloorBlock(); i++)
 		{
@@ -302,6 +263,42 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 				}
 			}
 		}
+	}*/
+
+	int id;
+	SimpleMath::Vector3 s;
+	SimpleMath::Vector3 playerPos = mp_player->GetPos();
+	SimpleMath::Vector3 v[2] = { SimpleMath::Vector3(playerPos.x, 100.0f, playerPos.z), SimpleMath::Vector3(playerPos.x, -100.0f, playerPos.z) };
+	// 道とプレイヤーの当たり判定を行う
+	if (m_box->HitCheck_Segment(v[0], v[1], &id, &s) == true)
+	{
+		// プレイヤーの位置を設定する
+		mp_player->SetHeightPos(s.y);
+	}
+
+	// 敵と弾の衝突判定
+	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
+	{
+		if (!mp_gameEnemyManager->GetEnemyState(i))continue;
+		if (mp_gameEnemyManager->GetEnemyState(i))
+		{
+			for (int j = 0; j < mp_player->GetBulletManager()->GetMaxBulletNum(); j++)
+			{
+				if (!mp_player->GetBulletManager()->GetBulletState(j))continue;
+				if (mp_player->GetBulletManager()->GetBulletState(j))
+				{
+					if (Collision::HitCheck_Sphere2Sphere(mp_gameEnemyManager->GetEnemyCollide(i),
+						mp_player->GetBulletManager()->GetBulletCollide(j)))
+					{
+						// 20点獲得
+						mp_gameScore->FluctuationScore(20);
+						// 互いのstateをfalseに
+						mp_gameEnemyManager->SetEnemyState(i, false);
+						mp_player->GetBulletManager()->SetBulletState(j, false);
+					}
+				}
+			}
+		}
 	}
 
 	// 弾の表示限界の設定
@@ -310,7 +307,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	for (int i = 0; i < mp_player->GetBulletManager()->GetMaxBulletNum(); i++)
 	{
 		// 発射されている弾のみ計測
-		if (!mp_player->GetBulletManager()->GetBulletState(i)) break;
+		if (!mp_player->GetBulletManager()->GetBulletState(i))
+		{
+			break;
+		}
 
 		// しきい値(100)
 		float length = 100.0f;
@@ -319,8 +319,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 
 		// 弾とプレイヤーの距離を計測
 		len = ((pPos.x - bPos[i].x)*(pPos.x - bPos[i].x)) +
-			         ((pPos.y - bPos[i].y)*(pPos.y - bPos[i].y)) +
-			         ((pPos.z - bPos[i].z)*(pPos.z - bPos[i].z));
+			((pPos.y - bPos[i].y)*(pPos.y - bPos[i].y)) +
+			((pPos.z - bPos[i].z)*(pPos.z - bPos[i].z));
 
 		// 距離が100を超えたら弾を消す
 		if (length*length < len)
@@ -334,31 +334,15 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// ゲーム道路の更新
 	mp_gameRoad->Update(timer);
 	// ゲーム的の更新
-	mp_gameTarget->Update(timer);
+	//mp_gameTarget->Update(timer);
 
 	// プレイヤーの更新
 	mp_player->Update(timer);
 
-	// 制限時間の更新
-	mp_gameTimer->Update(timer);
-	if (mp_gameTimer->GetTimeUpFlag() == true)
-	{
-		// 制限時間がきたらゲームオーバー
-		m_toResultMoveOnChecker = true;
-		SceneManager::SetResultSceneState(false);
-	}
+	// 敵の更新
+	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer());
 
 	// スコアの更新
-	if (hitObject == false && mp_player->GetJumpState() == false)
-	{
-		// 道路に乗ってないorジャンプしていなかったらフラグを立てる
-		mp_gameScore->SetDeductFlag(true);
-	}
-	if (hitObject == true || mp_player->GetJumpState() == true)
-	{
-		// 道路に乗っているか、ジャンプしていたらフラグを伏せる
-		mp_gameScore->SetDeductFlag(false);
-	}
 	mp_gameScore->Update(timer);
 	if (mp_gameScore->GetScore() == 0)
 	{
@@ -378,20 +362,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 /// </summary>
 void ScenePlay::Render()
 {
-	// スプライトの描画
-	/*m_sprites->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
-
-	m_sprites->Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
-	
-	m_sprites->End();*/
-
-	//DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f));
-
-	// 角度のデバッグ
-	//GameDebug::SingletonGetInstance().DebugRender(mp_camera->GetAngle(), SimpleMath::Vector2(10.0f, 30.0f));
-	//GameDebug::SingletonGetInstance().DebugRender(mp_camera->GetAngleDbg(), SimpleMath::Vector2(10.0f, 50.0f));
-	//GameDebug::SingletonGetInstance().Render();
-
 	// ビュー行列の作成
 	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
 	// ウインドウサイズからアスペクト比を算出する
@@ -417,28 +387,24 @@ void ScenePlay::Render()
 	// ゲーム道路の描画
 	//mp_gameRoad->Render(mp_matrixManager);
 	// ゲーム的の描画
-	mp_gameTarget->Render(mp_matrixManager);
+	//mp_gameTarget->Render(mp_matrixManager);
 
 	// マップの描画
 	mp_gameMap->Render(mp_matrixManager);
 
-	// スカイドームの描画
-	//mp_skydome->Render(mp_matrixManager);
-
-	//m_box->DrawCollision(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), mp_matrixManager->GetView(), mp_matrixManager->GetProjection());
-
 	// プレイヤーの描画
 	mp_player->Render(mp_matrixManager);
-	//mp_player->DrawDebugCollision();
 
-	// 制限時間の描画
-	//mp_gameTimer->Render();
+	// 敵の描画
+	mp_gameEnemyManager->Render(mp_matrixManager);
 
+	// スカイドームの描画
+	//mp_skydome->Render(mp_matrixManager);
+	
 	//mp_effectManager->Render();
 
 	// スコアの描画
 	mp_gameScore->Render();
-
 
 	DrawManager::SingletonGetInstance().DrawAlpha(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f), SimpleMath::Vector4(1.0, 1.0f, 1.0f, m_fadeInCount));
 }

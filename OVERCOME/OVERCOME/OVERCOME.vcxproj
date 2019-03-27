@@ -74,17 +74,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\s172179\Documents\git\OVERCOME\OVERCOME\DirectXTK\Inc;C:\Users\s172179\Documents\git\OVERCOME\OVERCOME\OVERCOME\Utility\Sounds\include;C:\DirectXTK\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\s172179\Documents\git\OVERCOME\OVERCOME\OVERCOME\Utility\Sounds\lib;C:\DirectXTK\Bin\Desktop_2015\Win32\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\DirectXTK\Inc;$(ProjectDir)\Utility\Sounds\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\DirectXTK\Lib;$(ProjectDir)\Utility\Sounds\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\DirectXTK\Inc;C:\Users\s172179\Documents\git\OVERCOME\OVERCOME\DirectXTK\Inc;$(IncludePath)</IncludePath>
-    <LibraryWPath>C:\DirectXTK\Bin\Desktop_2015\Win32\Release;$(LibraryWPath)</LibraryWPath>
-    <LibraryPath>C:\DirectXTK\Bin\Desktop_2015\Win32\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\DirectXTK\Inc;$(ProjectDir)\Utility\Sounds\include;$(IncludePath)</IncludePath>
+    <LibraryWPath>$(WindowsSDK_MetadataPath);$(LibraryWPath)</LibraryWPath>
+    <LibraryPath>$(ProjectDir)\DirectXTK\Lib;$(ProjectDir)\Utility\Sounds\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -104,8 +104,12 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;directXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;directXTK_DB.lib;cri_ware_pcx86_le_import.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -140,8 +144,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;directxtk.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;directXTK.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy_dll.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -184,6 +191,8 @@
     <ClInclude Include="GameObject\3DObject\GameBullet.h" />
     <ClInclude Include="GameObject\3DObject\GameBulletManager.h" />
     <ClInclude Include="GameObject\3DObject\GameCamera.h" />
+    <ClInclude Include="GameObject\3DObject\GameEnemy.h" />
+    <ClInclude Include="GameObject\3DObject\GameEnemyManager.h" />
     <ClInclude Include="GameObject\3DObject\GameFloor.h" />
     <ClInclude Include="GameObject\3DObject\GameMap.h" />
     <ClInclude Include="GameObject\3DObject\GameRoad.h" />
@@ -204,7 +213,6 @@
     <ClInclude Include="Utility\CountManager.h" />
     <ClInclude Include="Utility\DeviceResources.h" />
     <ClInclude Include="Utility\DrawManager.h" />
-    <ClInclude Include="Utility\GameDebug.h" />
     <ClInclude Include="Utility\InputManager.h" />
     <ClInclude Include="Utility\MatrixManager.h" />
   </ItemGroup>
@@ -227,6 +235,8 @@
     <ClCompile Include="GameObject\3DObject\GameBullet.cpp" />
     <ClCompile Include="GameObject\3DObject\GameBulletManager.cpp" />
     <ClCompile Include="GameObject\3DObject\GameCamera.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameEnemy.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameEnemyManager.cpp" />
     <ClCompile Include="GameObject\3DObject\GameFloor.cpp" />
     <ClCompile Include="GameObject\3DObject\GameMap.cpp" />
     <ClCompile Include="GameObject\3DObject\GameRoad.cpp" />
@@ -251,7 +261,6 @@
     <ClCompile Include="Utility\CountManager.cpp" />
     <ClCompile Include="Utility\DeviceResources.cpp" />
     <ClCompile Include="Utility\DrawManager.cpp" />
-    <ClCompile Include="Utility\GameDebug.cpp" />
     <ClCompile Include="Utility\InputManager.cpp" />
     <ClCompile Include="Utility\MatrixManager.cpp" />
   </ItemGroup>
@@ -266,6 +275,9 @@
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="..\FBX\bullet.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\enemy.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\floor01.FBX">

@@ -20,6 +20,7 @@
 #include "../3DObject/GameTarget.h"
 
 #include "../3DObject/GameMap.h"
+#include "../3DObject/GameEnemyManager.h"
 
 //#include "../SkyDome.h"
 
@@ -46,6 +47,7 @@ private:
 	std::unique_ptr<GameTarget> mp_gameTarget;    // ゲーム標的オブジェクト
 
 	std::unique_ptr<GameMap>   mp_gameMap;    // ゲームマップオブジェクト
+	std::unique_ptr<GameEnemyManager>   mp_gameEnemyManager;    // ゲーム敵管理オブジェクト
 
 	static std::unique_ptr<Player> mp_player;     // プレイヤーオブジェクト
 

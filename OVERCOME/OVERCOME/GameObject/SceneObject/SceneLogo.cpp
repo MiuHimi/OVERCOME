@@ -10,7 +10,6 @@
 #include "SceneManager.h"
 #include "SceneLogo.h"
 
-#include "../../Utility/GameDebug.h"
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/DrawManager.h"

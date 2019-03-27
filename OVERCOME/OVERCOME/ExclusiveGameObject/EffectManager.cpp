@@ -19,8 +19,6 @@
 #include "../Utility/DeviceResources.h"
 #include "../Utility/CommonStateManager.h"
 
-#include "../Utility/GameDebug.h"
-
 // usingディレクトリ
 using namespace DirectX::SimpleMath;
 using namespace DirectX;

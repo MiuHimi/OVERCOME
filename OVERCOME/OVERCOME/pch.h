@@ -55,7 +55,6 @@
 #include <CommonStates.h>
 #include <WICTextureLoader.h>
 #include <SpriteBatch.h>
-#include <SpriteFont.h>
 #include <Effects.h>
 #include <PrimitiveBatch.h>
 #include <VertexTypes.h>
