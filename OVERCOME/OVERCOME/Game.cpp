@@ -11,7 +11,7 @@
 
 #include "Utility/InputManager.h"
 
-#include "../ExclusiveGameObject/ADX2Le.h"
+#include "../../ExclusiveGameObject/ADX2Le.h"
 
 // デバッグ
 //#if _DEBUG

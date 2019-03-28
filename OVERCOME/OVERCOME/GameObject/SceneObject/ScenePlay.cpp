@@ -15,7 +15,7 @@
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/DrawManager.h"
 
-#include "../ExclusiveGameObject/ADX2Le.h"
+#include "../../ExclusiveGameObject/ADX2Le.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -131,11 +131,11 @@ void ScenePlay::Initialize()
 	mp_matrixManager->SetViewProjection(view, projection);
 
 	// エフェクトマネージャーの初期化
-	mp_effectManager = nullptr;
-	mp_effectManager = new EffectManager();
-	mp_effectManager->Create();
-	mp_effectManager->Initialize(5, SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3(0, 0, 0));
-	mp_effectManager->SetRenderState(view, projection);
+	//mp_effectManager = nullptr;
+	//mp_effectManager = new EffectManager();
+	//mp_effectManager->Create();
+	//mp_effectManager->Initialize(5, SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3(0, 0, 0));
+	//mp_effectManager->SetRenderState(view, projection);
 
 
 	// サウンド再生
@@ -155,11 +155,11 @@ void ScenePlay::Finalize()
 		mp_matrixManager = nullptr;
 	}
 	
-	if (mp_effectManager != nullptr) {
+	/*if (mp_effectManager != nullptr) {
 		mp_effectManager->Lost();
 		delete mp_effectManager;
 		mp_effectManager = nullptr;
-	}
+	}*/
 }
 
 /// <summary>
@@ -181,8 +181,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_camera->Update(timer, mp_player->GetPlayer());
 
 	// 道路とプレイヤーの衝突判定
-	/*mp_player->SetRoadCollideState(false);
-	bool hitObject = false;
 	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
 	{
 		for (int i = 0; i < mp_gameRoad->GetMaxFloorBlock(); i++)
@@ -191,33 +189,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			{
 				if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollisionObject(j, i)->GetCollision(), mp_player->GetCollision()) == true)
 				{
-					// 道路との衝突フラグを立てる
-					mp_player->SetRoadCollideState(true);
-
-					// プレイヤーに加点のチャンス、飛ぶ時のために道路座標を取得
-					if (mp_gameScore->GetPointChance() == false && mp_gameRoad->GetRoadObject(j, i).roadType == 2)
-					{
-						mp_gameScore->SetAddPointChance(j, i);
-						mp_gameScore->SetPointChance(true);
-					}
-					if (mp_gameScore->GetPointChance() == true && mp_gameRoad->GetRoadObject(j, i).roadType == 2)
-					{
-						mp_gameScore->AddPointChance(j, i);
-					}
-					if (mp_gameScore->GetPointChance() == true && mp_gameRoad->GetRoadObject(j, i).roadType != 2)
-					{
-						mp_gameScore->SetAddPointChance(0, 0);
-						mp_gameScore->SetPointChance(false);
-					}
-
-					// 道路にめり込まないようにする
-					if (mp_player->GetPos().y > 0.5f && mp_player->GetPos().y <= 1.0f)
-					{
-						mp_player->SetHeightPos(1.0f);
-					}
-
-					hitObject = true;
-
 					// ゴールに到達したら
 					if (SceneManager::GetStageNum() == 1 &&
 							i == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x &&
@@ -232,10 +203,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 					}
 				}
 			}
-			if (hitObject == true) break;
 		}
-		if (hitObject == true) break;
-	}*/
+	}
 
 	// 的と弾の衝突判定
 	/*for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
@@ -274,6 +243,19 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	{
 		// プレイヤーの位置を設定する
 		mp_player->SetHeightPos(s.y);
+	}
+
+	// 敵とプレイヤーの衝突判定
+	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
+	{
+		if (!mp_gameEnemyManager->GetEnemyState(i))continue;
+		if (mp_gameEnemyManager->GetEnemyState(i))
+		{
+			if (Collision::HitCheck_Sphere2Box(mp_gameEnemyManager->GetEnemyCollide(i), mp_player->GetCollision()))
+			{
+				mp_gameEnemyManager->SetEnemyState(i, false);
+			}
+		}
 	}
 
 	// 敵と弾の衝突判定

@@ -11,7 +11,7 @@
 #include "SceneBase.h"
 #include <SpriteBatch.h>
 
-#include "../ExclusiveGameObject/Collision2D.h"
+#include "../../ExclusiveGameObject/Collision2D.h"
 
 class MatrixManager;
 class SceneStageSelect : public SceneBase

@@ -14,7 +14,7 @@
 #include "../../Utility/InputManager.h"
 #include "../../Utility/CommonStateManager.h"
 
-#include "../ExclusiveGameObject/ADX2Le.h"
+#include "../../ExclusiveGameObject/ADX2Le.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -77,11 +77,11 @@ void SceneTitle::Initialize()
 	mp_matrixManager->SetViewProjection(view, projection);
 
 	// エフェクトマネージャーの初期化
-	mp_effectManager = nullptr;
-	mp_effectManager = new EffectManager();
-	mp_effectManager->Create();
-	mp_effectManager->Initialize(5, SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3(0, 0, 0));
-	mp_effectManager->SetRenderState(view, projection);
+	//mp_effectManager = nullptr;
+	//mp_effectManager = new EffectManager();
+	//mp_effectManager->Create();
+	//mp_effectManager->Initialize(5, SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3(0, 0, 0));
+	//mp_effectManager->SetRenderState(view, projection);
 
 	// サウンド再生
 	ADX2Le* adx2le = ADX2Le::GetInstance();
@@ -99,11 +99,11 @@ void SceneTitle::Finalize()
 		mp_matrixManager = nullptr;
 	}
 
-	if (mp_effectManager != nullptr) {
+	/*if (mp_effectManager != nullptr) {
 		mp_effectManager->Lost();
 		delete mp_effectManager;
 		mp_effectManager = nullptr;
-	}
+	}*/
 	
 	// サウンドの停止
 	ADX2Le* adx2le = ADX2Le::GetInstance();
@@ -120,15 +120,19 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Update();
 
-	mp_effectManager->Update(timer);
+	//mp_effectManager->Update(timer);
 	
 	// マウスの更新
-	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
+	//	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
+	InputManager::SingletonGetInstance().Update();
 
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
+	//if (InputManager::SingletonGetInstance().GetMouseState().leftButton)
+	//{
 		m_toPlayMoveOnChecker = true;
 		adx2le->Play(1);
+		OutputDebugString(L"AAAAAAAAAA");
 	}
 	if (m_toPlayMoveOnChecker == true)
 	{
@@ -147,7 +151,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneTitle::Render()
 {
-	mp_effectManager->Render();
+	//mp_effectManager->Render();
 
 	// タイトルの描画
 	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());

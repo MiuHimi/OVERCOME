@@ -27,8 +27,8 @@
 #include "../2DObject/GameTimer.h"
 #include "../2DObject/GameScore.h"
 
-#include "../ExclusiveGameObject/CollisionMesh.h"
-#include "../ExclusiveGameObject/EffectManager.h"
+#include "../../ExclusiveGameObject/CollisionMesh.h"
+//#include "../../ExclusiveGameObject/EffectManager.h"
 
 class MatrixManager;
 class ScenePlay : public SceneBase
@@ -66,7 +66,7 @@ private:
 	MatrixManager*                                       mp_matrixManager;      // 行列管理変数
 
 	std::unique_ptr<CollisionMesh>                       m_box;
-	EffectManager*	                                     mp_effectManager;      // エフェクト管理変数
+	//EffectManager*	                                     mp_effectManager;      // エフェクト管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:

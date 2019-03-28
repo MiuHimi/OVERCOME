@@ -6,18 +6,21 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
-#include "../pch.h"
+#include "../../pch.h"
 #include "Player.h"
 #include "GameRoad.h"
 
-#include "../Utility/InputManager.h"
-#include "../Utility/DeviceResources.h"
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/MatrixManager.h"
-#include "../Utility/DrawManager.h"
+#include "../../Utility/InputManager.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/MatrixManager.h"
+#include "../../Utility/DrawManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
+
+// staticディレクトリ
+const int Player::SPAWNTIME = 300;
 
 
 /// <summary>
@@ -26,10 +29,10 @@ using namespace DirectX;
 /// <param name="game">ゲームオブジェクト</param>
 Player::Player()
 	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f), m_dir(0.0f, 0.0f, 0.0f),
-	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_fallingPower(0.0f),
-	  m_collideToRoadFlag(false),
+	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_posTmp(0.0f, 0.0f, 0.0f),
 	  m_playStartFlag(false), m_playStartTime(0),
 	  m_restartFlag(false), m_restartTime(0),
+	  m_spawnFlag(false), m_spawnElapsedTime(0), m_assaultPoint(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
@@ -56,7 +59,6 @@ void Player::Initialize()
 	m_height       = 1.75f;                                       // プレイヤー自身の高さ
 	m_jumpForce    = 0.0f;                                        // ジャンプ力
 	m_gravity      = 0.1f;                                        // 重力
-	m_fallingPower = 0.0f;                                        // そのまま落ちる時の力
 
 	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
 
@@ -88,7 +90,7 @@ void Player::Create()
 
 	// リスタートUIの設定
 	m_posRestartUI = SimpleMath::Vector2(175.0f, 450.0f);
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\clicktostart.png", nullptr, m_textureRestart.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\clicktocenter.png", nullptr, m_textureRestart.GetAddressOf());
 
 	// カウント数字の設定
 	m_posCountUI = SimpleMath::Vector2(360.0f, 260.0f);
@@ -124,7 +126,7 @@ bool Player::Update(DX::StepTimer const & timer)
 			m_playStartTime = 0;
 			m_playStartFlag = true;
 			// マウスカーソルの非表示
-			//ShowCursor(FALSE);
+			ShowCursor(FALSE);
 		}
 	}
 	
@@ -148,7 +150,8 @@ bool Player::Update(DX::StepTimer const & timer)
 
 			SimpleMath::Vector2 nowPos = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
 			if (abs(m_pos.x - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x) < 0.01f &&
-				abs(m_pos.z - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z) < 0.01f)
+				abs(m_pos.z - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z) < 0.01f &&
+				m_spawnFlag == false)
 			{
 				m_pos.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x;
 				m_pos.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z;
@@ -208,35 +211,47 @@ bool Player::Update(DX::StepTimer const & timer)
 						}
 					}
 				}
-				m_velFlag = false;
-			}
-			else
-			{
-				if (!m_velFlag)
-				{
-					// 次の行き先に近づくまで差分で移動し続ける
-					m_vel.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x;
-					m_vel.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z;
 
-					m_vel.Normalize();
-					m_vel.x /= 10.0f;
-					if (m_vel.x > 1.0f || m_vel.x < -1.0f)
-					{
-						m_vel.x = 0.0f;
-					}
-					m_vel.y = 0.0f;
-					m_vel.z /= 10.0f;
-					if (m_vel.z > 1.0f || m_vel.z < -1.0f)
-					{
-						m_vel.z = 0.0f;
-					}
-					m_velFlag = true;
+				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType == 3 && m_velFlag == true)
+				{
+					m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+					m_spawnFlag = true;
+					m_assaultPoint = mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).rotaAngle;
 				}
+				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != 3)
+				{
+					m_velFlag = false;
+				}
+			}
+			else if (m_spawnFlag)
+			{
+				m_spawnElapsedTime++;
+				if (m_velFlag == true && m_spawnElapsedTime > SPAWNTIME)
+				{
+					m_spawnElapsedTime = 0;
+					m_velFlag = false;
+					m_spawnFlag = false;
+				}
+			}
+			else if(!m_velFlag)
+			{
+				// 次の行き先に近づくまで差分で移動し続ける
+				m_vel.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x;
+				m_vel.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z;
+
+				m_vel.Normalize();
+				m_vel.x /= 10.0f;
+				//if (m_vel.x > 1.0f || m_vel.x < -1.0f)m_vel.x = 0.0f;
+				m_vel.y = 0.0f;
+				m_vel.z /= 10.0f;
+				//if (m_vel.z > 1.0f || m_vel.z < -1.0f)m_vel.z = 0.0f;
+
+				m_velFlag = true;
 			}
 		}
 		
 		// リスタートの準備
-		if (m_restartFlag)
+		/*if (m_restartFlag)
 		{
 			m_restartTime++;
 		}
@@ -257,7 +272,7 @@ bool Player::Update(DX::StepTimer const & timer)
 			m_restartTime = 0;
 			m_restartFlag = false;
 			m_velFlag = false;
-		}
+		}*/
 
 	}
 
@@ -318,11 +333,11 @@ bool Player::Update(DX::StepTimer const & timer)
 	}
 	
 	// 移動前の座標を記憶
-	SimpleMath::Vector3 nowPos = m_pos;
+	m_posTmp = m_pos;
 	// プレイヤー移動(座標)
 	m_pos += m_vel;
 	// 移動後の座標との偏差から移動方向を算出
-	m_dir = m_pos - nowPos;
+	m_dir = m_pos - m_posTmp;
 	m_dir.Normalize();
 
 
@@ -332,7 +347,7 @@ bool Player::Update(DX::StepTimer const & timer)
 	// 衝突判定用の仮想オブジェクト生成
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
-	box.r = DirectX::SimpleMath::Vector3(0.5f, m_height / 2.0f, 0.5f);                        // 各半径
+	box.r = DirectX::SimpleMath::Vector3(1.0f, m_height / 2.0f, 1.0f);                        // 各半径
 	SetCollision(box);
 
 	return true;

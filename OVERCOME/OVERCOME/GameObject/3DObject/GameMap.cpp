@@ -6,12 +6,12 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
-#include "../pch.h"
+#include "../../pch.h"
 #include "../SceneObject/SceneManager.h"
 #include "GameMap.h"
 
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/MatrixManager.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;

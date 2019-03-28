@@ -6,10 +6,10 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
-#include "../pch.h"
-#include "GameScore.h"
+#include "../../pch.h"
+#include "../2DObject/GameScore.h"
 
-#include "../Utility/DrawManager.h"
+#include "../../Utility/DrawManager.h"
 
 // usingディレクトリ
 using namespace DirectX;

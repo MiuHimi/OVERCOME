@@ -14,9 +14,9 @@ using namespace DirectX::SimpleMath;
 
 #ifdef _DEBUG
 
-#include "VertexShader.inc"	// 頂点シェーダー
-#include "PixelShader.inc"	// ピクセルシェーダー
-#include "DebugSphere.inc"	// モデルの頂点とインデックス情報
+//#include "VertexShader.inc"	// 頂点シェーダー
+//#include "PixelShader.inc"	// ピクセルシェーダー
+//#include "DebugSphere.inc"	// モデルの頂点とインデックス情報
 
 #endif
 

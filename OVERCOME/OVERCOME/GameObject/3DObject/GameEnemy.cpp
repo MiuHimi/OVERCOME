@@ -8,12 +8,12 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
+#include "../../pch.h"
 #include "GameEnemy.h"
 
-#include "../Utility/DeviceResources.h"
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/MatrixManager.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -69,8 +69,11 @@ bool GameEnemy::Update(DX::StepTimer const & timer)
 {
 	m_pos += m_vel;
 
-	// ワールド行列の作成
-	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);
+	//SimpleMath::Matrix rotaY = SimpleMath::Matrix::CreateRotationY(90.0f);
+	/*// ワールド行列の作成
+	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);*/
+	// ワールド行列を作成
+	m_world = SimpleMath::Matrix::CreateFromQuaternion(SimpleMath::Quaternion::CreateFromRotationMatrix(m_rotaY)) * SimpleMath::Matrix::CreateTranslation(m_pos);
 
 	m_sphere.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y, m_pos.z);      // 境界球の中心
 	m_sphere.r = 1.0f;                                                         // 半径

@@ -12,11 +12,11 @@
 #include <CommonStates.h>
 #include <queue>
 
-#include "../pch.h"
-#include "../Utility/DeviceResources.h"
-#include "../Utility/StepTimer.h"
+#include "../../pch.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
 
-#include "../Game.h"
+#include "../../Game.h"
 
 class GameTimer
 {

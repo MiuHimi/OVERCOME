@@ -4,9 +4,8 @@
 // ƒJƒƒ‰ƒNƒ‰ƒX
 //
 // Date: 2018.7.9
-// Author: Hideyasu Imase
 //--------------------------------------------------------------------------------------
-#include "../pch.h"
+#include "../../pch.h"
 #include "Camera.h"
 
 using namespace DirectX;

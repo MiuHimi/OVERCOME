@@ -11,7 +11,7 @@
 #include "SceneBase.h"
 #include <SpriteBatch.h>
 
-#include "../ExclusiveGameObject/EffectManager.h"
+//#include "../../ExclusiveGameObject/EffectManager.h"
 
 class MatrixManager;
 class SceneTitle : public SceneBase
@@ -25,7 +25,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureBackground;   // テクスチャハンドル(背景)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureTitle;        // テクスチャハンドル(タイトル)
 
-	EffectManager*	                                   mp_effectManager;      // エフェクト管理変数
+	//EffectManager*	                                   mp_effectManager;      // エフェクト管理変数
 	MatrixManager*                                     mp_matrixManager;      // 行列管理変数
 
 	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;

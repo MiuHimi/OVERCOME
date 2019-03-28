@@ -8,10 +8,10 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../Utility/DeviceResources.h"
-#include "../Utility/StepTimer.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
 
-#include "../ExclusiveGameObject/CollisionBox.h"
+#include "../../ExclusiveGameObject/CollisionBox.h"
 
 #include "GameBulletManager.h"
 #include "GameCamera.h"
@@ -31,19 +31,21 @@ private:
 	float                                    m_height;                    // プレイヤー自身の高さ
 	float                                    m_jumpForce;                 // ジャンプ力
 	float                                    m_gravity;                   // 重力
-	float                                    m_fallingPower;              // そのまま落ちるときの力
+	DirectX::SimpleMath::Vector3             m_posTmp;                    // 前フレームの位置
 
 	bool                                     m_playStartFlag;             // ゲームが開始したらフラグが立つ
 	int                                      m_playStartTime;             // ゲームが開始されるまでの時間
 	bool                                     m_restartFlag;               // リスタートする条件が揃ったらフラグが立つ
 	int                                      m_restartTime;               // リスタートするまでの時間
 
-	bool                                     m_collideToRoadFlag;         // 道路と接触したかを判定
-	bool                                     m_noTouchObectFlag;          // 何にも触れずジャンプもしていない時にフラグが立つ
+	bool                                     m_spawnFlag;                 // 敵が出てくるフラグ
+	int                                      m_assaultPoint;              // 襲撃される位置(ID)
+	float                                    m_spawnElapsedTime;          // 敵が出現してからの経過時間
+	static const int                         SPAWNTIME;                   // 敵が出てくる時間(フレーム数)
 
 	DirectX::SimpleMath::Vector2             m_passedRoadPos;             // 通過済みの道路を記憶
 	DirectX::SimpleMath::Vector2             m_nextPos;                   // 次に向かう道路の座標を記憶
-	bool                                     m_velFlag;                   // 次の道路に向けて移動中ならフラグが立つ
+	bool                                     m_velFlag;                   // 次の道路マスに向けて移動中ならフラグが立つ
 
 	DirectX::SimpleMath::Matrix              m_world;                     // ワールド座標
 
@@ -52,8 +54,6 @@ private:
 	std::unique_ptr<GameCamera>              mp_gameCamera;               // カメラポインター
 	std::unique_ptr<GameRoad>                mp_gameRoad;                 // 道路ポインタ
 	
-	
-
 	DirectX::SimpleMath::Vector2             m_posRestartUI;              // リスタートUI位置
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     
 		                                     m_textureRestart;            // テクスチャハンドル(リスタート)
@@ -94,6 +94,10 @@ public:
 	float GetHeight()                               { return m_height; }
 	// プレイヤーが動き出したかどうか
 	bool GetPlaying()								{ return m_playStartFlag; }
+	// 敵が出てくる時間かどうか
+	bool GetEnemyTime()								{return m_spawnFlag;}
+	// 襲撃を受ける位置
+	int GetAssaultPoint()							{ return m_assaultPoint; }
 	// プレイヤー情報の取得
 	Player* GetPlayer();
 	// プレイヤー情報の取得
@@ -104,8 +108,6 @@ public:
 
 	// プレイヤーの高さのみの位置を設定
 	void SetHeightPos(float pos)                    { m_pos.y = pos; }
-	// 床、道路との衝突判定のフラグ設定
-	void SetRoadCollideState(bool flag)             { m_collideToRoadFlag = flag; }
 	//----------------------------------------------------------------------------//
 
 	/*// 弾情報取得

@@ -10,12 +10,12 @@
 #include <string>
 #include <sstream>
 
-#include "../pch.h"
+#include "../../pch.h"
 #include "GameTarget.h"
 
-#include "../Utility/DeviceResources.h"
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/MatrixManager.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;

@@ -6,10 +6,10 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
-#include "../pch.h"
+#include "../../pch.h"
 #include "GameTimer.h"
 
-#include "../Utility/DrawManager.h"
+#include "../../Utility/DrawManager.h"
 
 
 /// <summary>

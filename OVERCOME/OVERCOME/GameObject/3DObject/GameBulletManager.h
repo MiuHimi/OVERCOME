@@ -8,16 +8,16 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
+#include "../../pch.h"
 
 #include <vector>
 
-#include "../Utility/DeviceResources.h"
-#include "../Utility/StepTimer.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
 
 #include "GameBullet.h"
 
-#include "../ExclusiveGameObject/CollisionSphere.h"
+#include "../../ExclusiveGameObject/CollisionSphere.h"
 
 class GameBullet;
 class MatrixManager;
@@ -30,7 +30,7 @@ private:
 	//std::vector<GameBullet*>     mp_bullet;                  // 弾管理配列
 	
 	static const int             m_maxBulletNum = 5;         // 最大弾数
-	static const int             m_needReloadTime = 60;      // 次弾発射までの時間(フレーム)
+	static const int             m_needReloadTime = 30;      // 次弾発射までの時間(フレーム)
 
 	int                          m_reloadTime;               // 次弾装填時間(フレーム)
 	bool                         m_shootingFlag;             // 発射済みフラグ(m_reloadTimeカウント開始)

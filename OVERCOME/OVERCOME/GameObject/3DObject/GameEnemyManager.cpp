@@ -8,14 +8,14 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
+#include "../../pch.h"
 #include <time.h>
 #include "GameEnemyManager.h"
 #include "Player.h"
 
-#include "../Utility/DeviceResources.h"
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/MatrixManager.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -79,14 +79,36 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 
 	for (int i = 0; i < m_maxEnemyNum; i++)
 	{
+		// 敵の襲撃時間だったら更新する
+		if (!player->GetEnemyTime())break;
 		if (!mp_enemy[i]->GetState())
 		{
 			if (m_needRespawnTime < m_respawnTime && player->GetPlaying())
 			{
+				//int spawnPos = rand() % 4 + 1;
+				
 				// まだ出現出来たら出現準備
 				mp_enemy[i]->SetState(true);
-				mp_enemy[i]->SetPos(Vector3(-35.0f, 5.0f, -25.5f));
-				mp_enemy[i]->SetVel(Vector3(float(rand() % 5) / 20.0f, float(rand() % 2 - 1) / 10.0f, float(rand() % 5) / 20.0f));
+				switch (player->GetAssaultPoint())
+				{
+				case 1: 
+					mp_enemy[i]->SetPos(Vector3(-35.0f, 5.0f, -25.5f + float(rand() % 20 - 10))); 
+					mp_enemy[i]->SetRotate(180.f);
+					break;
+				case 2: 
+					mp_enemy[i]->SetPos(Vector3( 0.0f, 15.0f,  25.5f + float(rand() % 20 - 10)));
+					mp_enemy[i]->SetRotate(-90.f);
+					break;
+				case 3: 
+					mp_enemy[i]->SetPos(Vector3( 0.0f + float(rand() % 20 - 10),  3.0f,  30.0f));
+					mp_enemy[i]->SetRotate(-90.f); 
+					break;
+				case 4: 
+					mp_enemy[i]->SetPos(Vector3( -35.0f + float(rand() % 20 - 10), 5.0f,  -25.5f + float(rand() % 10 - 5)));
+					mp_enemy[i]->SetRotate(-240.f);
+					break;
+				}
+				
 				m_respawnTime = 0;
 				break;
 			}
@@ -95,9 +117,15 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 
 	for (int i = 0; i < m_maxEnemyNum; i++)
 	{
+		// 敵の襲撃時間だったら更新する
+		if (!player->GetEnemyTime())break;
 		// 敵の動き
 		if (mp_enemy[i]->GetState())
 		{
+			//mp_enemy[i]->SetVel(Vector3(float(rand() % 5) / 20.0f, float(rand() % 2 - 1) / 10.0f, float(rand() % 5) / 20.0f));
+			mp_enemy[i]->SetVel(Vector3(float(player->GetPos().x - mp_enemy[i]->GetPos().x) / 20.0f, 
+										float(player->GetPos().y - mp_enemy[i]->GetPos().y) / 20.0f, 
+										float(player->GetPos().z - mp_enemy[i]->GetPos().z) / 20.0f));
 			mp_enemy[i]->Update(timer);
 
 			// マップの中心から50ｍ離れたら消える

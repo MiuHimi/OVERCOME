@@ -3,12 +3,12 @@
 */
 
 // ヘッダをインクルード
-#include "../pch.h"
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/MatrixManager.h"
+#include "../../pch.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/MatrixManager.h"
 
 #include "Obj3D.h"
-#include "../Game.h"
+#include "../../Game.h"
 
 // usingディレクトリ
 using namespace DirectX;

@@ -8,9 +8,9 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
-#include "../Utility/DeviceResources.h"
-#include "../Utility/StepTimer.h"
+#include "../../pch.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
 
 class Obj2D
 {

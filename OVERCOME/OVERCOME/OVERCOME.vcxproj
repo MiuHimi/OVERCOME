@@ -107,8 +107,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;directXTK_DB.lib;cri_ware_pcx86_le_import.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy_dll.bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -179,8 +178,6 @@
     <ClInclude Include="ExclusiveGameObject\CollisionSphere.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
     <ClInclude Include="ExclusiveGameObject\DebugSphere.h" />
-    <ClInclude Include="ExclusiveGameObject\EffectManager.h" />
-    <ClInclude Include="ExclusiveGameObject\Myeffect.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject\2DObject\GameScore.h" />
@@ -224,8 +221,6 @@
     <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />
-    <ClCompile Include="ExclusiveGameObject\EffectManager.cpp" />
-    <ClCompile Include="ExclusiveGameObject\MyEffect.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject\2DObject\GameScore.cpp" />
     <ClCompile Include="GameObject\2DObject\GameTimer.cpp" />
@@ -307,24 +302,6 @@
     <MeshContentTask Include="..\FBX\target.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ExclusiveGameObject\Particle.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="ExclusiveGameObject\ParticleGS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.1</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="ExclusiveGameObject\ParticlePS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="ExclusiveGameObject\ParticleVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

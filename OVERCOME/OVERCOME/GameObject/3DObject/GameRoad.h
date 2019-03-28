@@ -8,11 +8,11 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
-#include "../Utility/DeviceResources.h"
-#include "../Utility/StepTimer.h"
+#include "../../pch.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
 
-#include "../ExclusiveGameObject/CollisionBox.h"
+#include "../../ExclusiveGameObject/CollisionBox.h"
 
 class MatrixManager;
 class GameRoad : public CollisionBox

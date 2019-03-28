@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "../Utility/DeviceResources.h"
-#include "../Utility/StepTimer.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
 
-#include "../pch.h"
+#include "../../pch.h"
 
 class Game;
 class MatrixManager;

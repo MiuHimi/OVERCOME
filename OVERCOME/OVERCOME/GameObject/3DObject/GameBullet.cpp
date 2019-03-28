@@ -8,12 +8,12 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
+#include "../../pch.h"
 #include "GameBullet.h"
 
-#include "../Utility/DeviceResources.h"
-#include "../Utility/CommonStateManager.h"
-#include "../Utility/MatrixManager.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/CommonStateManager.h"
+#include "../../Utility/MatrixManager.h"
 
 // usingディレクトリ
 using namespace DirectX;

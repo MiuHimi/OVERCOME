@@ -9,12 +9,12 @@
 #include <math.h>
 #include <cmath>
 
-#include "../pch.h"
+#include "../../pch.h"
 #include "GameCamera.h"
 #include "../SceneObject/SceneManager.h"
 
-#include "../Utility/InputManager.h"
-#include "../Utility/DeviceResources.h"
+#include "../../Utility/InputManager.h"
+#include "../../Utility/DeviceResources.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -277,7 +277,7 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player*
 
 		// 回転制限
 		// 進行方向より20度以上先を見ていたら制限範囲内に戻す
-		if (s > 0 && sita > 90.0f)
+		/*if (s > 0 && sita > 90.0f)
 		{
 			m_reformRota *= SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), 0.01f);
 		}
@@ -288,7 +288,7 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player*
 		else if(sita <= 90.0f)
 		{
 			m_reformRota = SimpleMath::Quaternion::Identity;
-		}
+		}*/
 
 		// 中心座標(相対値)設定
 		SimpleMath::Vector2 centerPos(400.0f, 300.0f);
@@ -297,7 +297,13 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player*
 		float x = InputManager::SingletonGetInstance().GetMouseState().x - centerPos.x;
 		float y = InputManager::SingletonGetInstance().GetMouseState().y - centerPos.y;
 
-		if (sita <= 90)
+		m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y / ROTATE_MAG));
+		m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x / ROTATE_MAG));
+
+		m_rotationX *= m_toScreenOutRotaX;
+		m_rotationY *= m_toScreenOutRotaY;
+
+		/*if (sita <= 90)
 		{
 			// 矯正範囲外だったら偏差分の回転
 			m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y / ROTATE_MAG));
@@ -320,12 +326,12 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player*
 			// カーソルがウィンドウ外に行ったときは元々回転していた分も回転させる
 			m_rotationX *= m_toScreenOutRotaX;
 			m_rotationY *= m_toScreenOutRotaY;
-		}
+		}*/
 
-		if (sita > 90.0f)
+		/*if (sita > 90.0f)
 		{
 			m_rotationY *= m_reformRota;
-		}
+		}*/
 		
 		// 画面外に出たらカーソルを画面の中心に戻す
 		if (InputManager::SingletonGetInstance().GetMouseState().x < 50 || InputManager::SingletonGetInstance().GetMouseState().x > 750 ||

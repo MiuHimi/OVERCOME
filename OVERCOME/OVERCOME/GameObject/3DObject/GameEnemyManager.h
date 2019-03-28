@@ -8,16 +8,16 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../pch.h"
+#include "../../pch.h"
 
 #include <vector>
 
-#include "../Utility/DeviceResources.h"
-#include "../Utility/StepTimer.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
 
 #include "GameEnemy.h"
 
-#include "../ExclusiveGameObject/CollisionSphere.h"
+#include "../../ExclusiveGameObject/CollisionSphere.h"
 
 class GameEnemy;
 class MatrixManager;
@@ -31,7 +31,7 @@ private:
 	static const int             m_maxEnemyNum = 100;         // 最大敵数
 	static const int             m_maxAliveDist = 50;
 
-	static const int             m_needRespawnTime = 30;      // リスポーンに必要な時間(フレーム)
+	static const int             m_needRespawnTime = 90;      // リスポーンに必要な時間(フレーム)
 	int                          m_respawnTime;               // リスポーン時間(フレーム)
 
 	GameEnemy*                   mp_enemy[m_maxEnemyNum];
