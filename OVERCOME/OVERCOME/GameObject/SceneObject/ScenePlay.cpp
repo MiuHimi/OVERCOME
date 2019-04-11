@@ -106,7 +106,7 @@ void ScenePlay::Initialize()
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
 
 	// ƒƒbƒVƒ…Õ“Ë”»’è
-	m_box = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"ExclusiveGameObject\\stage01.obj");
+	m_box = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\StageMap\\stage01.obj");
 
 
 	// s—ñŠÇ—•Ï”‚Ì‰Šú‰»
