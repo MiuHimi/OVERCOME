@@ -25,12 +25,16 @@ using namespace DirectX;
 GameEnemy::GameEnemy(DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 vel, bool stateFlag, DirectX::Model* model)
 	: m_pos(0.0f, 0.0f, 0.0f),
 	  m_vel(0.0f, 0.0f, 0.0f),
+	  m_dir(0.0f, 0.0f, 0.0f),
+	  m_rotaX(SimpleMath::Quaternion::Identity),
+   	  m_rotaY(SimpleMath::Quaternion::Identity),
 	  m_state(false),
 	  m_world(DirectX::SimpleMath::Matrix::Identity),
 	  mp_modelEnemy(nullptr)
 {
 	m_pos = pos;
 	m_vel = vel;
+	m_dir = SimpleMath::Vector3(0.0f, 0.0f, 1.0f);
 
 	m_state = stateFlag;
 }
@@ -55,6 +59,7 @@ void GameEnemy::Create()
 	// フォグの設定
 	SetFogEffectDistance(10.0f, 30.0f);
 
+	// 衝突判定用オブジェクト設定
 	m_sphere.c = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	m_sphere.r = 1.0f;
 	SetCollision(m_sphere);
@@ -67,14 +72,15 @@ void GameEnemy::Create()
 /// <returns>終了状態</returns>
 bool GameEnemy::Update(DX::StepTimer const & timer)
 {
+	// 移動
 	m_pos += m_vel;
 
-	//SimpleMath::Matrix rotaY = SimpleMath::Matrix::CreateRotationY(90.0f);
-	/*// ワールド行列の作成
-	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);*/
+	// 回転行列を作成
+	SimpleMath::Matrix rota = SimpleMath::Matrix::CreateFromQuaternion(m_rotaX) * SimpleMath::Matrix::CreateFromQuaternion(m_rotaY);
 	// ワールド行列を作成
-	m_world = SimpleMath::Matrix::CreateFromQuaternion(SimpleMath::Quaternion::CreateFromRotationMatrix(m_rotaY)) * SimpleMath::Matrix::CreateTranslation(m_pos);
+	m_world = rota * SimpleMath::Matrix::CreateTranslation(m_pos);
 
+	// 衝突判定用オブジェクト更新
 	m_sphere.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y, m_pos.z);      // 境界球の中心
 	m_sphere.r = 1.0f;                                                         // 半径
 	SetCollision(m_sphere);

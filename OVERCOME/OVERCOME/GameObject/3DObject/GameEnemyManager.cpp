@@ -9,6 +9,7 @@
 
 // インクルードディレクトリ
 #include "../../pch.h"
+#include <math.h>
 #include <time.h>
 #include "GameEnemyManager.h"
 #include "Player.h"
@@ -85,32 +86,51 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 		{
 			if (m_needRespawnTime < m_respawnTime && player->GetPlaying())
 			{
-				//int spawnPos = rand() % 4 + 1;
-				
 				// まだ出現出来たら出現準備
 				mp_enemy[i]->SetState(true);
+
+				// カウントしなおし
+				m_respawnTime = 0;
+
+				// 場所設定
 				switch (player->GetAssaultPoint())
 				{
-				case 1: 
-					mp_enemy[i]->SetPos(Vector3(-35.0f, 5.0f, -25.5f + float(rand() % 20 - 10))); 
-					mp_enemy[i]->SetRotate(180.f);
-					break;
-				case 2: 
-					mp_enemy[i]->SetPos(Vector3( 0.0f, 15.0f,  25.5f + float(rand() % 20 - 10)));
-					mp_enemy[i]->SetRotate(-90.f);
-					break;
-				case 3: 
-					mp_enemy[i]->SetPos(Vector3( 0.0f + float(rand() % 20 - 10),  3.0f,  30.0f));
-					mp_enemy[i]->SetRotate(-90.f); 
-					break;
-				case 4: 
-					mp_enemy[i]->SetPos(Vector3( -35.0f + float(rand() % 20 - 10), 5.0f,  -25.5f + float(rand() % 10 - 5)));
-					mp_enemy[i]->SetRotate(-240.f);
-					break;
+				case 1: mp_enemy[i]->SetPos(Vector3(-35.0f, 5.0f, -25.5f + float(rand() % 20 - 10))); break;
+				case 2: mp_enemy[i]->SetPos(Vector3(0.0f, 15.0f, 25.5f + float(rand() % 20 - 10))); break;
+				case 3: mp_enemy[i]->SetPos(Vector3(0.0f + float(rand() % 20 - 10), 3.0f, 30.0f)); break;
+				case 4: mp_enemy[i]->SetPos(Vector3(-35.0f + float(rand() % 20 - 10), 5.0f, -25.5f + float(rand() % 10 - 5))); break;
 				}
-				
-				m_respawnTime = 0;
-				break;
+
+				// プレイヤーとの位置の差分
+				SimpleMath::Vector3 enemyPosDiff = SimpleMath::Vector3(float(player->GetPos().x - mp_enemy[i]->GetPos().x), float(player->GetPos().y - mp_enemy[i]->GetPos().y), float(player->GetPos().z - mp_enemy[i]->GetPos().z));
+				// 敵の向き
+				SimpleMath::Vector3 enemyDir = SimpleMath::Vector3(mp_enemy[i]->GetDir());
+
+				{
+					// ベクトルの長さを求める
+					double lengthA = pow((enemyPosDiff.x * enemyPosDiff.x) + (enemyPosDiff.z * enemyPosDiff.z), 0.5);
+					double lengthB = pow((enemyDir.x * enemyDir.x) + (enemyDir.z * enemyDir.z), 0.5);
+					// 内積とベクトルの長さを使ってcosθを求める
+					double cos_sita = enemyPosDiff.x * enemyDir.x + enemyPosDiff.z * enemyDir.z / (lengthA * lengthB);
+
+					// cosθからθを求める
+					double sita = acos(cos_sita);
+					// デグリーで求める
+					//sita = sita * 180.0 / double(XM_PI);
+
+					mp_enemy[i]->SetRotateY(float(sita));
+				}
+
+				//{
+				//	// ベクトルの長さを求める
+				//	double lengthA = pow((enemyPosDiff.y * enemyPosDiff.y) + (enemyPosDiff.z * enemyPosDiff.z), 0.5);
+				//	double lengthB = pow((enemyDir.y * enemyDir.y) + (enemyDir.z * enemyDir.z), 0.5);
+				//	// 内積とベクトルの長さを使ってcosθを求める
+				//	double cos_sita = enemyPosDiff.y * enemyDir.y + enemyPosDiff.z * enemyDir.z / (lengthA * lengthB);
+				//	// cosθからθを求める
+				//	double sita = acos(cos_sita);
+				//	mp_enemy[i]->SetRotateX(float(sita));
+				//}
 			}
 		}
 	}
@@ -122,7 +142,6 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 		// 敵の動き
 		if (mp_enemy[i]->GetState())
 		{
-			//mp_enemy[i]->SetVel(Vector3(float(rand() % 5) / 20.0f, float(rand() % 2 - 1) / 10.0f, float(rand() % 5) / 20.0f));
 			mp_enemy[i]->SetVel(Vector3(float(player->GetPos().x - mp_enemy[i]->GetPos().x) / 20.0f, 
 										float(player->GetPos().y - mp_enemy[i]->GetPos().y) / 20.0f, 
 										float(player->GetPos().z - mp_enemy[i]->GetPos().z) / 20.0f));

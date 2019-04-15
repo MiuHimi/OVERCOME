@@ -128,11 +128,8 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
-	//if (InputManager::SingletonGetInstance().GetMouseState().leftButton)
-	//{
 		m_toPlayMoveOnChecker = true;
 		adx2le->Play(1);
-		OutputDebugString(L"AAAAAAAAAA");
 	}
 	if (m_toPlayMoveOnChecker == true)
 	{
