@@ -20,7 +20,7 @@
 // usingディレクトリ
 using namespace DirectX;
 
-int SceneManager::m_stageID;
+//int SceneManager::m_stageID;
 
 
 /// <summary>
@@ -102,6 +102,7 @@ void GameRoad::Initialize()
 		j++;
 	}
 
+	
 	// 道路の座標設定
 	for (int j = 0; j < m_maxFloorBlock; j++)
 	{
@@ -139,7 +140,7 @@ void GameRoad::Initialize()
 			}
 		}
 	}
-
+	
 	
 }
 /// <summary>
@@ -147,6 +148,7 @@ void GameRoad::Initialize()
 /// </summary>
 void GameRoad::Create()
 {
+	
 	// エフェクトファクトリー
 	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
@@ -219,7 +221,7 @@ void GameRoad::Create()
 			}
 		}
 	}
-
+	
 
 }
 
@@ -237,6 +239,7 @@ bool GameRoad::Update(DX::StepTimer const & timer)
 /// </summary>
 void GameRoad::Render(MatrixManager* matrixManager)
 {
+	/*
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix trans = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix rot = SimpleMath::Matrix::Identity;
@@ -272,6 +275,7 @@ void GameRoad::Render(MatrixManager* matrixManager)
 			//if(m_roadObject[j][i].roadType == 1 || m_roadObject[j][i].roadType == 2 || m_roadObject[j][i].roadType == 3)mp_roadCollideObject[j][i]->DrawDebugCollision(view);
 		}
 	}
+	*/
 }
 
 /// <summary>

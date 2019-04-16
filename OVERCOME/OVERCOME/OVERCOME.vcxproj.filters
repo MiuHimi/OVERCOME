@@ -326,5 +326,11 @@
     <MeshContentTask Include="..\FBX\enemy.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\map02.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\map01.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>

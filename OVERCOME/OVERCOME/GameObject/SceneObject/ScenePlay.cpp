@@ -67,15 +67,15 @@ void ScenePlay::Initialize()
 	mp_gameRoad->Create();
 
 	// ゲーム道路の生成
-	mp_gameTarget = std::make_unique<GameTarget>();
-	mp_gameTarget->Initialize();
+	//mp_gameTarget = std::make_unique<GameTarget>();
+	//mp_gameTarget->Initialize();
 	// ゲーム道路のモデル読み込み
-	mp_gameTarget->Create();
+	//mp_gameTarget->Create();
 
-	// ゲーム道路の生成
+	// ゲームマップの生成
 	mp_gameMap = std::make_unique<GameMap>();
 	mp_gameMap->Initialize();
-	// ゲーム道路のモデル読み込み
+	// ゲームマップのモデル読み込み
 	mp_gameMap->Create();
 
 	// ゲーム敵管理の生成
@@ -105,8 +105,8 @@ void ScenePlay::Initialize()
 
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
 
-	// メッシュ衝突判定
-	m_box = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\StageMap\\stage01.obj");
+	//// メッシュ衝突判定
+	//m_collisionStage = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\StageMap\\stage01.obj");
 
 
 	// 行列管理変数の初期化
@@ -185,22 +185,26 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	{
 		for (int i = 0; i < mp_gameRoad->GetMaxFloorBlock(); i++)
 		{
-			if (mp_gameRoad->GetRoadObject(j, i).roadType != 0)
+			/*if (mp_gameRoad->GetRoadObject(j, i).roadType != 0)
 			{
 				if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollisionObject(j, i)->GetCollision(), mp_player->GetCollision()) == true)
 				{
-					// ゴールに到達したら
-					if (SceneManager::GetStageNum() == 1 &&
-							i == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x &&
-							j == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y ||   // ステージ１のゴール
-						SceneManager::GetStageNum() == 2 && i == 11 && j == 13 ||     // ステージ２のゴール(分岐１)
-						SceneManager::GetStageNum() == 2 && i == 13 && j == 15)       // ステージ２のゴール(分岐２)
-					{
-						m_toResultMoveOnChecker = true;
-						SceneManager::SetResultSceneState(true);
-						// マウスカーソルの表示
-						ShowCursor(TRUE);
-					}
+					
+				}
+			}*/
+
+			if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollisionObject(j, i)->GetCollision(), mp_player->GetCollision()) == true)
+			{
+				if (i != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x || j != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)break;
+
+				// ゴールに到達したら
+				if (i == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x &&
+					j == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)
+				{
+					m_toResultMoveOnChecker = true;
+					SceneManager::SetResultSceneState(true);
+					// マウスカーソルの表示
+					ShowCursor(TRUE);
 				}
 			}
 		}
@@ -234,16 +238,19 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		}
 	}*/
 
-	int id;
-	SimpleMath::Vector3 s;
-	SimpleMath::Vector3 playerPos = mp_player->GetPos();
-	SimpleMath::Vector3 v[2] = { SimpleMath::Vector3(playerPos.x, 100.0f, playerPos.z), SimpleMath::Vector3(playerPos.x, -100.0f, playerPos.z) };
-	// 道とプレイヤーの当たり判定を行う
-	if (m_box->HitCheck_Segment(v[0], v[1], &id, &s) == true)
-	{
-		// プレイヤーの位置を設定する
-		mp_player->SetHeightPos(s.y);
-	}
+	//int id;
+	//SimpleMath::Vector3 s;
+	//SimpleMath::Vector3 playerPos = mp_player->GetPos();
+	//SimpleMath::Vector3 v[2] = { SimpleMath::Vector3(playerPos.x, 100.0f, playerPos.z), SimpleMath::Vector3(playerPos.x, -100.0f, playerPos.z) };
+	//// 道とプレイヤーの当たり判定を行う
+	//if (m_collisionStage->HitCheck_Segment(v[0], v[1], &id, &s) == true)
+	//{
+	//	// プレイヤーの位置を設定する
+	//	mp_player->SetHeightPos(s.y);
+	//}
+
+	// マップの更新
+	mp_gameMap->Update(timer, mp_player->GetPlayer());
 
 	// 敵とプレイヤーの衝突判定
 	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)

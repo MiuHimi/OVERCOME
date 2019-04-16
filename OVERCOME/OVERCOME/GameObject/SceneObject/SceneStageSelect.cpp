@@ -141,7 +141,6 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 				mousePos.y > m_posStageIcon[i].y && mousePos.y < m_posStageIcon[i].y + m_stageIconSize)
 			{
 				selectedStage = i+1;
-				if(selectedStage == 2)selectedStage = 1;
 				SceneManager::SetStageNum(selectedStage);
 				m_toPlayMoveOnChecker = true;
 				adx2le->Play(1);

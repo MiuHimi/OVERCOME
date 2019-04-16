@@ -12,7 +12,10 @@
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
 
+#include "../../ExclusiveGameObject/CollisionMesh.h"
+
 class MatrixManager;
+class Player;
 class GameMap
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
@@ -20,6 +23,8 @@ public:
 
 private:
 	std::unique_ptr<DirectX::Model> m_modelMap;   // マップモデル
+
+	std::unique_ptr<CollisionMesh>                       m_collisionStage;
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -33,7 +38,7 @@ public:
 	// 生成
 	void Create();
 	// 更新
-	bool Update(DX::StepTimer const& timer);
+	bool Update(DX::StepTimer const& timer, Player* player);
 	// 描画
 	void Render(MatrixManager* matrixManager);
 	// 廃棄処理

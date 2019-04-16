@@ -278,6 +278,12 @@
     <MeshContentTask Include="..\FBX\floor01.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\map01.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\map02.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
     <MeshContentTask Include="..\FBX\Map\wood_map01.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
