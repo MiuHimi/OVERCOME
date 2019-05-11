@@ -22,6 +22,7 @@ public:
 
 private:
 	DirectX::SimpleMath::Vector3             m_pos;                   // 位置
+	DirectX::SimpleMath::Vector3             m_posTmp;                // 前フレームの位置
 	DirectX::SimpleMath::Vector3             m_vel;                   // 速度
 	DirectX::SimpleMath::Vector3             m_dir;                   // 向き
 

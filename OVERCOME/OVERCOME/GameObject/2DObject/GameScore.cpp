@@ -19,10 +19,10 @@ using namespace DirectX;
 /// コンストラクタ
 /// </summary>
 GameScore::GameScore()
-	                 : m_compareColum(0)
-	                 , m_compareLine(0)
+	: m_compareColum(0)
+	, m_compareLine(0)
 {	  
-
+	GameScore::SetScore(0);
 }
 /// <summary>
 /// デストラクタ

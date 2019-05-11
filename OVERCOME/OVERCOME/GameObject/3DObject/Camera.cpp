@@ -1,17 +1,19 @@
-//--------------------------------------------------------------------------------------
-// File: Camera.cpp
-//
-// カメラクラス
-//
-// Date: 2018.7.9
-//--------------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////
+// File.    Camera.cpp
+// Summary. BaseCameraClass
+// Date.    2018.7.9
+// Auther.  Miu Himi
+//////////////////////////////////////////////////////////////
+
+// includeディレクトリ
 #include "../../pch.h"
 #include "Camera.h"
 
+// usingディレクトリ
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-// 適当な値です
+// 適当な値
 const float Camera::CAMERA_K = 1.0f / 40.0f;	//	ばね係数
 const float Camera::CAMERA_M = 1.0f / 2.0f;		//	摩擦係数
 const float Camera::CAMERA_DISTANCE = 10.0f;	//	基準の距離

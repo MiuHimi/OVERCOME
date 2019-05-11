@@ -20,7 +20,7 @@
 using namespace DirectX;
 
 // staticディレクトリ
-const int Player::SPAWNTIME = 300;
+const int Player::SPAWNTIME = 600;
 
 
 /// <summary>
@@ -98,6 +98,7 @@ void Player::Create()
 	
 	// ポインターの設定
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\pointer.png", nullptr, m_texturePointer.GetAddressOf());
+
 }
 
 /// <summary>
@@ -338,8 +339,12 @@ bool Player::Update(DX::StepTimer const & timer)
 	m_pos += m_vel;
 	// 移動後の座標との偏差から移動方向を算出
 	m_dir = m_pos - m_posTmp;
-	m_dir.Normalize();
+	//m_dir.Normalize();
 
+	if (m_vel != SimpleMath::Vector3::Zero)
+	{
+		m_assaultPoint = 0;
+	}
 
 	// ワールド行列の作成
 	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);

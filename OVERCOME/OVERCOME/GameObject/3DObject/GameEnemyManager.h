@@ -20,6 +20,7 @@
 #include "../../ExclusiveGameObject/CollisionSphere.h"
 
 class GameEnemy;
+class GameCamera;
 class MatrixManager;
 class Player;
 class GameEnemyManager
@@ -36,8 +37,31 @@ private:
 
 	GameEnemy*                   mp_enemy[m_maxEnemyNum];
 	Player*                      mp_player;
+	std::unique_ptr<GameCamera>              mp_gameCamera;               // カメラポインター
 
-	// メンバー関数(関数、Getter、Setter)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+		m_textureDengerousH;          // テクスチャハンドル(危険サイン横)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+		m_textureDengerousV;          // テクスチャハンドル(危険サイン縦)
+
+	enum DIRECTION
+	{
+		FRONT,
+		BACK,
+		RIGHT,
+		LEFT,
+
+		NONE
+	};
+	DIRECTION                    m_dengerousDirFB;
+	DIRECTION                    m_dengerousDirLR;
+
+	double                       m_compereLength[m_maxEnemyNum]; // 距離を比較
+	int                          m_lengthTmp;                 // プレイヤーに最短距離の敵を記憶
+
+	bool                         m_assault;                   // 敵移動中
+
+// メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
 	GameEnemyManager();
@@ -61,6 +85,7 @@ public:
 	DirectX::SimpleMath::Vector3 GetPos(int i) { return mp_enemy[i]->GetPos(); }
 	bool GetEnemyState(int i)				   { return mp_enemy[i]->GetState(); }
 	Collision::Sphere GetEnemyCollide(int i)   { return mp_enemy[i]->GetCollision(); }
+
 	//----------------------------------------------------------------------------//
 
 	//-----------------------------------Setter-----------------------------------//

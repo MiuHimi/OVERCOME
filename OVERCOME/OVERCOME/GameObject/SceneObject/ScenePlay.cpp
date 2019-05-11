@@ -238,17 +238,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		}
 	}*/
 
-	//int id;
-	//SimpleMath::Vector3 s;
-	//SimpleMath::Vector3 playerPos = mp_player->GetPos();
-	//SimpleMath::Vector3 v[2] = { SimpleMath::Vector3(playerPos.x, 100.0f, playerPos.z), SimpleMath::Vector3(playerPos.x, -100.0f, playerPos.z) };
-	//// 道とプレイヤーの当たり判定を行う
-	//if (m_collisionStage->HitCheck_Segment(v[0], v[1], &id, &s) == true)
-	//{
-	//	// プレイヤーの位置を設定する
-	//	mp_player->SetHeightPos(s.y);
-	//}
-
 	// マップの更新
 	mp_gameMap->Update(timer, mp_player->GetPlayer());
 

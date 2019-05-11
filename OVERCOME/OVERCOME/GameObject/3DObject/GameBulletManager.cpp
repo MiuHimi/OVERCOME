@@ -151,7 +151,9 @@ bool GameBulletManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::
 					// Žc’e‚ª‚ ‚Á‚½‚ç”­ŽË€”õ
 					mp_bullet[i]->SetState(true);
 					mp_bullet[i]->SetPos(ShootPos);
-					mp_bullet[i]->SetVel(cameraDir);
+					SimpleMath::Vector3 vel = cameraDir;
+					vel /= 2.0f;
+					mp_bullet[i]->SetVel(vel);
 					m_shootingFlag = true;
 					break;
 				}
