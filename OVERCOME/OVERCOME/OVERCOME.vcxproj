@@ -74,14 +74,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\DirectXTK\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\DirectXTK\Bin\Desktop_2015\Win32\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\DirectXTK\Inc;$(ProjectDir)\Utility\Sounds\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\DirectXTK\Lib;$(ProjectDir)\Utility\Sounds\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)\DirectXTK\Inc;$(ProjectDir)\Utility\Sounds\include;$(IncludePath)</IncludePath>
+    <LibraryWPath>$(WindowsSDK_MetadataPath);$(LibraryWPath)</LibraryWPath>
+    <LibraryPath>$(ProjectDir)\DirectXTK\Lib;$(ProjectDir)\Utility\Sounds\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -96,12 +99,16 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>pch.h</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;directXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;directXTK_DB.lib;cri_ware_pcx86_le_import.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy_dll.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -121,7 +128,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -129,14 +136,18 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;directXTK.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy_dll.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -158,23 +169,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DebugCamera.h" />
-    <ClInclude Include="DeviceResources.h" />
+    <ClInclude Include="ExclusiveGameObject\ADX2Le.h" />
+    <ClInclude Include="ExclusiveGameObject\BinaryFile.h" />
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
+    <ClInclude Include="ExclusiveGameObject\Collision2D.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionBox.h" />
+    <ClInclude Include="ExclusiveGameObject\CollisionMesh.h" />
+    <ClInclude Include="ExclusiveGameObject\CollisionSphere.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
-    <ClInclude Include="ExclusiveGameObject\InputManager.h" />
-    <ClInclude Include="ExclusiveGameObject\KeyManager.h" />
-    <ClInclude Include="ExclusiveGameObject\Obj3D.h" />
+    <ClInclude Include="ExclusiveGameObject\DebugSphere.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameObject\Camera.h" />
-    <ClInclude Include="GameObject\Collision.h" />
-    <ClInclude Include="GameObject\DebugCamera.h" />
-    <ClInclude Include="GameObject\GameFloor.h" />
-    <ClInclude Include="GameObject\GameRoad.h" />
-    <ClInclude Include="GameObject\MyCamera.h" />
-    <ClInclude Include="GameObject\Player.h" />
+    <ClInclude Include="GameObject\2DObject\GameScore.h" />
+    <ClInclude Include="GameObject\2DObject\GameTimer.h" />
+    <ClInclude Include="GameObject\2DObject\Obj2D.h" />
+    <ClInclude Include="GameObject\2DObject\String.h" />
+    <ClInclude Include="GameObject\3DObject\Camera.h" />
+    <ClInclude Include="GameObject\3DObject\GameBullet.h" />
+    <ClInclude Include="GameObject\3DObject\GameBulletManager.h" />
+    <ClInclude Include="GameObject\3DObject\GameCamera.h" />
+    <ClInclude Include="GameObject\3DObject\GameEnemy.h" />
+    <ClInclude Include="GameObject\3DObject\GameEnemyManager.h" />
+    <ClInclude Include="GameObject\3DObject\GameFloor.h" />
+    <ClInclude Include="GameObject\3DObject\GameMap.h" />
+    <ClInclude Include="GameObject\3DObject\GameRoad.h" />
+    <ClInclude Include="GameObject\3DObject\GameTarget.h" />
+    <ClInclude Include="GameObject\3DObject\Obj3D.h" />
+    <ClInclude Include="GameObject\3DObject\Player.h" />
+    <ClInclude Include="GameObject\3DObject\SkyDome.h" />
     <ClInclude Include="GameObject\SceneObject\SceneBase.h" />
     <ClInclude Include="GameObject\SceneObject\SceneLogo.h" />
     <ClInclude Include="GameObject\SceneObject\SceneManager.h" />
@@ -182,25 +204,42 @@
     <ClInclude Include="GameObject\SceneObject\SceneResult.h" />
     <ClInclude Include="GameObject\SceneObject\SceneStageSelect.h" />
     <ClInclude Include="GameObject\SceneObject\SceneTitle.h" />
-    <ClInclude Include="GameObject\SkyDome.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="StepTimer.h" />
+    <ClInclude Include="Utility\CommonStateManager.h" />
+    <ClInclude Include="Utility\CountManager.h" />
+    <ClInclude Include="Utility\DeviceResources.h" />
+    <ClInclude Include="Utility\DrawManager.h" />
+    <ClInclude Include="Utility\GameDebug.h" />
+    <ClInclude Include="Utility\InputManager.h" />
+    <ClInclude Include="Utility\MatrixManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DebugCamera.cpp" />
-    <ClCompile Include="DeviceResources.cpp" />
+    <ClCompile Include="ExclusiveGameObject\ADX2Le.cpp" />
+    <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
+    <ClCompile Include="ExclusiveGameObject\CollisionMesh.cpp" />
+    <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
-    <ClCompile Include="ExclusiveGameObject\InputManager.cpp" />
-    <ClCompile Include="ExclusiveGameObject\KeyManager.cpp" />
-    <ClCompile Include="ExclusiveGameObject\Obj3D.cpp" />
+    <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameObject\Camera.cpp" />
-    <ClCompile Include="GameObject\DebugCamera.cpp" />
-    <ClCompile Include="GameObject\GameFloor.cpp" />
-    <ClCompile Include="GameObject\GameRoad.cpp" />
-    <ClCompile Include="GameObject\MyCamera.cpp" />
-    <ClCompile Include="GameObject\Player.cpp" />
+    <ClCompile Include="GameObject\2DObject\GameScore.cpp" />
+    <ClCompile Include="GameObject\2DObject\GameTimer.cpp" />
+    <ClCompile Include="GameObject\2DObject\Obj2D.cpp" />
+    <ClCompile Include="GameObject\2DObject\String.cpp" />
+    <ClCompile Include="GameObject\3DObject\Camera.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameBullet.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameBulletManager.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameCamera.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameEnemy.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameEnemyManager.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameFloor.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameMap.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameRoad.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameTarget.cpp" />
+    <ClCompile Include="GameObject\3DObject\Obj3D.cpp" />
+    <ClCompile Include="GameObject\3DObject\Player.cpp" />
+    <ClCompile Include="GameObject\3DObject\SkyDome.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneBase.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneLogo.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneManager.cpp" />
@@ -208,14 +247,19 @@
     <ClCompile Include="GameObject\SceneObject\SceneResult.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneStageSelect.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneTitle.cpp" />
-    <ClCompile Include="GameObject\SkyDome.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Utility\CommonStateManager.cpp" />
+    <ClCompile Include="Utility\CountManager.cpp" />
+    <ClCompile Include="Utility\DeviceResources.cpp" />
+    <ClCompile Include="Utility\DrawManager.cpp" />
+    <ClCompile Include="Utility\GameDebug.cpp" />
+    <ClCompile Include="Utility\InputManager.cpp" />
+    <ClCompile Include="Utility\MatrixManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -227,10 +271,28 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <MeshContentTask Include="..\FBX\bullet.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\enemy.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
     <MeshContentTask Include="..\FBX\floor01.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\map01.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\map02.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\Map\wood_map01.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
     <MeshContentTask Include="..\FBX\player.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\road_branch.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\road_curve.FBX">
@@ -243,6 +305,9 @@
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\sky2.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\target.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Models\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
   </ItemGroup>

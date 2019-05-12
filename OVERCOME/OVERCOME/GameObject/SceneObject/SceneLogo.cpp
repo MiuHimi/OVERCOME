@@ -6,30 +6,29 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
+#include "../../pch.h"
 #include "SceneManager.h"
 #include "SceneLogo.h"
 
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/MatrixManager.h"
+#include "../../Utility/DrawManager.h"
+
 // usingディレクトリ
 using namespace DirectX;
-//using Microsoft::WRL::ComPtr;
 
 
-/// <summary>
-/// コンストラクタ
-/// </summary>
-/// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneLogo::SceneLogo(SceneManager* sceneManager) 
-	               : SceneBase(sceneManager)
-{
-}
 /// <summary>
 /// コンストラクタ
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneLogo::SceneLogo(Game * game, SceneManager * sceneManager)
-	               : mp_game(game)
-	               , SceneBase(sceneManager)
+SceneLogo::SceneLogo(SceneManager * sceneManager)
+	: SceneBase(sceneManager),
+	  m_toTitleMoveOnChecker(false),
+	  m_fadeoutNeedTime(2),
+	  fadeoutCount(0),
+	  mp_matrixManager(nullptr)
 {
 }
 /// <summary>
@@ -44,12 +43,32 @@ SceneLogo::~SceneLogo()
 /// </summary>
 void SceneLogo::Initialize()
 {
-	m_toTitleMoveOnChecker = false;
+	// テクスチャのロード
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\logo_image.png", nullptr, m_textureLogo.GetAddressOf());
 
-	m_count = 0;
+	// 行列管理変数の初期化
+	mp_matrixManager = new MatrixManager();
 
-	// スプライトフォントの作成
-	m_font = std::make_unique<SpriteFont>(/*device*/mp_game->GetDevice(), L"SegoeUI_18.spritefont");
+	// ビュー行列の作成
+	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	float aspectRatio = float(size.right) / float(size.bottom);
+	// 画角を設定
+	float fovAngleY = XMConvertToRadians(45.0f);
+
+	// 射影行列を作成
+	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		200.0f
+	);
+
+	// 行列を設定
+	mp_matrixManager->SetViewProjection(view, projection);
 }
 
 /// <summary>
@@ -57,19 +76,34 @@ void SceneLogo::Initialize()
 /// </summary>
 void SceneLogo::Finalize()
 {
+	if (mp_matrixManager != nullptr)
+	{
+		delete mp_matrixManager;
+		mp_matrixManager = nullptr;
+	}
 }
 
 /// <summary>
 /// ロゴシーンの更新処理
 /// </summary>
 /// <param name="timer">時間情報</param>
-void SceneLogo::Update(DX::StepTimer const& timer, Game* game)
+void SceneLogo::Update(DX::StepTimer const& timer)
 {
-	m_count++;
+	// フレームをカウント
+	static int count = 0;
+	count++;
 
-	if (m_count == 120)
+	// フェードアウト開始
+	if (count / 60 >= m_fadeoutNeedTime)
+	{
+		fadeoutCount += 0.01f;
+	}
+
+	// シーン遷移
+	if (count / 60 >= m_sceneChangeNeedSecond)
 	{
 		m_toTitleMoveOnChecker = true;
+		count = 0;
 	}
 
 	if (m_toTitleMoveOnChecker == true)
@@ -81,17 +115,9 @@ void SceneLogo::Update(DX::StepTimer const& timer, Game* game)
 /// <summary>
 /// ロゴシーンの描画処理
 /// </summary>
-//void SceneLogo::Render()
-//{
-//	// デバッグ用
-//	/*DebugText* debugText = DebugText::GetInstance();
-//	debugText->AddText(Vector2(10, 10), L"SceneLogo");
-//	debugText->AddText(Vector2(10, 30), L"Count = %3d", m_count);*/
-//}
-void SceneLogo::Render(DirectX::SpriteBatch* sprites, Game* game)
+void SceneLogo::Render()
 {
-	// デバッグ用
-	sprites->Begin();
-	m_font->DrawString(sprites, L"SceneLogo", DirectX::SimpleMath::Vector2(20.0f, 30.0f), Colors::Yellow);
-	sprites->End();
+	// ロゴの描画
+	DrawManager::SingletonGetInstance().Draw(m_textureLogo.Get(), SimpleMath::Vector2(0.0f, 0.0f));
+	DrawManager::SingletonGetInstance().DrawAlpha(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), SimpleMath::Vector4(1.0, 1.0f, 1.0f, fadeoutCount));
 }

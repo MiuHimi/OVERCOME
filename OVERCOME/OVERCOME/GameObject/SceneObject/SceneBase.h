@@ -8,13 +8,9 @@
 #pragma once
 
 // インクルードディレクトリ
-#include "../../pch.h"
-#include "../../DeviceResources.h"
-#include "../../StepTimer.h"
-
-#include "../../Game.h"
-
-#include "../../ExclusiveGameObject/InputManager.h"
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
+#include "../../Utility/InputManager.h"
 
 class SceneManager;
 class SceneBase
@@ -37,11 +33,9 @@ public:
 	// 初期化
 	virtual void Initialize() = 0;
 	// 更新
-	//virtual void Update(DX::StepTimer const& timer) = 0;
-	virtual void Update(DX::StepTimer const& timer, Game* game) = 0;
+	virtual void Update(DX::StepTimer const& timer) = 0;
 	// 描画
-	//virtual void Render() = 0;
-	virtual void Render(DirectX::SpriteBatch* sprite, Game* game) = 0;
+	virtual void Render() = 0;
 	// 終了
 	virtual void Finalize() = 0;
 };

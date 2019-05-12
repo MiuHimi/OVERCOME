@@ -1,65 +1,79 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneManager.h
 // Summary. SceneManagerClass
-// Date.    2018/07/27
+// Date.    2018/11/05
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
 #pragma once
 
 // インクルードディレクトリ
-#include "../../pch.h"
-#include "../../DeviceResources.h"
-#include "../../StepTimer.h"
-
-#include "../../Game.h"
-
-
-// クラスの宣言
-class SceneBase;
+#include "../../Utility/DeviceResources.h"
+#include "../../Utility/StepTimer.h"
 
 // シーンID
 enum SceneId
 {
 	SCENE_LOGO,
 	SCENE_TITLE,
+	SCENE_SELECTSTAGE,
 	SCENE_PLAY,
 	SCENE_RESULT,
 
 	NUM_SCENES
 };
 
-
+class SceneBase;
 // シーン管理クラス
-class Game;
 class SceneManager
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
+public :
+	static int            m_stageID;                   // ステージ番号
+	static bool           m_clearSceneState;           // リザルトシーンの状態を決める
+
+	static const int      m_maxStageNum = 2;           // 全ステージ数
+
 private:
 	// 他クラスへのポインタ
-	SceneBase* mp_scenes[NUM_SCENES];    // 登録されているシーンのリスト
+	SceneBase*            mp_scene;                    // シーンが設定される
 
-	SceneBase* mp_activeScene;           // 更新中のシーン
-	SceneBase* mp_requestedScene;        // 要求されたシーン
+	static SceneId        m_activeScene;               // アクティブなシーンを保存
+	SceneId               m_nextScene;                 // 次に更新するシーンを決定
+	bool                  m_requestSceneFlag;          // シーン遷移を要求されたらフラグが立つ
 
-	Game* mp_game;                       // Gameファイルの情報を格納
-
+	bool                  m_gameStateFlag;             // ゲームを閉じたらフラグが立つ
 
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
 	SceneManager(SceneId startSceneId);
-	SceneManager(Game* game, SceneId startSceneId);
 	// デストラクタ
 	~SceneManager();
 
 	// 更新中のシーンの更新処理
 	void UpdateActiveScene(DX::StepTimer const& timer);
-	void UpdateActiveScene(DX::StepTimer const& timer, Game* game);
 	// 更新中のシーンの描画処理
-	void RenderActiveScene(DirectX::SpriteBatch* sprite, Game* game);
+	void RenderActiveScene();
 	// 遷移したいシーンを要求
 	bool RequestToChangeScene(SceneId sceneId);
+	// シーンを削除
+	void DeleteScene();
+
+	// ステージ番号の設定、取得
+	static void SetStageNum(int stageID) { m_stageID = stageID; }
+	static int  GetStageNum()            { return m_stageID; }
+
+	// リザルトシーンの状態の設定、取得
+	static void SetResultSceneState(bool state)  { m_clearSceneState = state; }
+	static bool GetResultSceneState()            { return m_clearSceneState; }
+
+	// アクティブなシーンの取得
+	static SceneId GetActiveScene() { return m_activeScene; }
+
+	// ゲームの更新の設定
+	void SetGameState(bool flag) { m_gameStateFlag = flag; }
+	bool GetGameState()          { return m_gameStateFlag; }
 
 private:
 	// シーンを遷移する
