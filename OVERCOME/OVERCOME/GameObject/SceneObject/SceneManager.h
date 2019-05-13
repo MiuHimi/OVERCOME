@@ -30,9 +30,9 @@ class SceneManager
 // メンバー変数(構造体、enum、列挙子 etc...)
 public :
 	static int            m_stageID;                   // ステージ番号
-	static bool           m_clearSceneState;           // リザルトシーンの状態を決める
+	static bool           m_clearSceneState;           // リザルトシーンの状態
 
-	static const int      m_maxStageNum = 2;           // 全ステージ数
+	static const int      MAXSTAGE;                    // 全ステージ数
 
 private:
 	// 他クラスへのポインタ
@@ -42,7 +42,7 @@ private:
 	SceneId               m_nextScene;                 // 次に更新するシーンを決定
 	bool                  m_requestSceneFlag;          // シーン遷移を要求されたらフラグが立つ
 
-	bool                  m_gameStateFlag;             // ゲームを閉じたらフラグが立つ
+	bool                  m_gameStateFlag;             // ゲームの更新中はフラグが立つ
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -60,20 +60,32 @@ public:
 	// シーンを削除
 	void DeleteScene();
 
-	// ステージ番号の設定、取得
-	static void SetStageNum(int stageID) { m_stageID = stageID; }
-	static int  GetStageNum()            { return m_stageID; }
+	//-----------------------------------Getter-----------------------------------//
 
-	// リザルトシーンの状態の設定、取得
-	static void SetResultSceneState(bool state)  { m_clearSceneState = state; }
-	static bool GetResultSceneState()            { return m_clearSceneState; }
+	// ステージ番号の取得
+	static int  GetStageNum()					{ return m_stageID; }
+
+	// リザルトシーンの状態の取得
+	static bool GetResultSceneState()			{ return m_clearSceneState; }
 
 	// アクティブなシーンの取得
-	static SceneId GetActiveScene() { return m_activeScene; }
+	static SceneId GetActiveScene()				{ return m_activeScene; }
 
-	// ゲームの更新の設定
-	void SetGameState(bool flag) { m_gameStateFlag = flag; }
-	bool GetGameState()          { return m_gameStateFlag; }
+	// ゲームの更新中フラグの取得
+	bool GetGameState()							{ return m_gameStateFlag; }
+	//----------------------------------------------------------------------------//
+
+	//-----------------------------------Setter-----------------------------------//
+
+	// ステージ番号の設定、取得
+	static void SetStageNum(int stageID)		{ m_stageID = stageID; }
+
+	// リザルトシーンの状態の設定、取得
+	static void SetResultSceneState(bool state) { m_clearSceneState = state; }
+
+	// ゲームの更新中フラグの設定
+	void SetGameState(bool flag)				{ m_gameStateFlag = flag; }
+	//----------------------------------------------------------------------------//
 
 private:
 	// シーンを遷移する

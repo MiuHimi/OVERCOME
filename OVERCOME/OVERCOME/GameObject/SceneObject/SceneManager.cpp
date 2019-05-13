@@ -17,6 +17,8 @@
 
 // usingディレクトリ
 
+// constディレクトリ
+const int SceneManager::MAXSTAGE = 2;   // 前ステージ数
 
 
 /// <summary>
@@ -66,6 +68,13 @@ void SceneManager::UpdateActiveScene(DX::StepTimer const& timer)
 		m_requestSceneFlag = false;
 	}
 
+	// 更新中のシーンがなければ
+	if (mp_scene == nullptr)
+	{
+		// エラー
+		throw std::range_error("Not Find Active Update Scene.");
+	}
+
 	// 更新中のシーンがあったら
 	if (mp_scene != nullptr && m_requestSceneFlag == false)
 	{
@@ -73,12 +82,7 @@ void SceneManager::UpdateActiveScene(DX::StepTimer const& timer)
 		mp_scene->Update(timer);
 	}
 
-	// シーンの情報がわからなかったら
-	if(mp_scene == nullptr)
-	{
-		// エラー
-		throw std::range_error("Not Find Active Update Scene.");
-	}
+	
 }
 
 /// <summary>
@@ -86,17 +90,20 @@ void SceneManager::UpdateActiveScene(DX::StepTimer const& timer)
 /// </summary>
 void SceneManager::RenderActiveScene()
 {
+	// 更新中のシーンがなければ
+	if (mp_scene == nullptr)
+	{
+		// エラー
+		throw std::range_error("Not Find Active Render Scene.");
+	}
+
 	// 更新中のシーンがあったら
 	if (mp_scene != nullptr)
 	{
 		// シーンの描画
 		mp_scene->Render();
 	}
-	else if (mp_scene == nullptr)
-	{
-		// 更新中のシーンがなかったらエラー
-		throw std::range_error("Not Find Active Render Scene.");
-	}
+	
 }
 
 /// <summary>

@@ -45,6 +45,6 @@ public:
 	virtual void Update(DX::StepTimer const& timer) override;
 	// •`‰æ
 	virtual void Render() override;
-	// •`‰æ
+	// I—¹
 	virtual void Finalize() override;
 };

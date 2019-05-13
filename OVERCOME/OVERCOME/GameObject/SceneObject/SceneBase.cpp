@@ -16,7 +16,7 @@
 /// </summary>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneBase::SceneBase(SceneManager* sceneManager)
-	               : m_sceneManager(sceneManager)
+	: m_sceneManager(sceneManager)
 {
 }
 /// <summary>

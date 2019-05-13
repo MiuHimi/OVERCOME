@@ -10,7 +10,6 @@
 // インクルードディレクトリ
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
-#include "../../Utility/InputManager.h"
 
 class SceneManager;
 class SceneBase
@@ -19,7 +18,7 @@ class SceneBase
 public:
 
 protected:
-	SceneManager* m_sceneManager;   // 他クラスへのポインタ
+	SceneManager* m_sceneManager;   // SceneManagerへのポインタ
 
 private:
 

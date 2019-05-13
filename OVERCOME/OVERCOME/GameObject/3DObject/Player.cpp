@@ -19,7 +19,7 @@
 // usingディレクトリ
 using namespace DirectX;
 
-// staticディレクトリ
+// constディレクトリ
 const int Player::SPAWNTIME = 600;
 
 
