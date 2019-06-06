@@ -20,17 +20,15 @@ public:
 private:
 	bool                                               m_toTitleMoveOnChecker;        // タイトルシーンに進めるかどうかのチェック
 
-	int                                                m_fadeoutNeedTime;             // フェードアウトし始める秒数
-	static const int                                   m_sceneChangeNeedSecond = 4;   // シーン遷移に必要な秒数
+	static const int                                   FADEOUT_NEED_SECOND;           // フェードアウトし始める秒数
+	static const int                                   SCENE_CHANGE_NEED_SECOND;      // シーン遷移に必要な秒数
 
-	float                                              fadeoutCount;                  // α値を変更
+	float											   m_colorAlpha;				  // α値を変更
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureBackground;           // テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureLogo;                 // テクスチャハンドル
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureLogo;                // テクスチャハンドル(ロゴ)
+	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;					  // スプライトバッチ
 
 	MatrixManager*                                     mp_matrixManager;              // 行列管理変数
-
-	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;
 
 // メンバー関数(関数、Getter、Setter)
 public:

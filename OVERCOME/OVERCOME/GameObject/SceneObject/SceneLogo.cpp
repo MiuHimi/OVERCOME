@@ -13,24 +13,26 @@
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/DrawManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
+
+// constディレクトリ
+const int SceneLogo::FADEOUT_NEED_SECOND = 2;
+const int SceneLogo::SCENE_CHANGE_NEED_SECOND = 4;
 
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-/// <param name="game">ゲームオブジェクト</param>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneLogo::SceneLogo(SceneManager * sceneManager)
 	: SceneBase(sceneManager),
 	  m_toTitleMoveOnChecker(false),
-	  m_fadeoutNeedTime(2),
-	  fadeoutCount(0),
-	  mp_matrixManager(nullptr),
-	  mp_sprite(nullptr)
+	  m_colorAlpha(0.0f),
+	  mp_textureLogo(nullptr),
+	  mp_sprite(nullptr),
+	  mp_matrixManager(nullptr)
 {
 }
 /// <summary>
@@ -46,17 +48,19 @@ SceneLogo::~SceneLogo()
 void SceneLogo::Initialize()
 {
 	// テクスチャのロード
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\logo_image.png", nullptr, m_textureLogo.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\logo_image.png", nullptr, mp_textureLogo.GetAddressOf());
 
 	// スプライトバッチの初期化
 	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+
+	// α値の設定(初期化)
+	m_colorAlpha = 1.0f;
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
 
 	// ビュー行列の作成
-	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+	SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
 
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
@@ -82,6 +86,7 @@ void SceneLogo::Initialize()
 /// </summary>
 void SceneLogo::Finalize()
 {
+	// 行列管理変数の削除
 	if (mp_matrixManager != nullptr)
 	{
 		delete mp_matrixManager;
@@ -96,23 +101,28 @@ void SceneLogo::Finalize()
 void SceneLogo::Update(DX::StepTimer const& timer)
 {
 	// フレームをカウント
-	static int count = 0;
-	count++;
+	static int frameCount = 0;
+	frameCount++;
+
+	// 秒数をカウントするために割る
+	int framesPerSecond = 60;
+	int elapsedSecond = frameCount / framesPerSecond;
 
 	// フェードアウト開始
-	if (count / 60 >= m_fadeoutNeedTime)
+	if (elapsedSecond >= FADEOUT_NEED_SECOND)
 	{
-		fadeoutCount += 0.01f;
+		m_colorAlpha -= 0.01f;
+		if (m_colorAlpha < 0.0f) m_colorAlpha = 0.0f;
+	}
+
+	// シーン遷移発生
+	if (elapsedSecond >= SCENE_CHANGE_NEED_SECOND)
+	{
+		m_toTitleMoveOnChecker = true;
 	}
 
 	// シーン遷移
-	if (count / 60 >= m_sceneChangeNeedSecond)
-	{
-		m_toTitleMoveOnChecker = true;
-		count = 0;
-	}
-
-	if (m_toTitleMoveOnChecker == true)
+	if (m_toTitleMoveOnChecker)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_TITLE);
 	}
@@ -124,13 +134,10 @@ void SceneLogo::Update(DX::StepTimer const& timer)
 void SceneLogo::Render()
 {
 	// ロゴの描画
-	DrawManager::SingletonGetInstance().Draw(m_textureLogo.Get(), SimpleMath::Vector2(0.0f, 0.0f));
-	DrawManager::SingletonGetInstance().DrawAlpha(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), SimpleMath::Vector4(1.0, 1.0f, 1.0f, fadeoutCount));
+	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 
-	// タイトルの描画
-	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+	RECT logoRect = { 0, 0, 800, 600 };
+	mp_sprite->Draw(mp_textureLogo.Get(), SimpleMath::Vector2(0.0f, 0.0f), &logoRect, SimpleMath::Vector4( 1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 
-
-	
 	mp_sprite->End();
 }
