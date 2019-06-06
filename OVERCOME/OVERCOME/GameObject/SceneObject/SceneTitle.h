@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneTitle.h
 // Summary. SceneTitleClass
-// Date.    2018/07/27
+// Date.    2019/06/06
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -18,16 +18,19 @@ class SceneTitle : public SceneBase
 public:
 
 private:
-	bool              m_toPlayMoveOnChecker;              // ロゴシーンに進めるかどうかのチェック
+	bool                                               m_toPlayMoveOnChecker;     // タイトルシーンに進めるかどうかのチェック
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureBackground;   // テクスチャハンドル(背景)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureTitle;        // テクスチャハンドル(タイトル)
+	float											   m_colorAlpha;			  // α値を変更
 
-	MatrixManager*                                     mp_matrixManager;      // 行列管理変数
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureBackground;      // テクスチャハンドル(背景)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureTitle;		      // テクスチャハンドル(タイトル)
+	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;				  // スプライトバッチ
 
-	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;
+	float											   m_titleWidth;			  // タイトルの幅
+	float											   m_titleHeight;			  // タイトルの高さ
+	DirectX::SimpleMath::Vector2					   m_TitlePos;				  // タイトルの表示位置
 
-	float                                              m_color;
+	MatrixManager*                                     mp_matrixManager;          // 行列管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:

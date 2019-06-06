@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneLogo.cpp
 // Summary. SceneLogoClass
-// Date.    2018/07/27
+// Date.    2019/06/06
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -10,15 +10,14 @@
 #include "SceneManager.h"
 #include "SceneTitle.h"
 
+#include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/InputManager.h"
-#include "../../Utility/CommonStateManager.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
 // usingディレクトリ
 using namespace DirectX;
-//using Microsoft::WRL::ComPtr;
 
 
 /// <summary>
@@ -28,8 +27,14 @@ using namespace DirectX;
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneTitle::SceneTitle(SceneManager * sceneManager)
 	: SceneBase(sceneManager),
-	  mp_matrixManager(nullptr),
-	  m_color(0.0f)
+      m_colorAlpha(0.0f),
+	  mp_textureBackground(nullptr),
+	  mp_textureTitle(nullptr),
+	  mp_sprite(nullptr),
+	  m_titleWidth(0.0f),
+	  m_titleHeight(0.0f),
+	  m_TitlePos(0.0f, 0.0f),
+	  mp_matrixManager(nullptr)
 {
 }
 /// <summary>
@@ -47,11 +52,19 @@ void SceneTitle::Initialize()
 	m_toPlayMoveOnChecker = false;
 
 	// テクスチャのロード
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\title_background.png", nullptr, m_textureBackground.GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\title.png", nullptr, m_textureTitle.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\title_background.png", nullptr, mp_textureBackground.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\title.png", nullptr, mp_textureTitle.GetAddressOf());
 
 	// スプライトバッチの初期化
 	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+
+	// タイトルの幅、高さ、位置設定
+	m_titleWidth = 500.0f;
+	m_titleHeight = 120.0f;
+	m_TitlePos = SimpleMath::Vector2(150.0f, 100.0f);
+
+	// α値の設定(初期化)
+	m_colorAlpha = 1.0f;
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
@@ -77,13 +90,6 @@ void SceneTitle::Initialize()
 	// 行列を設定
 	mp_matrixManager->SetViewProjection(view, projection);
 
-	// エフェクトマネージャーの初期化
-	//mp_effectManager = nullptr;
-	//mp_effectManager = new EffectManager();
-	//mp_effectManager->Create();
-	//mp_effectManager->Initialize(5, SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3(0, 0, 0));
-	//mp_effectManager->SetRenderState(view, projection);
-
 	// サウンド再生
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->LoadAcb(L"SceneTitle.acb", L"SceneTitle.awb");
@@ -100,12 +106,6 @@ void SceneTitle::Finalize()
 		mp_matrixManager = nullptr;
 	}
 
-	/*if (mp_effectManager != nullptr) {
-		mp_effectManager->Lost();
-		delete mp_effectManager;
-		mp_effectManager = nullptr;
-	}*/
-	
 	// サウンドの停止
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Stop();
@@ -120,24 +120,25 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	// サウンドの更新
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Update();
-
-	//mp_effectManager->Update(timer);
 	
 	// マウスの更新
 	//	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 	InputManager::SingletonGetInstance().Update();
 
+	// 右クリックでシーン遷移開始
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		m_toPlayMoveOnChecker = true;
 		adx2le->Play(1);
 	}
-	if (m_toPlayMoveOnChecker == true)
+	if (m_toPlayMoveOnChecker)
 	{
-		m_color += 0.01f;
+		m_colorAlpha -= 0.01f;
+		if (m_colorAlpha < 0.0f) m_colorAlpha = 0.0f;
 	}
 
-	if (m_toPlayMoveOnChecker == true && m_color > 1.0f)
+	// シーン遷移
+	if (m_toPlayMoveOnChecker && m_colorAlpha <= 0.0f)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_SELECTSTAGE);
 	}
@@ -149,27 +150,14 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneTitle::Render()
 {
-	//mp_effectManager->Render();
-
 	// タイトルの描画
 	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 	
-	// 切り取る場所を設定
-	RECT rectBG;
-	rectBG.top = LONG(0.0f);
-	rectBG.left = LONG(0.0f);
-	rectBG.right = LONG(800.0f);
-	rectBG.bottom = LONG(600.0f);
+	RECT rectTiteBG = { 0, 0, 800, 600 };
+	RECT rectTite = { 0, 0, int(m_titleWidth), int(m_titleHeight) };
 
-	RECT rectTite;
-	rectTite.top = LONG(0.0f);
-	rectTite.left = LONG(0.0f);
-	rectTite.right = LONG(500.0f);
-	rectTite.bottom = LONG(120.0f);
-
-	mp_sprite->Draw(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectBG, SimpleMath::Vector4(1.0f- m_color, 1.0f- m_color, 1.0f- m_color, 1.0f), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-	mp_sprite->Draw(m_textureTitle.Get(), SimpleMath::Vector2(150.0f, 100.0f), &rectTite, SimpleMath::Vector4(1.0f- m_color, 1.0f- m_color, 1.0f- m_color, 1.0f), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectTiteBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	mp_sprite->Draw(mp_textureTitle.Get(), m_TitlePos, &rectTite, SimpleMath::Vector4( 1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	
 	mp_sprite->End();
-
 }
