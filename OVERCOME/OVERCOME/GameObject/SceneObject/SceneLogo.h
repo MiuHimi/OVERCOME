@@ -9,6 +9,7 @@
 
 // インクルードディレクトリ
 #include "SceneBase.h"
+#include <SpriteBatch.h>
 
 class MatrixManager;
 class SceneLogo : public SceneBase
@@ -28,6 +29,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   m_textureLogo;                 // テクスチャハンドル
 
 	MatrixManager*                                     mp_matrixManager;              // 行列管理変数
+
+	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;
 
 // メンバー関数(関数、Getter、Setter)
 public:

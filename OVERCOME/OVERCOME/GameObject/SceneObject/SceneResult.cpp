@@ -11,6 +11,7 @@
 #include "SceneResult.h"
 #include "../2DObject/GameScore.h"
 
+#include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/DrawManager.h"
 
@@ -60,7 +61,8 @@ void SceneResult::Initialize()
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// ‰æŠp‚ğİ’è
-	float fovAngleY = XMConvertToRadians(45.0f);
+	float angle = 45.0f;
+	float fovAngleY = XMConvertToRadians(angle);
 
 	// Ë‰es—ñ‚ğì¬
 	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(

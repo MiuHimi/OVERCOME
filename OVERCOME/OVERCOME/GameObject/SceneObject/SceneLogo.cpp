@@ -11,6 +11,7 @@
 #include "SceneLogo.h"
 
 #include "../../Utility/DeviceResources.h"
+#include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/DrawManager.h"
 
@@ -28,7 +29,8 @@ SceneLogo::SceneLogo(SceneManager * sceneManager)
 	  m_toTitleMoveOnChecker(false),
 	  m_fadeoutNeedTime(2),
 	  fadeoutCount(0),
-	  mp_matrixManager(nullptr)
+	  mp_matrixManager(nullptr),
+	  mp_sprite(nullptr)
 {
 }
 /// <summary>
@@ -47,6 +49,9 @@ void SceneLogo::Initialize()
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\logo_image.png", nullptr, m_textureLogo.GetAddressOf());
 
+	// スプライトバッチの初期化
+	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
 
@@ -57,7 +62,8 @@ void SceneLogo::Initialize()
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
-	float fovAngleY = XMConvertToRadians(45.0f);
+	float angle = 45.0f;
+	float fovAngleY = XMConvertToRadians(angle);
 
 	// 射影行列を作成
 	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
@@ -120,4 +126,11 @@ void SceneLogo::Render()
 	// ロゴの描画
 	DrawManager::SingletonGetInstance().Draw(m_textureLogo.Get(), SimpleMath::Vector2(0.0f, 0.0f));
 	DrawManager::SingletonGetInstance().DrawAlpha(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), SimpleMath::Vector4(1.0, 1.0f, 1.0f, fadeoutCount));
+
+	// タイトルの描画
+	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+
+
+	
+	mp_sprite->End();
 }

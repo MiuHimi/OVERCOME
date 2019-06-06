@@ -63,7 +63,8 @@ void SceneTitle::Initialize()
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// ‰æŠp‚ğİ’è
-	float fovAngleY = XMConvertToRadians(45.0f);
+	float angle = 45.0f;
+	float fovAngleY = XMConvertToRadians(angle);
 
 	// Ë‰es—ñ‚ğì¬
 	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(

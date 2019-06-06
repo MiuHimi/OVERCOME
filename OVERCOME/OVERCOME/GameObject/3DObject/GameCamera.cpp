@@ -369,7 +369,9 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player*
 		// éãì_ê›íË
 		SimpleMath::Vector3 eye(0.0f, 0.0f, -0.1f);
 
-		SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(180.0f));
+		float defaultAngle = 180.0f;
+
+		SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(defaultAngle));
 		eye = SimpleMath::Vector3::Transform(eye, rotY);
 		eye += target;
 
