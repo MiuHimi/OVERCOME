@@ -18,7 +18,8 @@ class SceneTitle : public SceneBase
 public:
 
 private:
-	bool                                               m_toPlayMoveOnChecker;     // タイトルシーンに進めるかどうかのチェック
+	bool                                               m_toStageSelectMoveOnChecker;
+																				  // ステージセレクトシーンに進めるかどうかのチェック
 
 	float											   m_colorAlpha;			  // α値を変更
 

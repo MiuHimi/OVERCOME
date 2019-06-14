@@ -48,7 +48,7 @@ SceneLogo::~SceneLogo()
 void SceneLogo::Initialize()
 {
 	// テクスチャのロード
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\logo_image.png", nullptr, mp_textureLogo.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Logo\\logo_image.png", nullptr, mp_textureLogo.GetAddressOf());
 
 	// スプライトバッチの初期化
 	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());

@@ -95,16 +95,16 @@ void ScenePlay::Initialize()
 	//mp_skydome = std::make_unique<SkyDome>();
 	//mp_skydome->Initialize();
 	// スカイドームのモデルの読み込み
-	//mp_skydome->Create();mp_gameScore
+	//mp_skydome->Create();
 
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
-	mp_gameScore->Create();
+	mp_gameScore->Create(L"Resources\\Images\\GameScore\\score_len.png", L"Resources\\Images\\GameScore\\score_background.png");
 
 	m_fadeInCount = 1;
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureFadeIn.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\background.png", nullptr, m_textureFadeIn.GetAddressOf());
 
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\background.png", nullptr, m_textureBackground.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\background.png", nullptr, m_textureBackground.GetAddressOf());
 
 	//// メッシュ衝突判定
 	//m_collisionStage = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\StageMap\\stage01.obj");
@@ -156,7 +156,7 @@ void ScenePlay::Finalize()
 		delete mp_matrixManager;
 		mp_matrixManager = nullptr;
 	}
-	
+
 	/*if (mp_effectManager != nullptr) {
 		mp_effectManager->Lost();
 		delete mp_effectManager;

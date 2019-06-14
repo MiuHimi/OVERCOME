@@ -23,15 +23,29 @@ class GameScore
 public:
 
 private:
-	static int                                           m_score;                       // プレイヤーが得る得点
-	bool                                                 m_deductOccurrence = false;    // コースアウトしているかを判定
-	int                                                  m_compareColum;                // プレイヤージャンプによる加点判定用変数
-	int                                                  m_compareLine;                 // プレイヤージャンプによる加点判定用変数
-	bool                                                 m_getPointChance = false;      // プレイヤージャンプによる加点判定用変数
+	static int                                         m_score;                // プレイヤーが得る得点
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBsckground;           // テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_texture;                     // テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureNum[10];              // テクスチャハンドル
+    // スコアの桁
+	enum Digit
+	{
+		HUNDRED,
+		TEN,
+		ONE,
+
+		NUM
+	};
+
+	DirectX::SimpleMath::Vector2					   m_scorePos;			   // スコアの表示位置
+	DirectX::SimpleMath::Vector2					   m_scoreBGPos;		   // スコア背景の表示位置
+
+	float											   m_scoreWidth;		   // スコアの幅
+	float											   m_scoreHeight;		   // スコアの高さ
+	float											   m_scoreBGWidth;		   // スコア背景の幅
+	float											   m_scoreBGHeight;		   // スコア背景の高さ
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureBackground;   // テクスチャハンドル
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_texture;             // テクスチャハンドル
+	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;			   // スプライトバッチ
 
 // メンバー関数
 public:
@@ -41,28 +55,24 @@ public:
 	~GameScore();
 
 	// 生成
-	void Create();
+	void Create(const wchar_t* scoreFileName, const wchar_t* backgroundFileName);
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
 	void Render();
 
-	// 加点チャンス
-	void AddPointChance(int j, int i);
+	//-----------------------------------Getter-----------------------------------//
 
-	// Getter,Setter
 	static int GetScore()                           { return m_score; }
+	//----------------------------------------------------------------------------//
+
+	//-----------------------------------Setter-----------------------------------//
+
 	static void SetScore(int score)                 { m_score = score; }
+	//----------------------------------------------------------------------------//
+
 	// 得点の増減
-	void FluctuationScore(int addscore)      { m_score += addscore; }
-	// プレイヤーがコースアウトしたらフラグが立つ
-	void SetDeductFlag(bool flag)            { m_deductOccurrence = flag; }
-	// プレイヤージャンプによる加点判定用の値設定
-	void SetAddPointChance(int j, int i)     { m_compareColum = j; m_compareLine = i;}
-	// プレイヤー得点獲得チャンスか判定
-	bool GetPointChance()                    { return m_getPointChance; }
-	// プレイヤー得点獲得チャンス設定
-	void SetPointChance(bool flag)           { m_getPointChance = flag; }
+	void FluctuationScore(int addscore)				{ m_score += addscore; }
 
 private:
 

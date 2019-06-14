@@ -90,14 +90,14 @@ void Player::Create()
 
 	// リスタートUIの設定
 	m_posRestartUI = SimpleMath::Vector2(175.0f, 450.0f);
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\clicktocenter.png", nullptr, m_textureRestart.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\clicktocenter.png", nullptr, m_textureRestart.GetAddressOf());
 
 	// カウント数字の設定
 	m_posCountUI = SimpleMath::Vector2(360.0f, 260.0f);
 	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\count\\count_len.png", nullptr, m_textureCount.GetAddressOf());
 	
 	// ポインターの設定
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\pointer.png", nullptr, m_texturePointer.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\pointer.png", nullptr, m_texturePointer.GetAddressOf());
 
 }
 

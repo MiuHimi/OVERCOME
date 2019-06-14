@@ -9,7 +9,7 @@
 #include "../../pch.h"
 #include "../2DObject/GameScore.h"
 
-#include "../../Utility/DrawManager.h"
+#include "../../Utility/CommonStateManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -19,8 +19,13 @@ using namespace DirectX;
 /// コンストラクタ
 /// </summary>
 GameScore::GameScore()
-	: m_compareColum(0)
-	, m_compareLine(0)
+	: m_scorePos(0.0f, 0.0f),
+	  m_scoreBGPos(0.0f, 0.0f),
+	  m_scoreWidth(0.0f), m_scoreHeight(0.0f),
+	  m_scoreBGWidth(0.0f), m_scoreBGHeight(0.0f),
+	  mp_texture(nullptr),
+	  mp_textureBackground(nullptr),
+	  mp_sprite(nullptr)
 {	  
 }
 /// <summary>
@@ -33,22 +38,26 @@ GameScore::~GameScore()
 /// <summary>
 /// 生成
 /// </summary>
-void GameScore::Create()
+void GameScore::Create(const wchar_t* scoreFileName, const wchar_t* backgroundFileName)
 {
-	// テクスチャのロード
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_0_image.png", nullptr, m_textureNum[0].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_1_image.png", nullptr, m_textureNum[1].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_2_image.png", nullptr, m_textureNum[2].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_3_image.png", nullptr, m_textureNum[3].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_4_image.png", nullptr, m_textureNum[4].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_5_image.png", nullptr, m_textureNum[5].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_6_image.png", nullptr, m_textureNum[6].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_7_image.png", nullptr, m_textureNum[7].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_8_image.png", nullptr, m_textureNum[8].GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameTimer\\timer_9_image.png", nullptr, m_textureNum[9].GetAddressOf());
+	// 各変数の初期化
+	m_score = 0;
 
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\GameScore\\score_background_image.png", nullptr, m_textureBsckground.GetAddressOf());
+	m_scorePos = SimpleMath::Vector2(650.0f, 560.0f);
+	m_scoreBGPos = SimpleMath::Vector2(700.0f, 560.0f);
+
+	m_scoreWidth = 40.0f; 
+	m_scoreHeight = 60.0f;
+	m_scoreBGWidth = 200.0f;
+	m_scoreBGHeight = 80.0f;
+
+	// テクスチャのロード
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), scoreFileName, nullptr, mp_texture.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), backgroundFileName, nullptr, mp_textureBackground.GetAddressOf());
 	
+	// スプライトバッチの初期化
+	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+
 }
 
 /// <summary>
@@ -58,9 +67,9 @@ void GameScore::Create()
 bool GameScore::Update(DX::StepTimer const& timer)
 {	
 	// スコアの下限
-	if (GameScore::GetScore() <= 0)
+	if (GetScore() <= 0)
 	{
-		GameScore::SetScore(0);
+		SetScore(0);
 	}
 	
 	return true;
@@ -71,31 +80,53 @@ bool GameScore::Update(DX::StepTimer const& timer)
 /// </summary>
 void GameScore::Render()
 {
-	int hundredDigit = m_score / 100;
-	int tenDigit = ((m_score % 100) / 10);
-	int oneDigit = m_score % 10;
+	// スコア
+	int hundredDigit = m_score / 100;		// 100の位
+	int tenDigit = ((m_score % 100) / 10);  // 10の位
+	int oneDigit = m_score % 10;			// 1の位
 
-	// スプライトの描画
-	DrawManager::SingletonGetInstance().Draw(m_textureBsckground.Get(), SimpleMath::Vector2(600.0f, 520.0f));
+	// スコアの描画
+	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 
-	DrawManager::SingletonGetInstance().Draw(m_textureNum[hundredDigit].Get(), DirectX::SimpleMath::Vector2(650.0f, 530.0f));
-	DrawManager::SingletonGetInstance().Draw(m_textureNum[tenDigit].Get()    , DirectX::SimpleMath::Vector2(700.0f, 530.0f));
-	DrawManager::SingletonGetInstance().Draw(m_textureNum[oneDigit].Get()    , DirectX::SimpleMath::Vector2(750.0f, 530.0f));
-}
+	// 背景
+	RECT rectBG = { 0, 0, 200, 80 };
+	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(m_scoreBGPos.x - m_scoreBGWidth / 2.0f, m_scoreBGPos.y - m_scoreBGHeight / 2.0f), &rectBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 
-/// <summary>
-/// ジャンプで乗り越えられたら加点
-/// </summary>
-/// <param name="j">行座標</param>
-/// <param name="i">列座標</param>
-void GameScore::AddPointChance(int j, int i)
-{
-	// 以前にいた座標と違えば
-	if (j != m_compareColum || i != m_compareLine)
+	// スコア
+	for (int i = 0; i < Digit::NUM; i++)
 	{
-		// 加点
-		GameScore::FluctuationScore(10);
-		// 座標再設定
-		GameScore::SetAddPointChance(j, i);
+		RECT rect;
+		// 桁に応じて切り取る位置を変える
+		switch (i)
+		{
+		// 100の位
+		case HUNDRED:
+			rect = { int(m_scoreWidth) * hundredDigit, 0, int(m_scoreWidth) * hundredDigit + int(m_scoreWidth), int(m_scoreHeight) };
+			break;
+		// 10の位
+		case TEN:
+			rect = { int(m_scoreWidth) * tenDigit, 0, int(m_scoreWidth) * tenDigit + int(m_scoreWidth), int(m_scoreHeight) };
+			break;
+		// 1の位
+		case ONE:
+			rect = { int(m_scoreWidth) * oneDigit, 0, int(m_scoreWidth) * oneDigit + int(m_scoreWidth), int(m_scoreHeight) };
+			break;
+		// それ以外の位
+		default:
+			break;
+		}
+
+		float indent = 0;
+		if (i == 0)
+		{
+			indent = 0;
+		}
+		else
+		{
+			indent = 10;
+		}
+		mp_sprite->Draw(mp_texture.Get(), SimpleMath::Vector2(m_scorePos.x + float(i * m_scoreWidth) + indent, m_scorePos.y - (float)m_scoreHeight / 2.0f), &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	}
+
+	mp_sprite->End();
 }

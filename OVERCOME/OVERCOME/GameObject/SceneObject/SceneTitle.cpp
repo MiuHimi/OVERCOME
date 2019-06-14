@@ -27,6 +27,7 @@ using namespace DirectX;
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneTitle::SceneTitle(SceneManager * sceneManager)
 	: SceneBase(sceneManager),
+	  m_toStageSelectMoveOnChecker(false),
       m_colorAlpha(0.0f),
 	  mp_textureBackground(nullptr),
 	  mp_textureTitle(nullptr),
@@ -49,11 +50,11 @@ SceneTitle::~SceneTitle()
 /// </summary>
 void SceneTitle::Initialize()
 {
-	m_toPlayMoveOnChecker = false;
+	m_toStageSelectMoveOnChecker = false;
 
 	// テクスチャのロード
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\title_background.png", nullptr, mp_textureBackground.GetAddressOf());
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\title.png", nullptr, mp_textureTitle.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_background.png", nullptr, mp_textureBackground.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title.png", nullptr, mp_textureTitle.GetAddressOf());
 
 	// スプライトバッチの初期化
 	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
@@ -100,6 +101,7 @@ void SceneTitle::Initialize()
 /// </summary>
 void SceneTitle::Finalize()
 {
+	// 行列管理変数の削除
 	if (mp_matrixManager != nullptr)
 	{
 		delete mp_matrixManager;
@@ -128,17 +130,17 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	// 右クリックでシーン遷移開始
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
-		m_toPlayMoveOnChecker = true;
+		m_toStageSelectMoveOnChecker = true;
 		adx2le->Play(1);
 	}
-	if (m_toPlayMoveOnChecker)
+	if (m_toStageSelectMoveOnChecker)
 	{
 		m_colorAlpha -= 0.01f;
 		if (m_colorAlpha < 0.0f) m_colorAlpha = 0.0f;
 	}
 
 	// シーン遷移
-	if (m_toPlayMoveOnChecker && m_colorAlpha <= 0.0f)
+	if (m_toStageSelectMoveOnChecker && m_colorAlpha <= 0.0f)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_SELECTSTAGE);
 	}

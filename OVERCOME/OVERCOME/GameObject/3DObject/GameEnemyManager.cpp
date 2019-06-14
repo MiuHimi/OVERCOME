@@ -77,8 +77,8 @@ void GameEnemyManager::Create()
 	}
 
 	// äÎåØÉTÉCÉìÇÃê›íË
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\dangerous_signH.png", nullptr, m_textureDengerousH.GetAddressOf());
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\dangerous_signV.png", nullptr, m_textureDengerousV.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\dangerous_signH.png", nullptr, m_textureDengerousH.GetAddressOf());
+	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\dangerous_signV.png", nullptr, m_textureDengerousV.GetAddressOf());
 }
 
 /// <summary>
