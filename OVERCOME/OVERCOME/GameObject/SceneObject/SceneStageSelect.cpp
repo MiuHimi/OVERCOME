@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneStageSelect.cpp
 // Summary. SceneStageSelectClass
-// Date.    2018/11/30
+// Date.    2019/06/06
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -13,13 +13,14 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/InputManager.h"
-#include "../../Utility/DrawManager.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
 // usingディレクトリ
 using namespace DirectX;
-//using Microsoft::WRL::ComPtr;
+
+// constディレクトリ
+const int SceneStageSelect::STAGE_ICON_SIZE = 80;
 
 
 /// <summary>
@@ -29,9 +30,12 @@ using namespace DirectX;
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneStageSelect::SceneStageSelect(SceneManager * sceneManager)
 	: SceneBase(sceneManager),
-	  selectedStage(0),
-	  mp_matrixManager(nullptr),
-	  m_color(0.0f)
+	  m_toPlayMoveOnChecker(false),
+	  m_selectedStage(0),
+	  m_colorAlpha(0.0f),
+	  mp_textureBackground(nullptr),
+	  mp_sprite(nullptr),
+	  mp_matrixManager(nullptr)
 {
 }
 /// <summary>
@@ -48,37 +52,35 @@ void SceneStageSelect::Initialize()
 {
 	m_toPlayMoveOnChecker = false;
 
-	// ウインドウサイズからアスペクト比を算出する
-	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	// アイコン衝突判定の初期化
+	for (int i = 0; i < stage::NUM; i++)
+	{
+		m_collideStageIcon[i].pos = SimpleMath::Vector2(float((i * 30) + 315 + i * STAGE_ICON_SIZE), 360.0f);
+		m_collideStageIcon[i].width = float(STAGE_ICON_SIZE);
+		m_collideStageIcon[i].height = float(STAGE_ICON_SIZE);
+	}
 
 	// テクスチャのロード
 	for (int i = 0; i < stage::NUM; i++)
 	{
-		DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\StageSelect\\stage_len.png", nullptr, m_textureStageIcon[i].GetAddressOf());
+		CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\StageSelect\\stage_len.png", nullptr, mp_textureStageIcon[i].GetAddressOf());
 	}
-
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\StageSelect\\stageselect_background_image.png", nullptr, m_textureBackground.GetAddressOf());
-
-	for (int i = 0; i < stage::NUM; i++)
-	{
-		m_posStageIcon[i] = SimpleMath::Vector2((i*30)+315.0f + i * m_stageIconSize, 360.0f);
-	}
-
-	for (int i = 0; i < stage::NUM; i++)
-	{
-		m_collideStageIcon[i].pos = SimpleMath::Vector2((i * 30) + 315.0f + i * m_stageIconSize, 360.0f);
-		m_collideStageIcon[i].width = 80.0f;
-		m_collideStageIcon[i].height = 80.0f;
-	}
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\StageSelect\\stageselect_background_image.png", nullptr, mp_textureBackground.GetAddressOf());
 
 	// スプライトバッチの初期化
 	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+
+	// α値の設定(初期化)
+	m_colorAlpha = 1.0f;
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
 
 	// ビュー行列の作成
-	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+	SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
 
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
@@ -107,6 +109,7 @@ void SceneStageSelect::Initialize()
 /// </summary>
 void SceneStageSelect::Finalize()
 {
+	// 行列管理変数の削除
 	if (mp_matrixManager != nullptr)
 	{
 		delete mp_matrixManager;
@@ -138,24 +141,32 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 		SimpleMath::Vector2 mousePos = SimpleMath::Vector2(float(InputManager::SingletonGetInstance().GetMousePosX()), float(InputManager::SingletonGetInstance().GetMousePosY()));
 		for (int i = 0; i < stage::NUM; i++)
 		{
-			if (mousePos.x > m_posStageIcon[i].x && mousePos.x < m_posStageIcon[i].x + m_stageIconSize &&
-				mousePos.y > m_posStageIcon[i].y && mousePos.y < m_posStageIcon[i].y + m_stageIconSize)
+			// マウスとアイコンの衝突判定
+			if (mousePos.x > m_collideStageIcon[i].pos.x && mousePos.x < m_collideStageIcon[i].pos.x + float(STAGE_ICON_SIZE) &&
+				mousePos.y > m_collideStageIcon[i].pos.y && mousePos.y < m_collideStageIcon[i].pos.y + float(STAGE_ICON_SIZE))
 			{
-				selectedStage = i+1;
-				SceneManager::SetStageNum(selectedStage);
+				// 選択されたステージ番号を記憶
+				m_selectedStage = i+1;
+				// プレイステージを決定
+				SceneManager::SetStageNum(m_selectedStage);
+				// シーン遷移発生
 				m_toPlayMoveOnChecker = true;
+				// サウンド再生
 				adx2le->Play(1);
 				break;
 			}
 		}
 	}
 
-	if (m_toPlayMoveOnChecker == true)
+	// シーン遷移開始
+	if (m_toPlayMoveOnChecker)
 	{
-		m_color += 0.01f;
+		m_colorAlpha -= 0.01f;
+		if (m_colorAlpha < 0.0f) m_colorAlpha = 0.0f;
 	}
 
-	if (m_toPlayMoveOnChecker == true && m_color > 1.0f)
+	// シーン遷移
+	if (m_toPlayMoveOnChecker && m_colorAlpha <= 0.0f)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_PLAY);
 	}
@@ -166,34 +177,20 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneStageSelect::Render()
 {
-	// 切り取る場所を設定
-	RECT rectBG;
-	rectBG.top = LONG(0.0f);
-	rectBG.left = LONG(0.0f);
-	rectBG.right = LONG(800.0f);
-	rectBG.bottom = LONG(600.0f);
+	// ステージセレクト画面の描画
+	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 
-	// タイトルの描画
-	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
-
-	// BG
-	mp_sprite->Draw(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectBG, SimpleMath::Vector4(1.0f - m_color, 1.0f - m_color, 1.0f - m_color, 1.0f), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	// 背景
+	RECT rectBG = { 0, 0, 800, 600};
+	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectBG, SimpleMath::Vector4( 1.0f, 1.0f, 1.0f , m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 
 	// アイコン
 	for (int i = 0; i < stage::NUM; i++)
 	{
-		// 切り取る場所を設定
-		RECT rect;
-		rect.top = LONG(0.0f);
-		rect.left = LONG(i*m_stageIconSize);
-		rect.right = LONG(i*m_stageIconSize + m_stageIconSize);
-		rect.bottom = LONG(m_stageIconSize);
-
-		mp_sprite->Draw(m_textureStageIcon[i].Get(), m_posStageIcon[i], &rect, SimpleMath::Vector4(1.0f - m_color, 1.0f - m_color, 1.0f - m_color, 1.0f), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+		RECT rect = { i*STAGE_ICON_SIZE, 0, i*STAGE_ICON_SIZE+STAGE_ICON_SIZE, STAGE_ICON_SIZE };
+		mp_sprite->Draw(mp_textureStageIcon[i].Get(), m_collideStageIcon[i].pos, &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	}
 
 	mp_sprite->End();
-	
-
 }
 

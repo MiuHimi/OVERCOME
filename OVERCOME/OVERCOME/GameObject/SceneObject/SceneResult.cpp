@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneResult.cpp
 // Summary. SceneResultClass
-// Date.    2018/08/15
+// Date.    2019/06/12
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -11,14 +11,17 @@
 #include "SceneResult.h"
 #include "../2DObject/GameScore.h"
 
+#include "../../Utility/CommonStateManager.h"
 #include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/DrawManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
-//using Microsoft::WRL::ComPtr;
 
+// constディレクトリ
+const int SceneResult::SCORE_SIZE = 80;
+
+// スコアを取得できるようにする
 int GameScore::m_score;
 
 
@@ -27,7 +30,16 @@ int GameScore::m_score;
 /// </summary>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 SceneResult::SceneResult(SceneManager * sceneManager)
-	: SceneBase(sceneManager)
+	: SceneBase(sceneManager),
+	  m_toTitleMoveOnChecker(false),
+	  m_returnToPlayChecker(false),
+	  m_resultState(false),
+	  m_scorePos(0.0f,0.0f),
+	  mp_gameScore(nullptr),
+	  mp_textureScore(nullptr),
+	  mp_textureBackground(nullptr),
+	  mp_sprite(nullptr),
+	  mp_matrixManager(nullptr)
 {
 }
 /// <summary>
@@ -42,20 +54,29 @@ SceneResult::~SceneResult()
 /// </summary>
 void SceneResult::Initialize()
 {
+	// シーン遷移、リザルト状態のフラグの初期化
 	m_toTitleMoveOnChecker = false;
+	m_returnToPlayChecker = false;
+	m_resultState = false;
 
-	for (int i = 0; i < 3; i++)
-	{
-		DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\count\\count_length.png", nullptr, m_textureScore[i].GetAddressOf());
-	}
+	// スコアの表示位置の初期化
+	m_scorePos = SimpleMath::Vector2(320.0f, 400.0f);
 
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Result\\result_background_image.png", nullptr, m_textureBackground.GetAddressOf());
+	// スコアのポインタの初期化
+	mp_gameScore = std::make_unique<GameScore>();
+
+	// テクスチャのロード
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\count\\count_length.png", nullptr, mp_textureScore.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Result\\result_background_image.png", nullptr, mp_textureBackground.GetAddressOf());
+
+	// スプライトバッチの初期化
+	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
 
 	// ビュー行列の作成
-	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+	SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
 
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
@@ -81,6 +102,7 @@ void SceneResult::Initialize()
 /// </summary>
 void SceneResult::Finalize()
 {
+	// 行列管理変数の削除
 	if (mp_matrixManager != nullptr)
 	{
 		delete mp_matrixManager;
@@ -99,25 +121,27 @@ void SceneResult::Update(DX::StepTimer const& timer)
 	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 
-
 	// スコアの更新
 	mp_gameScore->Update(timer);
 
-	// リザルトシーンの状態を設定
+	// リザルトシーンの状態を取得
 	m_resultState = SceneManager::GetResultSceneState();
 
+	// 画面クリックでシーン遷移発生
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		m_toTitleMoveOnChecker = true;
 	}
-
-	// キー入力
-	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(DirectX::Keyboard::Space))
+	// キー入力でもシーン遷移発生
+	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(Keyboard::Space))
 	{
 		m_toTitleMoveOnChecker = true;
 	}
-	if (m_toTitleMoveOnChecker == true)
+
+	// シーン遷移が発生したら
+	if (m_toTitleMoveOnChecker)
 	{
+		// タイトルに戻る
 		m_sceneManager->RequestToChangeScene(SCENE_TITLE);
 	}
 }
@@ -127,74 +151,47 @@ void SceneResult::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneResult::Render()
 {
-	int score = GameScore::GetScore();
-
-	// 背景
-	DrawManager::SingletonGetInstance().Draw(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f));
+	// スコアの取得
+	int score = mp_gameScore->GetScore();
 
 	// スコア
-	int hundredDigit = score / 100;
-	int tenDigit = ((score % 100) / 10);
-	int oneDigit = score % 10;
+	int hundredDigit = score / 100;		  // 100の位
+	int tenDigit = ((score % 100) / 10);  // 10の位
+	int oneDigit = score % 10;			  // 1の位
 
-	/*for (int i = 0; i < 3; i++)
+	// リザルト画面の描画
+	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+
+	// 背景
+	RECT rectBG = { 0, 0, 800, 600 };
+	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+
+	// スコア
+	for (int i = 0; i < Digit::NUM; i++)
 	{
 		RECT rect;
-		// 切り取る場所を設定
-		if (i = 0)
+		// 桁に応じて切り取る位置を変える
+		switch (i)
 		{
-			rect.top = LONG(0.0f);
-			rect.left = LONG(m_scoreNumSize * hundredDigit);
-			rect.right = LONG(m_scoreNumSize * hundredDigit + m_scoreNumSize);
-			rect.bottom = LONG(m_scoreNumSize);
-			DrawManager::SingletonGetInstance().DrawRect(m_textureScore[i].Get(), DirectX::SimpleMath::Vector2(320 + (i * float(m_scoreNumSize)), 400.0f - m_scoreNumSize / 2), &rect);
-
+		// 100の位
+		case HUNDRED: 
+			rect = { SCORE_SIZE * hundredDigit, 0, SCORE_SIZE * hundredDigit + SCORE_SIZE, SCORE_SIZE }; 
+			break;
+		// 10の位
+		case TEN:
+			rect = { SCORE_SIZE * tenDigit, 0, SCORE_SIZE * tenDigit + SCORE_SIZE, SCORE_SIZE };
+			break;
+		// 1の位
+		case ONE:
+			rect = { SCORE_SIZE * oneDigit, 0, SCORE_SIZE * oneDigit + SCORE_SIZE, SCORE_SIZE };
+			break;
+		// それ以外の位
+		default:
+			break;
 		}
-		if (i = 1)
-		{
-			rect.top = LONG(0.0f);
-			rect.left = LONG(m_scoreNumSize * tenDigit);
-			rect.right = LONG(m_scoreNumSize * tenDigit + m_scoreNumSize);
-			rect.bottom = LONG(m_scoreNumSize);
-			DrawManager::SingletonGetInstance().DrawRect(m_textureScore[i].Get(), DirectX::SimpleMath::Vector2(320 + (i * float(m_scoreNumSize)), 400.0f - m_scoreNumSize / 2), &rect);
 
-		}
-		if (i = 2)
-		{
-			rect.top = LONG(0.0f);
-			rect.left = LONG(m_scoreNumSize * oneDigit);
-			rect.right = LONG(m_scoreNumSize * oneDigit + m_scoreNumSize);
-			rect.bottom = LONG(m_scoreNumSize);
-			DrawManager::SingletonGetInstance().DrawRect(m_textureScore[i].Get(), DirectX::SimpleMath::Vector2(320 + (i * float(m_scoreNumSize)), 400.0f - m_scoreNumSize / 2), &rect);
+		mp_sprite->Draw(mp_textureScore.Get(), SimpleMath::Vector2(m_scorePos.x + float(i * SCORE_SIZE), m_scorePos.y - (float)SCORE_SIZE / 2.0f), &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	}
 
-		}
-		
-	}*/
-
-	RECT rect;
-
-	rect.top = LONG(0.0f);
-	rect.left = LONG(m_scoreNumSize * hundredDigit);
-	rect.right = LONG(m_scoreNumSize * hundredDigit + m_scoreNumSize);
-	rect.bottom = LONG(m_scoreNumSize);
-	DrawManager::SingletonGetInstance().DrawRect(m_textureScore[0].Get(), DirectX::SimpleMath::Vector2(320.0f, 400.0f - m_scoreNumSize / 2), &rect);
-
-	rect.top = LONG(0.0f);
-	rect.left = LONG(m_scoreNumSize * tenDigit);
-	rect.right = LONG(m_scoreNumSize * tenDigit + m_scoreNumSize);
-	rect.bottom = LONG(m_scoreNumSize);
-	DrawManager::SingletonGetInstance().DrawRect(m_textureScore[0].Get(), DirectX::SimpleMath::Vector2(400.0f, 400.0f - m_scoreNumSize / 2), &rect);
-
-	rect.top = LONG(0.0f);
-	rect.left = LONG(m_scoreNumSize * oneDigit);
-	rect.right = LONG(m_scoreNumSize * oneDigit + m_scoreNumSize);
-	rect.bottom = LONG(m_scoreNumSize);
-	DrawManager::SingletonGetInstance().DrawRect(m_textureScore[0].Get(), DirectX::SimpleMath::Vector2(480.0f, 400.0f - m_scoreNumSize / 2), &rect);
-
-	// デバッグ用
-	//GameDebug::SingletonGetInstance().DebugRender("SceneResult", DirectX::SimpleMath::Vector2(20.0f, 10.0f));
-	//if (m_resultState == true) GameDebug::SingletonGetInstance().DebugRender("Clear", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-	//if (m_resultState == false)GameDebug::SingletonGetInstance().DebugRender("GameOver", DirectX::SimpleMath::Vector2(20.0f, 30.0f));
-	//GameDebug::SingletonGetInstance().DebugRender("SPACEkey to SceneTitle", DirectX::SimpleMath::Vector2(20.0f, 50.0f));
-	//GameDebug::SingletonGetInstance().Render();
+	mp_sprite->End();
 }

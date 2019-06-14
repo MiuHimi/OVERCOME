@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneStageSelect.h
 // Summary. SceneStageSelectClass
-// Date.    2018/11/30
+// Date.    2019/06/06
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -20,11 +20,11 @@ class SceneStageSelect : public SceneBase
 public:
 
 private:
-	bool m_toPlayMoveOnChecker;                   // プレイシーンに進めるかどうかのチェック
-	bool m_returnToTitleChecker;                  // タイトルシーンに戻れるかどうかのチェック
+	bool                                               m_toPlayMoveOnChecker;     // タイトルシーンに進めるかどうかのチェック
 
-	int selectedStage;                            // 選択されたステージ
+	int												   m_selectedStage;			  // 選択されたステージ
 
+	// ステージ数
 	enum stage
 	{
 		ONE,
@@ -33,18 +33,16 @@ private:
 		NUM
 	};
 
-	const int                                            m_stageIconSize = 80;
-	DirectX::SimpleMath::Vector2                         m_posStageIcon[NUM];      // タイマー数列位置
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureStageIcon[NUM];  // テクスチャハンドル(数字)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;      // テクスチャハンドル(数字)
+	float											   m_colorAlpha;			  // α値を変更
 
-	Collision2D                                          m_collideStageIcon[2];
+	static const int                                   STAGE_ICON_SIZE;			  // ステージアイコンサイズ
+	DirectX::SimpleMath::Vector2                       m_posStageIcon[NUM];       // ステージアイコン位置
+	Collision2D                                        m_collideStageIcon[NUM];	  // ステージアイコン衝突判定
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureStageIcon[NUM];  // テクスチャハンドル(数字)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureBackground;      // テクスチャハンドル(数字)
+	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;				  // スプライトバッチ
 
-	MatrixManager*                                       mp_matrixManager;      // 行列管理変数
-
-	std::unique_ptr<DirectX::SpriteBatch>                mp_sprite;
-
-	float                                                m_color;
+	MatrixManager*                                     mp_matrixManager;		  // 行列管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -63,9 +61,5 @@ public:
 	virtual void Finalize() override;
 
 private:
-	// 選択しているステージを読み込み
-	void LoadStage(int stageID);
 
-	// 選択しているステージを表示
-	void ShowStage();
 };

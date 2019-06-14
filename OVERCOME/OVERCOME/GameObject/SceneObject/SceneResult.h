@@ -18,16 +18,29 @@ class SceneResult : public SceneBase
 public:
 
 private:
-	bool                                   m_toTitleMoveOnChecker;                 // タイトルシーンに進めるかどうかのチェック
-	bool                                   m_returnToPlayChecker;                  // プレイシーンに戻れるかどうかのチェック
-	bool                                   m_resultState;                          // リザルトシーンの状態
+	bool												 m_toTitleMoveOnChecker;  // タイトルシーンに進めるかどうかのチェック
+	bool												 m_returnToPlayChecker;   // プレイシーンに戻れるかどうかのチェック
+	bool												 m_resultState;			  // リザルトシーンの状態
 
-	std::unique_ptr<GameScore>             mp_gameScore;
+	static const int									 SCORE_SIZE;			  // スコアの数字のサイズ
 
-	const int m_scoreNumSize = 80;
+	// スコアの桁
+	enum Digit
+	{
+		HUNDRED,
+		TEN,
+		ONE,
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureScore[3];       // テクスチャハンドル(数字)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     m_textureBackground;     // テクスチャハンドル(背景)
+		NUM
+	};
+
+	DirectX::SimpleMath::Vector2						 m_scorePos;			  // スコアの表示位置
+
+	std::unique_ptr<GameScore>							 mp_gameScore;			  // スコアのポインタ
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     mp_textureScore;         // テクスチャハンドル(スコア)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     mp_textureBackground;    // テクスチャハンドル(背景)
+	std::unique_ptr<DirectX::SpriteBatch>                mp_sprite;				  // スプライトバッチ
 
 	MatrixManager*                                       mp_matrixManager;        // 行列管理変数
 
@@ -46,5 +59,7 @@ public:
 	virtual void Render() override;
 	// 終了
 	virtual void Finalize() override;
+
+private:
 
 };

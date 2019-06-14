@@ -95,7 +95,7 @@ void ScenePlay::Initialize()
 	//mp_skydome = std::make_unique<SkyDome>();
 	//mp_skydome->Initialize();
 	// スカイドームのモデルの読み込み
-	//mp_skydome->Create();
+	//mp_skydome->Create();mp_gameScore
 
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
