@@ -181,7 +181,6 @@
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject\2DObject\GameScore.h" />
-    <ClInclude Include="GameObject\2DObject\GameTimer.h" />
     <ClInclude Include="GameObject\2DObject\Obj2D.h" />
     <ClInclude Include="GameObject\2DObject\String.h" />
     <ClInclude Include="GameObject\3DObject\Camera.h" />
@@ -190,7 +189,6 @@
     <ClInclude Include="GameObject\3DObject\GameCamera.h" />
     <ClInclude Include="GameObject\3DObject\GameEnemy.h" />
     <ClInclude Include="GameObject\3DObject\GameEnemyManager.h" />
-    <ClInclude Include="GameObject\3DObject\GameFloor.h" />
     <ClInclude Include="GameObject\3DObject\GameMap.h" />
     <ClInclude Include="GameObject\3DObject\GameRoad.h" />
     <ClInclude Include="GameObject\3DObject\GameTarget.h" />
@@ -223,7 +221,6 @@
     <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject\2DObject\GameScore.cpp" />
-    <ClCompile Include="GameObject\2DObject\GameTimer.cpp" />
     <ClCompile Include="GameObject\2DObject\Obj2D.cpp" />
     <ClCompile Include="GameObject\2DObject\String.cpp" />
     <ClCompile Include="GameObject\3DObject\Camera.cpp" />
@@ -232,7 +229,6 @@
     <ClCompile Include="GameObject\3DObject\GameCamera.cpp" />
     <ClCompile Include="GameObject\3DObject\GameEnemy.cpp" />
     <ClCompile Include="GameObject\3DObject\GameEnemyManager.cpp" />
-    <ClCompile Include="GameObject\3DObject\GameFloor.cpp" />
     <ClCompile Include="GameObject\3DObject\GameMap.cpp" />
     <ClCompile Include="GameObject\3DObject\GameRoad.cpp" />
     <ClCompile Include="GameObject\3DObject\GameTarget.cpp" />

@@ -10,8 +10,8 @@
 #include "SceneManager.h"
 #include "ScenePlay.h"
 
-#include "../../Utility/CommonStateManager.h"
 #include "../../Utility/DeviceResources.h"
+#include "../../Utility/CommonStateManager.h"
 #include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/DrawManager.h"
@@ -20,7 +20,6 @@
 
 // usingディレクトリ
 using namespace DirectX;
-//using Microsoft::WRL::ComPtr;
 
 std::unique_ptr<Player> ScenePlay::mp_player;
 bool SceneManager::m_clearSceneState;
@@ -56,11 +55,6 @@ void ScenePlay::Initialize()
 	//mp_camera = std::make_unique<GameCamera>();
 	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
 
-	// ゲーム床の生成
-	mp_gameFloor = std::make_unique<GameFloor>();
-	// ゲーム床のモデル読み込み
-	mp_gameFloor->Create();
-
 	// ゲーム道路の生成
 	mp_gameRoad = std::make_unique<GameRoad>();
 	mp_gameRoad->Initialize();
@@ -91,30 +85,22 @@ void ScenePlay::Initialize()
 	// プレイヤーのモデルの読み込み
 	mp_player->Create();
 
-	// スカイドームの生成
-	//mp_skydome = std::make_unique<SkyDome>();
-	//mp_skydome->Initialize();
-	// スカイドームのモデルの読み込み
-	//mp_skydome->Create();
-
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
 	mp_gameScore->Create(L"Resources\\Images\\GameScore\\score_len.png", L"Resources\\Images\\GameScore\\score_background.png");
 
 	m_fadeInCount = 1;
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\background.png", nullptr, m_textureFadeIn.GetAddressOf());
-
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\background.png", nullptr, m_textureBackground.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\background.png", nullptr, m_textureFadeIn.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\background.png", nullptr, m_textureBackground.GetAddressOf());
 
 	//// メッシュ衝突判定
 	//m_collisionStage = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\StageMap\\stage01.obj");
-
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
 
 	// ビュー行列の作成
-	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+	SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
 
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
@@ -138,7 +124,6 @@ void ScenePlay::Initialize()
 	//mp_effectManager->Create();
 	//mp_effectManager->Initialize(5, SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3(0, 0, 0));
 	//mp_effectManager->SetRenderState(view, projection);
-
 
 	// サウンド再生
 	ADX2Le* adx2le = ADX2Le::GetInstance();
@@ -187,14 +172,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	{
 		for (int i = 0; i < mp_gameRoad->GetMaxFloorBlock(); i++)
 		{
-			/*if (mp_gameRoad->GetRoadObject(j, i).roadType != 0)
-			{
-				if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollisionObject(j, i)->GetCollision(), mp_player->GetCollision()) == true)
-				{
-					
-				}
-			}*/
-
 			if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollisionObject(j, i)->GetCollision(), mp_player->GetCollision()) == true)
 			{
 				if (i != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x || j != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)break;
@@ -309,8 +286,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		}
 	}
 
-	// ゲーム床の更新
-	mp_gameFloor->Update(timer);
 	// ゲーム道路の更新
 	mp_gameRoad->Update(timer);
 	// ゲーム的の更新
@@ -343,7 +318,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 void ScenePlay::Render()
 {
 	// ビュー行列の作成
-	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), DirectX::SimpleMath::Vector3::Up);
+	SimpleMath::Matrix view = SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), SimpleMath::Vector3::Up);
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 
@@ -363,8 +338,6 @@ void ScenePlay::Render()
 	// 行列を設定
 	mp_matrixManager->SetViewProjection(view, projection);
 
-	// ゲーム床の描画
-	mp_gameFloor->Render(mp_matrixManager);
 	// ゲーム道路の描画
 	//mp_gameRoad->Render(mp_matrixManager);
 	// ゲーム的の描画
@@ -378,14 +351,11 @@ void ScenePlay::Render()
 
 	// 敵の描画
 	mp_gameEnemyManager->Render(mp_matrixManager);
-
-	// スカイドームの描画
-	//mp_skydome->Render(mp_matrixManager);
 	
 	//mp_effectManager->Render();
 
 	// スコアの描画
 	mp_gameScore->Render();
 
-	DrawManager::SingletonGetInstance().DrawAlpha(m_textureBackground.Get(), DirectX::SimpleMath::Vector2(0.0f, 0.0f), SimpleMath::Vector4(1.0, 1.0f, 1.0f, m_fadeInCount));
+	DrawManager::SingletonGetInstance().DrawAlpha(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), SimpleMath::Vector4(1.0, 1.0f, 1.0f, m_fadeInCount));
 }

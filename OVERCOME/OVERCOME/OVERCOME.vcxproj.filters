@@ -117,9 +117,6 @@
     <ClInclude Include="GameObject\3DObject\GameTarget.h">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject\3DObject\GameFloor.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\3DObject\GameRoad.h">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
@@ -134,9 +131,6 @@
     </ClInclude>
     <ClInclude Include="GameObject\3DObject\Camera.h">
       <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\2DObject\GameTimer.h">
-      <Filter>Game\GameObject\2DObject</Filter>
     </ClInclude>
     <ClInclude Include="GameObject\2DObject\GameScore.h">
       <Filter>Game\GameObject\2DObject</Filter>
@@ -233,9 +227,6 @@
     <ClCompile Include="GameObject\3DObject\GameTarget.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameFloor.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject\3DObject\GameRoad.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
@@ -250,9 +241,6 @@
     </ClCompile>
     <ClCompile Include="GameObject\3DObject\Camera.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\2DObject\GameTimer.cpp">
-      <Filter>Game\GameObject\2DObject</Filter>
     </ClCompile>
     <ClCompile Include="GameObject\2DObject\GameScore.cpp">
       <Filter>Game\GameObject\2DObject</Filter>
