@@ -9,11 +9,21 @@
 
 // インクルードディレクトリ
 #include "SceneBase.h"
-#include <SpriteBatch.h>
 
 #include "../../Game.h"
 
+#include "../3DObject/Player.h"
+#include "../3DObject/GameCamera.h"
+#include "../3DObject/GameEnemyManager.h"
+
+#include "../3DObject/GameRoad.h"
+#include "../3DObject/GameTarget.h"
+
+#include "../3DObject/GameMap.h"
+
 #include "../2DObject/GameScore.h"
+
+//#include "../../ExclusiveGameObject/EffectManager.h"
 
 class MatrixManager;
 class ScenePlay : public SceneBase
@@ -25,16 +35,26 @@ private:
 	bool								m_toResultMoveOnChecker;   // リザルトシーンに進めるかどうかのチェック
 	bool								m_returnToTitleChecker;    // タイトルシーンに戻れるかどうかのチェック
 
-	std::unique_ptr<GameScore>			mp_gameScore;			   // スコアオブジェクト
-	
-	float								m_colorAlpha;			   // α値を変更
+	static std::unique_ptr<Player>		mp_player;				   // プレイヤーオブジェクト
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   
-										mp_fade;				   // テクスチャハンドル(フェード処理)
-	std::unique_ptr<DirectX::SpriteBatch>              
-										mp_sprite;				   // スプライトバッチ
+	std::unique_ptr<GameCamera>			mp_camera;				   // カメラオブジェクト
+	std::unique_ptr<GameEnemyManager>   mp_gameEnemyManager;	   // ゲーム敵管理オブジェクト
+
+	std::unique_ptr<GameRoad>			mp_gameRoad;			   // ゲーム道路オブジェクト
+	std::unique_ptr<GameTarget>			mp_gameTarget;			   // ゲーム標的オブジェクト
+	std::unique_ptr<GameMap>			mp_gameMap;				   // ゲームマップオブジェクト
+
+	std::unique_ptr<GameScore> mp_gameScore;					   // スコアオブジェクト
+
+	float m_fadeInCount;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+										m_textureBackground;	   // テクスチャハンドル(背景)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+										m_textureFadeIn;		   // テクスチャハンドル(フェードイン)
 
 	MatrixManager*						mp_matrixManager;		   // 行列管理変数
+
+	//EffectManager*					mp_effectManager;		   // エフェクト管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -51,5 +71,7 @@ public:
 	virtual void Render() override;
 	// 終了
 	virtual void Finalize() override;
+
+	static Player* GetPlayer() { return mp_player.get(); }
 
 };
