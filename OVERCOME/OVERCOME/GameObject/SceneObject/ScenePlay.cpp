@@ -14,14 +14,13 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/DrawManager.h"
+#include "../../Utility/GameDebug.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
 // usingディレクトリ
 using namespace DirectX;
 
-std::unique_ptr<Player> ScenePlay::mp_player;
 bool SceneManager::m_clearSceneState;
 
 
@@ -31,6 +30,10 @@ bool SceneManager::m_clearSceneState;
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
 ScenePlay::ScenePlay(SceneManager* sceneManager)
 	: SceneBase(sceneManager),
+	  m_toResultMoveOnChecker(false),
+	  m_colorAlpha(0.0f),
+	  mp_fade(nullptr),
+	  mp_sprite(nullptr),
    	  mp_matrixManager(nullptr)
 {
 }
@@ -51,72 +54,40 @@ void ScenePlay::Initialize()
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 
-	// カメラオブジェクトの作成
-	//mp_camera = std::make_unique<GameCamera>();
-	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
-
-	// ゲーム道路の生成
-	mp_gameRoad = std::make_unique<GameRoad>();
-	mp_gameRoad->Initialize();
-	// ゲーム道路のモデル読み込み
-	mp_gameRoad->Create();
-
-	// ゲーム道路の生成
-	//mp_gameTarget = std::make_unique<GameTarget>();
-	//mp_gameTarget->Initialize();
-	// ゲーム道路のモデル読み込み
-	//mp_gameTarget->Create();
-
-	// ゲームマップの生成
-	mp_gameMap = std::make_unique<GameMap>();
-	mp_gameMap->Initialize();
-	// ゲームマップのモデル読み込み
-	mp_gameMap->Create();
-
-	// ゲーム敵管理の生成
-	mp_gameEnemyManager = std::make_unique<GameEnemyManager>();
-	mp_gameEnemyManager->Initialize();
-	// ゲーム敵管理のモデル読み込み
-	mp_gameEnemyManager->Create();
-
-	// プレイヤーの生成
-	mp_player = std::make_unique<Player>();
-	mp_player->Initialize();
-	// プレイヤーのモデルの読み込み
-	mp_player->Create();
-
+	
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
 	mp_gameScore->Create(L"Resources\\Images\\GameScore\\score_len.png", L"Resources\\Images\\GameScore\\score_background.png");
 
-	m_fadeInCount = 1;
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\background.png", nullptr, m_textureFadeIn.GetAddressOf());
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\background.png", nullptr, m_textureBackground.GetAddressOf());
+	// α値の設定(初期化)
+	m_colorAlpha = 1.0f;
 
-	//// メッシュ衝突判定
-	//m_collisionStage = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\StageMap\\stage01.obj");
+	// テクスチャのロード
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\black.png", nullptr, mp_fade.GetAddressOf());
+	// スプライトバッチの初期化
+	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
 
 	// 行列管理変数の初期化
-	mp_matrixManager = new MatrixManager();
+	//mp_matrixManager = new MatrixManager();
 
 	// ビュー行列の作成
-	SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
+	//SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
 
-	float aspectRatio = float(size.right) / float(size.bottom);
+	//float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
-	float angle = 45.0f;
-	float fovAngleY = XMConvertToRadians(angle);
+	//float angle = 45.0f;
+	//float fovAngleY = XMConvertToRadians(angle);
 
 	// 射影行列を作成
-	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+	/*SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
 		fovAngleY,
 		aspectRatio,
 		0.01f,
 		200.0f
-	);
+	);*/
 
 	// 行列を設定
-	mp_matrixManager->SetViewProjection(view, projection);
+	//mp_matrixManager->SetViewProjection(view, projection);
 
 	// エフェクトマネージャーの初期化
 	//mp_effectManager = nullptr;
@@ -136,17 +107,12 @@ void ScenePlay::Initialize()
 /// </summary>
 void ScenePlay::Finalize()
 {
+	// 行列管理変数の削除
 	if (mp_matrixManager != nullptr)
 	{
 		delete mp_matrixManager;
 		mp_matrixManager = nullptr;
 	}
-
-	/*if (mp_effectManager != nullptr) {
-		mp_effectManager->Lost();
-		delete mp_effectManager;
-		mp_effectManager = nullptr;
-	}*/
 }
 
 /// <summary>
@@ -155,9 +121,9 @@ void ScenePlay::Finalize()
 /// <param name="timer">時間情報</param>
 void ScenePlay::Update(DX::StepTimer const& timer)
 {
-	// フェードイン
-	m_fadeInCount -= 0.01f;
-	if (m_fadeInCount < 0.0f)m_fadeInCount = 0.0f;
+	// シーン遷移直後のフェードイン
+	m_colorAlpha -= 0.01f;
+	if (m_colorAlpha < 0.0f)m_colorAlpha = 0.0f;
 
 	//mp_effectManager->Update(timer);
 
@@ -165,10 +131,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	InputManager::SingletonGetInstance().Update();
 
 	// カメラの更新
-	mp_camera->Update(timer, mp_player->GetPlayer());
+	//mp_camera->Update(timer, mp_player->GetPlayer());
 
 	// 道路とプレイヤーの衝突判定
-	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
+	/*for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
 	{
 		for (int i = 0; i < mp_gameRoad->GetMaxFloorBlock(); i++)
 		{
@@ -187,7 +153,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 				}
 			}
 		}
-	}
+	}*/
 
 	// 的と弾の衝突判定
 	/*for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
@@ -218,10 +184,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	}*/
 
 	// マップの更新
-	mp_gameMap->Update(timer, mp_player->GetPlayer());
+	//mp_gameMap->Update(timer, mp_player->GetPlayer());
 
 	// 敵とプレイヤーの衝突判定
-	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
+	/*for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
 	{
 		if (!mp_gameEnemyManager->GetEnemyState(i))continue;
 		if (mp_gameEnemyManager->GetEnemyState(i))
@@ -231,10 +197,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 				mp_gameEnemyManager->SetEnemyState(i, false);
 			}
 		}
-	}
+	}*/
 
 	// 敵と弾の衝突判定
-	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
+	/*for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
 	{
 		if (!mp_gameEnemyManager->GetEnemyState(i))continue;
 		if (mp_gameEnemyManager->GetEnemyState(i))
@@ -256,10 +222,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 				}
 			}
 		}
-	}
+	}*/
 
 	// 弾の表示限界の設定
-	SimpleMath::Vector3 pPos = mp_player->GetPos();
+	/*SimpleMath::Vector3 pPos = mp_player->GetPos();
 	SimpleMath::Vector3 bPos[5];
 	for (int i = 0; i < mp_player->GetBulletManager()->GetMaxBulletNum(); i++)
 	{
@@ -284,18 +250,18 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		{
 			mp_player->GetBulletManager()->SetBulletState(i, false);
 		}
-	}
+	}*/
 
 	// ゲーム道路の更新
-	mp_gameRoad->Update(timer);
+	//mp_gameRoad->Update(timer);
 	// ゲーム的の更新
 	//mp_gameTarget->Update(timer);
 
 	// プレイヤーの更新
-	mp_player->Update(timer);
+	//mp_player->Update(timer);
 
 	// 敵の更新
-	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer());
+	//mp_gameEnemyManager->Update(timer, mp_player->GetPlayer());
 
 	// スコアの更新
 	mp_gameScore->Update(timer);
@@ -306,7 +272,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	}
 
 	// シーン操作
-	if (m_toResultMoveOnChecker == true)
+	if (m_toResultMoveOnChecker || InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_RESULT);
 	}
@@ -318,25 +284,38 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 void ScenePlay::Render()
 {
 	// ビュー行列の作成
-	SimpleMath::Matrix view = SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), SimpleMath::Vector3::Up);
+	//SimpleMath::Matrix view = SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), SimpleMath::Vector3::Up);
 	// ウインドウサイズからアスペクト比を算出する
-	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	//RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 
-	float aspectRatio = float(size.right) / float(size.bottom);
+	//float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
-	float angle = 45.0f;
-	float fovAngleY = XMConvertToRadians(angle);
+	//float angle = 45.0f;
+	//float fovAngleY = XMConvertToRadians(angle);
 
 	// 射影行列を作成
-	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+	/*SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
 		fovAngleY,
 		aspectRatio,
 		0.01f,
 		200.0f
-	);
+	);*/
 
 	// 行列を設定
-	mp_matrixManager->SetViewProjection(view, projection);
+	//mp_matrixManager->SetViewProjection(view, projection);
+
+	// フェードインの描画
+	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+
+	RECT rect = { 0, 0, 800, 600 };
+
+	mp_sprite->Draw(mp_fade.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+
+	mp_sprite->End();
+
+	// デバッグ
+	GameDebug::SingletonGetInstance().DebugRender("ScenePlay", SimpleMath::Vector2(10.0f, 10.0f));
+	GameDebug::SingletonGetInstance().Render();
 
 	// ゲーム道路の描画
 	//mp_gameRoad->Render(mp_matrixManager);
@@ -344,18 +323,16 @@ void ScenePlay::Render()
 	//mp_gameTarget->Render(mp_matrixManager);
 
 	// マップの描画
-	mp_gameMap->Render(mp_matrixManager);
+	//mp_gameMap->Render(mp_matrixManager);
 
 	// プレイヤーの描画
-	mp_player->Render(mp_matrixManager);
+	//mp_player->Render(mp_matrixManager);
 
 	// 敵の描画
-	mp_gameEnemyManager->Render(mp_matrixManager);
+	//mp_gameEnemyManager->Render(mp_matrixManager);
 	
 	//mp_effectManager->Render();
 
 	// スコアの描画
 	mp_gameScore->Render();
-
-	DrawManager::SingletonGetInstance().DrawAlpha(m_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), SimpleMath::Vector4(1.0, 1.0f, 1.0f, m_fadeInCount));
 }
