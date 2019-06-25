@@ -42,9 +42,6 @@
     <ClInclude Include="ExclusiveGameObject\Collision.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
-    <ClInclude Include="ExclusiveGameObject\CollisionBox.h">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClInclude>
     <ClInclude Include="ExclusiveGameObject\DebugBox.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
@@ -62,9 +59,6 @@
     </ClInclude>
     <ClInclude Include="Utility\CommonStateManager.h">
       <Filter>Game\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="ExclusiveGameObject\CollisionSphere.h">
-      <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
     <ClInclude Include="ExclusiveGameObject\DebugSphere.h">
       <Filter>Game\ExclusiveGameObject</Filter>
@@ -108,35 +102,8 @@
     <ClInclude Include="ExclusiveGameObject\BinaryFile.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject\3DObject\SkyDome.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\Player.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\GameTarget.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\GameRoad.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\GameCamera.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\GameBulletManager.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\GameBullet.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\Camera.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\2DObject\GameScore.h">
       <Filter>Game\GameObject\2DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\Obj3D.h">
-      <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
     <ClInclude Include="GameObject\2DObject\Obj2D.h">
       <Filter>Game\GameObject\2DObject</Filter>
@@ -147,23 +114,29 @@
     <ClInclude Include="ExclusiveGameObject\CollisionMesh.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\3DObject\Camera.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\3DObject\GameCamera.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\3DObject\Player.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\3DObject\GameRoad.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
     <ClInclude Include="GameObject\3DObject\GameMap.h">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject\3DObject\GameEnemy.h">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\3DObject\GameEnemyManager.h">
-      <Filter>Game\GameObject\3DObject</Filter>
+    <ClInclude Include="Utility\GameDebug.h">
+      <Filter>Game\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp">
-      <Filter>Game\ExclusiveGameObject</Filter>
-    </ClCompile>
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
@@ -175,9 +148,6 @@
     </ClCompile>
     <ClCompile Include="Utility\CommonStateManager.cpp">
       <Filter>Game\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp">
-      <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
     <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
@@ -218,35 +188,8 @@
     <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\3DObject\SkyDome.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\Player.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameTarget.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameRoad.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameCamera.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameBulletManager.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameBullet.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\Camera.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject\2DObject\GameScore.cpp">
       <Filter>Game\GameObject\2DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\Obj3D.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
     <ClCompile Include="GameObject\2DObject\Obj2D.cpp">
       <Filter>Game\GameObject\2DObject</Filter>
@@ -257,14 +200,23 @@
     <ClCompile Include="ExclusiveGameObject\CollisionMesh.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject\3DObject\Camera.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\3DObject\GameCamera.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\3DObject\Player.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\3DObject\GameRoad.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
     <ClCompile Include="GameObject\3DObject\GameMap.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameEnemy.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameEnemyManager.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
+    <ClCompile Include="Utility\GameDebug.cpp">
+      <Filter>Game\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -281,42 +233,6 @@
     </Manifest>
   </ItemGroup>
   <ItemGroup>
-    <MeshContentTask Include="..\FBX\floor01.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\road_curve.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\road_stop.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\road_straight.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\player.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\sky2.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\road_branch.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\bullet.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\target.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\Map\wood_map01.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\enemy.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="..\FBX\map02.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
     <MeshContentTask Include="..\FBX\map01.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>

@@ -148,7 +148,7 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 				// 選択されたステージ番号を記憶
 				m_selectedStage = i+1;
 				// プレイステージを決定
-				SceneManager::SetStageNum(m_selectedStage);
+				//SceneManager::SetStageNum(m_selectedStage);
 				// シーン遷移発生
 				m_toPlayMoveOnChecker = true;
 				// サウンド再生

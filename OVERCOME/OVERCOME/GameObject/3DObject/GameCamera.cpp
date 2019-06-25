@@ -19,7 +19,7 @@
 // usingディレクトリ
 using namespace DirectX;
 
-// constantディレクトリ
+// constディレクトリ
 const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
 const float GameCamera::ROTATE_MAG = 300.0f;
 
@@ -82,8 +82,7 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		break;
 	case SCENE_PLAY:
 		// マウス操作のカメラ
-		target = player->GetPos();
-		target.y += player->GetHeight();
+		target = SimpleMath::Vector3(player->GetPos().x, player->GetPos().y + player->GetHeight(), player->GetPos().z);
 		// 注視点はプレイヤーの目線の位置
 		MouseOperateCamera(target, player);
 		break;

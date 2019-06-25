@@ -29,7 +29,7 @@ class SceneManager
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
 public :
-	static int            m_stageID;                   // ステージ番号
+	//static int            m_stageID;                   // ステージ番号
 	static bool           m_clearSceneState;           // リザルトシーンの状態
 
 	static const int      MAXSTAGE;                    // 全ステージ数
@@ -63,7 +63,7 @@ public:
 	//-----------------------------------Getter-----------------------------------//
 
 	// ステージ番号の取得
-	static int  GetStageNum()					{ return m_stageID; }
+	//static int  GetStageNum()					{ return m_stageID; }
 
 	// リザルトシーンの状態の取得
 	static bool GetResultSceneState()			{ return m_clearSceneState; }
@@ -78,7 +78,7 @@ public:
 	//-----------------------------------Setter-----------------------------------//
 
 	// ステージ番号の設定、取得
-	static void SetStageNum(int stageID)		{ m_stageID = stageID; }
+	//static void SetStageNum(int stageID)		{ m_stageID = stageID; }
 
 	// リザルトシーンの状態の設定、取得
 	static void SetResultSceneState(bool state) { m_clearSceneState = state; }

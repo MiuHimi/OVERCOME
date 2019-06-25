@@ -8,7 +8,7 @@
 // インクルードディレクトリ
 #include "../../pch.h"
 #include "Player.h"
-#include "GameRoad.h"
+//#include "GameRoad.h"
 
 #include "../../Utility/InputManager.h"
 #include "../../Utility/DeviceResources.h"
@@ -35,7 +35,7 @@ Player::Player()
 	  m_spawnFlag(false), m_spawnElapsedTime(0), m_assaultPoint(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
-	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
+	  /*mp_bulletManager(nullptr),*/ mp_gameCamera(nullptr), mp_gameRoad(nullptr),
 	  m_posRestartUI(0.0f, 0.0f), m_textureRestart(nullptr),
 	  m_posCountUI(0.0f, 0.0f), m_textureCount(nullptr),
 	  m_texturePointer(nullptr)
@@ -46,8 +46,8 @@ Player::Player()
 /// </summary>
 Player::~Player()
 {
-	delete mp_bulletManager;
-	mp_bulletManager = nullptr;
+	/*delete mp_bulletManager;
+	mp_bulletManager = nullptr;*/
 }
 
 /// <summary>
@@ -64,8 +64,8 @@ void Player::Initialize()
 
 	// 他オブジェクトの初期化
 	mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
-	mp_bulletManager = new GameBulletManager();
-	mp_bulletManager->Initialize();
+	//mp_bulletManager = new GameBulletManager();
+	//mp_bulletManager->Initialize();
 	mp_gameRoad = std::make_unique<GameRoad>();
 	mp_gameRoad->Initialize();
 	mp_gameRoad->Create();
@@ -77,16 +77,16 @@ void Player::Initialize()
 void Player::Create()
 {
 	// エフェクトファクトリー
-	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
+	//EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
-	fx.SetDirectory(L"Resources\\Models");
+	//fx.SetDirectory(L"Resources\\Models");
 	// モデルをロードしてモデルハンドルを取得する
-	m_modelPlayer = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\player.cmo", fx);
+	//m_modelPlayer = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\player.cmo", fx);
 
 	// プレイヤーの作成
-	SetModel(m_modelPlayer.get());
+	//SetModel(m_modelPlayer.get());
 
-	mp_bulletManager->Create();
+	//mp_bulletManager->Create();
 
 	// リスタートUIの設定
 	m_posRestartUI = SimpleMath::Vector2(175.0f, 450.0f);
@@ -135,7 +135,7 @@ bool Player::Update(DX::StepTimer const & timer)
 	if (m_playStartFlag)
 	{
 		// 弾の更新
-		mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
+		//mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
 
 		// プレイヤー移動(ベクトル)
 		if (mp_gameCamera->GetStartPosMouse())
@@ -201,9 +201,8 @@ bool Player::Update(DX::StepTimer const & timer)
 							int pY = (int)m_passedRoadPos.y;
 							SimpleMath::Vector2 p = SimpleMath::Vector2((float)pX, (float)pY);
 
-							// 既に通過したところじゃなければ次の移動先に決定
-							if (p != pos &&
-								nowPos != pos)
+							// 既に通過したところでなければ次の移動先に決定
+							if (p != pos && nowPos != pos)
 							{
 								m_nextPos = pos;
 
@@ -217,7 +216,7 @@ bool Player::Update(DX::StepTimer const & timer)
 				{
 					m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 					m_spawnFlag = true;
-					m_assaultPoint = mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).rotaAngle;
+					m_assaultPoint = mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadNum;
 				}
 				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != 3)
 				{
@@ -250,31 +249,6 @@ bool Player::Update(DX::StepTimer const & timer)
 				m_velFlag = true;
 			}
 		}
-		
-		// リスタートの準備
-		/*if (m_restartFlag)
-		{
-			m_restartTime++;
-		}
-		if (m_restartTime > 180)
-		{
-			SimpleMath::Vector3 pos = m_pos;
-
-			m_pos.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x;
-			m_pos.y = 1.0f;
-			m_pos.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z;
-
-			m_vel = pos - m_pos;
-			m_vel.Normalize();
-			m_vel.x /= 10.0f;
-			m_vel.y = 0.0f;
-			m_vel.z /= 10.0f;
-
-			m_restartTime = 0;
-			m_restartFlag = false;
-			m_velFlag = false;
-		}*/
-
 	}
 
 	// スタートするまでは初期位置で固定
@@ -346,15 +320,6 @@ bool Player::Update(DX::StepTimer const & timer)
 		m_assaultPoint = 0;
 	}
 
-	// ワールド行列の作成
-	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);
-
-	// 衝突判定用の仮想オブジェクト生成
-	Collision::Box box;
-	box.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
-	box.r = DirectX::SimpleMath::Vector3(1.0f, m_height / 2.0f, 1.0f);                        // 各半径
-	SetCollision(box);
-
 	return true;
 }
 
@@ -363,11 +328,7 @@ bool Player::Update(DX::StepTimer const & timer)
 /// </summary>
 void Player::Render(MatrixManager* matrixManager)
 {
-	// プレイヤーの描画
-	//m_modelPlayer->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
-	//	           m_world, matrixManager->GetView(), matrixManager->GetProjection());
-
-	mp_bulletManager->Render(matrixManager);
+	//mp_bulletManager->Render(matrixManager);
 
 	// スタートカウントの描画
 	if (!m_playStartFlag)

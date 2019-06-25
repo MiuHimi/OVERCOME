@@ -22,9 +22,9 @@ class GameMap
 public:
 
 private:
-	std::unique_ptr<DirectX::Model> m_modelMap;   // マップモデル
+	std::unique_ptr<DirectX::Model> mp_modelMap;	   // マップモデル
 
-	std::unique_ptr<CollisionMesh>                       m_collisionStage;
+	std::unique_ptr<CollisionMesh>  mp_collisionStage; // コリジョンメッシュ
 
 // メンバー関数(関数、Getter、Setter)
 public:

@@ -20,13 +20,14 @@
 // usingディレクトリ
 using namespace DirectX;
 
-int SceneManager::m_stageID;
+//int SceneManager::m_stageID;
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 GameMap::GameMap()
-	: m_modelMap(nullptr)
+	: mp_modelMap(nullptr),
+	  mp_collisionStage(nullptr)
 {
 }
 /// <summary>
@@ -55,21 +56,21 @@ void GameMap::Create()
 	// ファイルパス
 	std::wstring filePath;
 	// ステージ番号
-	int fileNumber = SceneManager::GetStageNum();
+	int fileNumber = /*SceneManager::GetStageNum()*/1;
 
 	// 文字列を連結しモデルのパスを生成
 	std::wstringstream ssModel;
 	ssModel << "Resources\\Models\\map0" << fileNumber << ".cmo";
 	filePath = ssModel.str();
 	// モデルをロードしてモデルハンドルを取得する
-	m_modelMap = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), filePath.c_str(), fx);
+	mp_modelMap = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), filePath.c_str(), fx);
 
 	// 文字列を連結し衝突判定モデルのパスを生成
 	std::wstringstream ssCollision;
 	ssCollision << "Resources\\StageMap\\stage0" << fileNumber << ".obj";
 	filePath = ssCollision.str();
 	// メッシュ衝突判定
-	m_collisionStage = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), filePath.c_str());
+	mp_collisionStage = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), filePath.c_str());
 
 }
 
@@ -83,7 +84,7 @@ bool GameMap::Update(DX::StepTimer const & timer, Player *player)
 	SimpleMath::Vector3 playerPos = player->GetPos();
 	SimpleMath::Vector3 v[2] = { SimpleMath::Vector3(playerPos.x, 100.0f, playerPos.z), SimpleMath::Vector3(playerPos.x, -100.0f, playerPos.z) };
 	// 道とプレイヤーの当たり判定を行う
-	if (m_collisionStage->HitCheck_Segment(v[0], v[1], &id, &s) == true)
+	if (mp_collisionStage->HitCheck_Segment(v[0], v[1], &id, &s) == true)
 	{
 		// プレイヤーの位置を設定する
 		player->SetHeightPos(s.y);
@@ -99,7 +100,7 @@ void GameMap::Render(MatrixManager * matrixManager)
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 
 	// 描画
-	m_modelMap->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
+	mp_modelMap->Draw(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(), 
 		world, matrixManager->GetView(), matrixManager->GetProjection());
 }
 

@@ -11,15 +11,16 @@
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
 
-#include "../../ExclusiveGameObject/CollisionBox.h"
+//#include "../../ExclusiveGameObject/CollisionBox.h"
 
-#include "GameBulletManager.h"
+#include "GameRoad.h"
+//#include "GameBulletManager.h"
 #include "GameCamera.h"
 
 class GameCamera;
 class GameRoad;
 class MatrixManager;
-class Player : public CollisionBox
+class Player/* : public CollisionBox*/
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
 public:
@@ -49,8 +50,8 @@ private:
 
 	DirectX::SimpleMath::Matrix              m_world;                     // ワールド座標
 
-	std::unique_ptr<DirectX::Model>          m_modelPlayer;               // プレイヤーモデルオブジェクト
-	GameBulletManager*                       mp_bulletManager;            // 弾管理ポインター
+	//std::unique_ptr<DirectX::Model>          m_modelPlayer;               // プレイヤーモデルオブジェクト
+	//GameBulletManager*                       mp_bulletManager;            // 弾管理ポインター
 	std::unique_ptr<GameCamera>              mp_gameCamera;               // カメラポインター
 	std::unique_ptr<GameRoad>                mp_gameRoad;                 // 道路ポインタ
 	
@@ -101,7 +102,7 @@ public:
 	// プレイヤー情報の取得
 	Player* GetPlayer();
 	// プレイヤー情報の取得
-	GameBulletManager* GetBulletManager()           { return mp_bulletManager; }
+	//GameBulletManager* GetBulletManager()           { return mp_bulletManager; }
 	//----------------------------------------------------------------------------//
 
 	//-----------------------------------Setter-----------------------------------//

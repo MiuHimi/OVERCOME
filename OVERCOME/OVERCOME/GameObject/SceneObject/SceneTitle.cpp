@@ -71,7 +71,7 @@ void SceneTitle::Initialize()
 	mp_matrixManager = new MatrixManager();
 	
 	// ビュー行列の作成
-	DirectX::SimpleMath::Matrix view = DirectX::SimpleMath::Matrix::Identity;
+	SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
 
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
@@ -153,13 +153,13 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 void SceneTitle::Render()
 {
 	// タイトルの描画
-	mp_sprite->Begin(DirectX::SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 	
 	RECT rectTiteBG = { 0, 0, 800, 600 };
 	RECT rectTite = { 0, 0, int(m_titleWidth), int(m_titleHeight) };
 
-	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectTiteBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-	mp_sprite->Draw(mp_textureTitle.Get(), m_TitlePos, &rectTite, SimpleMath::Vector4( 1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectTiteBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	mp_sprite->Draw(mp_textureTitle.Get(), m_TitlePos, &rectTite, SimpleMath::Vector4( 1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	
 	mp_sprite->End();
 }
