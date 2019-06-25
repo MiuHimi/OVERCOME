@@ -14,7 +14,6 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/GameDebug.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
@@ -37,8 +36,8 @@ ScenePlay::ScenePlay(SceneManager* sceneManager)
 	  mp_sprite(nullptr),
 	  mp_camera(nullptr),
 	  mp_player(nullptr),
-	  mp_gameRoad(nullptr),
- 	  mp_gameMap(nullptr),
+	  mp_gameEnemy(nullptr), mp_gameEnemyManager(nullptr),
+	  mp_gameRoad(nullptr), mp_gameMap(nullptr),
 	  mp_gameScore(nullptr),
    	  mp_matrixManager(nullptr)
 {
@@ -64,6 +63,18 @@ void ScenePlay::Initialize()
 	//mp_camera = std::make_unique<GameCamera>();
 	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
 
+	// プレイヤーの生成
+	mp_player = std::make_unique<Player>();
+	mp_player->Initialize();
+	// プレイヤーのモデルの読み込み
+	mp_player->Create();
+
+	// ゲーム敵管理の生成
+	mp_gameEnemyManager = std::make_unique<GameEnemyManager>();
+	mp_gameEnemyManager->Initialize();
+	// ゲーム敵管理のモデル読み込み
+	mp_gameEnemyManager->Create();
+
 	// ゲーム道路の生成
 	mp_gameRoad = std::make_unique<GameRoad>();
 	mp_gameRoad->Initialize();
@@ -82,19 +93,6 @@ void ScenePlay::Initialize()
 	// ゲーム道路のモデル読み込み
 	//mp_gameTarget->Create();
 
-	
-
-	// ゲーム敵管理の生成
-	//mp_gameEnemyManager = std::make_unique<GameEnemyManager>();
-	//mp_gameEnemyManager->Initialize();
-	// ゲーム敵管理のモデル読み込み
-	//mp_gameEnemyManager->Create();
-
-	// プレイヤーの生成
-	mp_player = std::make_unique<Player>();
-	mp_player->Initialize();
-	// プレイヤーのモデルの読み込み
-	mp_player->Create();
 
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
@@ -306,7 +304,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_player->Update(timer);
 
 	// 敵の更新
-	//mp_gameEnemyManager->Update(timer, mp_player->GetPlayer());
+	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer());
 
 	// スコアの更新
 	mp_gameScore->Update(timer);
@@ -369,7 +367,7 @@ void ScenePlay::Render()
 	//mp_player->Render(mp_matrixManager);
 
 	// 敵の描画
-	//mp_gameEnemyManager->Render(mp_matrixManager);
+	mp_gameEnemyManager->Render(mp_matrixManager);
 	
 	//mp_effectManager->Render();
 

@@ -174,6 +174,7 @@
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
     <ClInclude Include="ExclusiveGameObject\Collision2D.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionMesh.h" />
+    <ClInclude Include="ExclusiveGameObject\CollisionSphere.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
     <ClInclude Include="ExclusiveGameObject\DebugSphere.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
@@ -183,8 +184,11 @@
     <ClInclude Include="GameObject\2DObject\String.h" />
     <ClInclude Include="GameObject\3DObject\Camera.h" />
     <ClInclude Include="GameObject\3DObject\GameCamera.h" />
+    <ClInclude Include="GameObject\3DObject\GameEnemy.h" />
+    <ClInclude Include="GameObject\3DObject\GameEnemyManager.h" />
     <ClInclude Include="GameObject\3DObject\GameMap.h" />
     <ClInclude Include="GameObject\3DObject\GameRoad.h" />
+    <ClInclude Include="GameObject\3DObject\Obj3D.h" />
     <ClInclude Include="GameObject\3DObject\Player.h" />
     <ClInclude Include="GameObject\SceneObject\SceneBase.h" />
     <ClInclude Include="GameObject\SceneObject\SceneLogo.h" />
@@ -207,6 +211,7 @@
     <ClCompile Include="ExclusiveGameObject\ADX2Le.cpp" />
     <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionMesh.cpp" />
+    <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -215,8 +220,11 @@
     <ClCompile Include="GameObject\2DObject\String.cpp" />
     <ClCompile Include="GameObject\3DObject\Camera.cpp" />
     <ClCompile Include="GameObject\3DObject\GameCamera.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameEnemy.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameEnemyManager.cpp" />
     <ClCompile Include="GameObject\3DObject\GameMap.cpp" />
     <ClCompile Include="GameObject\3DObject\GameRoad.cpp" />
+    <ClCompile Include="GameObject\3DObject\Obj3D.cpp" />
     <ClCompile Include="GameObject\3DObject\Player.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneBase.cpp" />
     <ClCompile Include="GameObject\SceneObject\SceneLogo.cpp" />
@@ -249,6 +257,9 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <MeshContentTask Include="..\FBX\ghost.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
     <MeshContentTask Include="..\FBX\map01.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>

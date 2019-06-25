@@ -130,9 +130,7 @@ bool Player::Update(DX::StepTimer const & timer)
 			ShowCursor(FALSE);
 		}
 	}
-	
-	// ゲームスタートしてからの行動
-	if (m_playStartFlag)
+	else
 	{
 		// 弾の更新
 		//mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
@@ -218,8 +216,9 @@ bool Player::Update(DX::StepTimer const & timer)
 					m_spawnFlag = true;
 					m_assaultPoint = mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadNum;
 				}
-				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != 3)
+				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != mp_gameRoad->NUM)
 				{
+					// 道のIDに設定していないところでなければ移動を開始する
 					m_velFlag = false;
 				}
 			}

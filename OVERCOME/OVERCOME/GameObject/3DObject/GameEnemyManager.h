@@ -29,20 +29,20 @@ class GameEnemyManager
 public:
 
 private:
-	static const int             m_maxEnemyNum = 100;         // 最大敵数
-	static const int             m_maxAliveDist = 50;
+	static const int              m_maxEnemyNum = 100;       // 最大敵数
+	static const int              m_maxAliveDist = 50;		 // 
 
-	static const int             m_needRespawnTime = 90;      // リスポーンに必要な時間(フレーム)
-	int                          m_respawnTime;               // リスポーン時間(フレーム)
+	static const int              m_needRespawnTime = 90;    // リスポーンに必要な時間(フレーム)
+	int                           m_respawnTime;             // リスポーン時間(フレーム)
 
-	GameEnemy*                   mp_enemy[m_maxEnemyNum];
-	Player*                      mp_player;
-	std::unique_ptr<GameCamera>              mp_gameCamera;               // カメラポインター
+	GameEnemy*                    mp_enemy[m_maxEnemyNum];   // 敵管理
+	Player*                       mp_player;				 // プレイヤーオブジェクト
+	std::unique_ptr<GameCamera>   mp_gameCamera;             // カメラオブジェクト
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-		m_textureDengerousH;          // テクスチャハンドル(危険サイン横)
+								  m_textureDengerousH;       // テクスチャハンドル(危険サイン横)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-		m_textureDengerousV;          // テクスチャハンドル(危険サイン縦)
+								  m_textureDengerousV;       // テクスチャハンドル(危険サイン縦)
 
 	enum DIRECTION
 	{

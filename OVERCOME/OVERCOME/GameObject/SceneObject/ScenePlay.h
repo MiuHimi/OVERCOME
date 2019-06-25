@@ -17,6 +17,9 @@
 
 #include "../3DObject/Player.h"
 
+#include "../3DObject/GameEnemy.h"
+#include "../3DObject/GameEnemyManager.h"
+
 #include "../3DObject/GameRoad.h"
 #include "../3DObject/GameMap.h"
 
@@ -44,6 +47,9 @@ private:
 	std::unique_ptr<GameCamera>			mp_camera;				   // ゲームカメラオブジェクト
 
 	std::unique_ptr<Player>				mp_player;				   // プレイヤーオブジェクト
+
+	std::unique_ptr<GameEnemy>			mp_gameEnemy;			   // 敵オブジェクト
+	std::unique_ptr<GameEnemyManager>	mp_gameEnemyManager;	   // 敵管理オブジェクト
 
 	std::unique_ptr<GameRoad>			mp_gameRoad;			   // 道オブジェクト
 	std::unique_ptr<GameMap>			mp_gameMap;				   // ステージオブジェクト

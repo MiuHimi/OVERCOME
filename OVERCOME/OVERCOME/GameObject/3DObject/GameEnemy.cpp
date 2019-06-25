@@ -52,7 +52,7 @@ void GameEnemy::Create()
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
 	// モデルを作成
-	mp_modelEnemy = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\enemy.cmo", fx);
+	mp_modelEnemy = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\ghost.cmo", fx);
 	// 衝突判定用モデル設定
 	Obj3D::SetModel(mp_modelEnemy.get());
 
@@ -109,7 +109,7 @@ void GameEnemy::SetFogEffectDistance(float start, float end)
 		if (fog)
 		{
 			fog->SetFogEnabled(true);
-			fog->SetFogStart(start); // assuming RH coordiantes
+			fog->SetFogStart(start);
 			fog->SetFogEnd(end);
 			fog->SetFogColor(Colors::Black);
 		}

@@ -132,6 +132,18 @@
     <ClInclude Include="Utility\GameDebug.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\3DObject\GameEnemy.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\3DObject\GameEnemyManager.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\CollisionSphere.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\3DObject\Obj3D.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -218,6 +230,18 @@
     <ClCompile Include="Utility\GameDebug.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject\3DObject\GameEnemy.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\3DObject\GameEnemyManager.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\3DObject\Obj3D.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -234,6 +258,9 @@
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="..\FBX\map01.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\ghost.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
   </ItemGroup>
