@@ -43,7 +43,7 @@ void GameScore::Create(const wchar_t* scoreFileName, const wchar_t* backgroundFi
 	// 各変数の初期化
 	m_score = 0;
 
-	m_scorePos = SimpleMath::Vector2(650.0f, 560.0f);
+	m_scorePos = SimpleMath::Vector2(620.0f, 560.0f);
 	m_scoreBGPos = SimpleMath::Vector2(700.0f, 560.0f);
 
 	m_scoreWidth = 40.0f; 
@@ -81,9 +81,10 @@ bool GameScore::Update(DX::StepTimer const& timer)
 void GameScore::Render()
 {
 	// スコア
-	int hundredDigit = m_score / 100;		// 100の位
-	int tenDigit = ((m_score % 100) / 10);  // 10の位
-	int oneDigit = m_score % 10;			// 1の位
+	int thousandDigit = m_score / 1000;			 // 1000の位
+	int hundredDigit = ((m_score / 100) % 10);   // 100の位
+	int tenDigit = ((m_score % 100) / 10);		 // 10の位
+	int oneDigit = m_score % 10;				 // 1の位
 
 	// スコアの描画
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
@@ -99,6 +100,10 @@ void GameScore::Render()
 		// 桁に応じて切り取る位置を変える
 		switch (i)
 		{
+		// 1000の位
+		case THOUSAND:
+			rect = { int(m_scoreWidth) * thousandDigit, 0, int(m_scoreWidth) * thousandDigit + int(m_scoreWidth), int(m_scoreHeight) };
+			break;
 		// 100の位
 		case HUNDRED:
 			rect = { int(m_scoreWidth) * hundredDigit, 0, int(m_scoreWidth) * hundredDigit + int(m_scoreWidth), int(m_scoreHeight) };

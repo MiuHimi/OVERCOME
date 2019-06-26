@@ -60,7 +60,7 @@ void SceneResult::Initialize()
 	m_resultState = false;
 
 	// スコアの表示位置の初期化
-	m_scorePos = SimpleMath::Vector2(320.0f, 400.0f);
+	m_scorePos = SimpleMath::Vector2(280.0f, 400.0f);
 
 	// スコアのポインタの初期化
 	mp_gameScore = std::make_unique<GameScore>();
@@ -155,9 +155,10 @@ void SceneResult::Render()
 	int score = mp_gameScore->GetScore();
 
 	// スコア
-	int hundredDigit = score / 100;		  // 100の位
-	int tenDigit = ((score % 100) / 10);  // 10の位
-	int oneDigit = score % 10;			  // 1の位
+	int thousandDigit = score / 1000;		   // 1000の位
+	int hundredDigit = ((score / 100) % 10);   // 100の位
+	int tenDigit = ((score % 100) / 10);	   // 10の位
+	int oneDigit = score % 10;				   // 1の位
 
 	// リザルト画面の描画
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
@@ -173,6 +174,10 @@ void SceneResult::Render()
 		// 桁に応じて切り取る位置を変える
 		switch (i)
 		{
+		// 1000の位
+		case THOUSAND:
+			rect = { int(SCORE_SIZE) * thousandDigit, 0, int(SCORE_SIZE) * thousandDigit + int(SCORE_SIZE), int(SCORE_SIZE) };
+			break;
 		// 100の位
 		case HUNDRED: 
 			rect = { SCORE_SIZE * hundredDigit, 0, SCORE_SIZE * hundredDigit + SCORE_SIZE, SCORE_SIZE }; 

@@ -27,6 +27,7 @@ private:
 	// ÉXÉRÉAÇÃåÖ
 	enum Digit
 	{
+		THOUSAND,
 		HUNDRED,
 		TEN,
 		ONE,

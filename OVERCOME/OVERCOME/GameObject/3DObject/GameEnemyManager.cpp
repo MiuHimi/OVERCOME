@@ -178,9 +178,9 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 		// “G‚Ì“®‚«
 		if (mp_enemy[i]->GetState())
 		{
-			mp_enemy[i]->SetVel(Vector3(float(player->GetPos().x - mp_enemy[i]->GetPos().x) / 50.0f, 
-										float(player->GetPos().y - mp_enemy[i]->GetPos().y) / 50.0f, 
-										float(player->GetPos().z - mp_enemy[i]->GetPos().z) / 50.0f));
+			mp_enemy[i]->SetVel(Vector3(float(player->GetPos().x - mp_enemy[i]->GetPos().x) / 80.0f, 
+										float(player->GetPos().y - mp_enemy[i]->GetPos().y) / 80.0f, 
+										float(player->GetPos().z - mp_enemy[i]->GetPos().z) / 80.0f));
 
 			double baseLength = 150.0;
 			m_compereLength[i] = (mp_enemy[i]->GetPos().x - player->GetPos().x)*(mp_enemy[i]->GetPos().x - player->GetPos().x) +

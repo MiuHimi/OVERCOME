@@ -129,9 +129,6 @@
     <ClInclude Include="GameObject\3DObject\GameMap.h">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\GameDebug.h">
-      <Filter>Game\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\3DObject\GameEnemy.h">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
@@ -235,9 +232,6 @@
     </ClCompile>
     <ClCompile Include="GameObject\3DObject\GameMap.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
-    <ClCompile Include="Utility\GameDebug.cpp">
-      <Filter>Game\Utility</Filter>
     </ClCompile>
     <ClCompile Include="GameObject\3DObject\GameEnemy.cpp">
       <Filter>Game\GameObject\3DObject</Filter>

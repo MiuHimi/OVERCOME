@@ -14,7 +14,7 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/GameDebug.h"
+//#include "../../Utility/GameDebug.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 

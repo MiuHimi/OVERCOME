@@ -73,7 +73,7 @@ bool GameBullet::Update(DX::StepTimer const & timer)
 	m_world = SimpleMath::Matrix::CreateTranslation(m_pos);
 
 	m_sphere.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y, m_pos.z);      // ‹«ŠE‹…‚Ì’†S
-	m_sphere.r = 0.5f;                                                         // ”¼Œa
+	m_sphere.r = 1.0f;                                                         // ”¼Œa
 	SetCollision(m_sphere);
 
 	return true;

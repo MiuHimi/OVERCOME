@@ -369,7 +369,7 @@ void Player::Render(MatrixManager* matrixManager)
 	// ポインターの描画
 	if (mp_gameCamera->GetStartPosMouse() && m_playStartFlag)
 	{
-		DrawManager::SingletonGetInstance().Draw(m_texturePointer.Get(), SimpleMath::Vector2(350.0f, 300.0f));
+		DrawManager::SingletonGetInstance().Draw(m_texturePointer.Get(), SimpleMath::Vector2(350.0f, 330.0f));
 	}
 }
 
