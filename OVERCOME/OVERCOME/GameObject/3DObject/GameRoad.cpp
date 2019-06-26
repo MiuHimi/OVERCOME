@@ -42,7 +42,7 @@ GameRoad::~GameRoad()
 void GameRoad::Initialize()
 {
 	// ステージマップの読み込み
-	std::string filePath = "Resources\\StageMap\\Stage";
+	std::string filePath = "Resources\\StageMap\\stage";
 	std::ostringstream os;
 	int stageNum = 1;
 	os << stageNum;

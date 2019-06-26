@@ -58,6 +58,10 @@ private:
 
 	MatrixManager*						mp_matrixManager;		   // 行列管理変数
 
+	DirectX::SimpleMath::Vector2 m_debug;
+	DirectX::SimpleMath::Vector2 m_debug2;
+
+
 	//EffectManager*					mp_effectManager;		   // エフェクト管理変数
 
 // メンバー関数(関数、Getter、Setter)

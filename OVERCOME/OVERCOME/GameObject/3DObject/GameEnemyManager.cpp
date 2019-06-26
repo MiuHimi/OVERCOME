@@ -124,10 +124,10 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 				// 場所設定
 				switch (player->GetAssaultPoint())
 				{
-				case 1: mp_enemy[i]->SetPos(Vector3(-35.0f, 5.0f, -25.5f + float(rand() % 20 - 10))); break;
-				case 2: mp_enemy[i]->SetPos(Vector3(0.0f, 15.0f, 25.5f + float(rand() % 20 - 10))); break;
-				case 3: mp_enemy[i]->SetPos(Vector3(0.0f + float(rand() % 20 - 10), 3.0f, 30.0f)); break;
-				case 4: mp_enemy[i]->SetPos(Vector3(-35.0f + float(rand() % 20 - 10), 5.0f, -25.5f + float(rand() % 10 - 5))); break;
+				case 1: mp_enemy[i]->SetPos(Vector3(30.0f + float(rand() % 10 - 5), 5.0f + float(rand() % 5), -35.0f)); break;
+				case 2: mp_enemy[i]->SetPos(Vector3(-12.5f + float(rand() % 14 - 7), 5.0f + float(rand() % 5), -32.5f + float(rand() % 14 - 7))); break;
+				case 3: mp_enemy[i]->SetPos(Vector3(17.5f + float(rand() % 14 - 7), 5.0f + float(rand() % 5), 32.5f + float(rand() % 14 - 7))); break;
+				case 4: mp_enemy[i]->SetPos(Vector3(-10.0f + float(rand() % 20 - 10), 5.0f + float(rand() % 5), 5.0f)); break;
 				case 5: mp_enemy[i]->SetPos(Vector3(22.5f + float(rand() % 40 - 20), 7.0f, -42.5f)); break;
 				case 6: mp_enemy[i]->SetPos(Vector3(12.5f + float(rand() % 60 - 30), 7.0f, float(rand() & 10))); break;
 				case 7: mp_enemy[i]->SetPos(Vector3(32.5f + float(rand() % 60 - 30), 7.0f, 7.5f + float(rand() % 30 - 15))); break;
@@ -178,10 +178,9 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 		// 敵の動き
 		if (mp_enemy[i]->GetState())
 		{
-			mp_enemy[i]->SetVel(Vector3(float(player->GetPos().x - mp_enemy[i]->GetPos().x) / 40.0f, 
-										float(player->GetPos().y - mp_enemy[i]->GetPos().y) / 40.0f, 
-										float(player->GetPos().z - mp_enemy[i]->GetPos().z) / 40.0f));
-			mp_enemy[i]->Update(timer);
+			mp_enemy[i]->SetVel(Vector3(float(player->GetPos().x - mp_enemy[i]->GetPos().x) / 50.0f, 
+										float(player->GetPos().y - mp_enemy[i]->GetPos().y) / 50.0f, 
+										float(player->GetPos().z - mp_enemy[i]->GetPos().z) / 50.0f));
 
 			double baseLength = 150.0;
 			m_compereLength[i] = (mp_enemy[i]->GetPos().x - player->GetPos().x)*(mp_enemy[i]->GetPos().x - player->GetPos().x) +
@@ -234,6 +233,8 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 				m_dengerousDirFB = DIRECTION::NONE;
 				m_dengerousDirLR = DIRECTION::NONE;
 			}
+
+			mp_enemy[i]->Update(timer);
 
 			// マップの中心から50ｍ離れたら消える
 			float dist = (mp_enemy[i]->GetPos().x - 0.0f)*(mp_enemy[i]->GetPos().x - 0.0f) +

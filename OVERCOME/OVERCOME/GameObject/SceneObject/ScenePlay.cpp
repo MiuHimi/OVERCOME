@@ -14,6 +14,7 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
+#include "../../Utility/GameDebug.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
@@ -177,26 +178,44 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_camera->Update(timer, mp_player->GetPlayer());
 
 	// 道路とプレイヤーの衝突判定
-	/*for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
+	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
 	{
 		for (int i = 0; i < mp_gameRoad->GetMaxFloorBlock(); i++)
 		{
-			if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollisionObject(j, i)->GetCollision(), mp_player->GetCollision()) == true)
-			{
-				if (i != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x || j != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)break;
+			//if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollision(j, i)->GetCollision(), mp_player->GetCollision()) == true)
+			//{
+			//	if (i != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x || j != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)break;
 
-				// ゴールに到達したら
-				if (i == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x &&
-					j == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)
-				{
-					m_toResultMoveOnChecker = true;
-					SceneManager::SetResultSceneState(true);
-					// マウスカーソルの表示
-					ShowCursor(TRUE);
-				}
+			//	// ゴールに到達したら
+			//	if (i == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x &&
+			//		j == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)
+			//	{
+			//		m_toResultMoveOnChecker = true;
+			//		SceneManager::SetResultSceneState(true);
+			//		// マウスカーソルの表示
+			//		ShowCursor(TRUE);
+			//	}
+			//}
+
+			SimpleMath::Vector3 roadpos = mp_gameRoad->GetRoadObject(mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x, mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y).pos;
+			SimpleMath::Vector3 playerpos = mp_player->GetPos();
+			float distX = roadpos.z - playerpos.x;
+			float distY = roadpos.x - playerpos.z;
+			float dist = distX*distX + distY*distY;
+
+			float radius = 1.0f + 5.0f;
+			float rad = radius * radius;
+
+			// ゴールに到達したら
+			if (rad > dist)
+			{
+				m_toResultMoveOnChecker = true;
+				SceneManager::SetResultSceneState(true);
+				// マウスカーソルの表示
+				ShowCursor(TRUE);
 			}
 		}
-	}*/
+	}
 
 	// 的と弾の衝突判定
 	/*for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
@@ -228,7 +247,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 
 	
 	// 敵とプレイヤーの衝突判定
-	/*for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
+	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
 	{
 		if (!mp_gameEnemyManager->GetEnemyState(i))continue;
 		if (mp_gameEnemyManager->GetEnemyState(i))
@@ -238,10 +257,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 				mp_gameEnemyManager->SetEnemyState(i, false);
 			}
 		}
-	}*/
+	}
 
 	// 敵と弾の衝突判定
-	/*for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
+	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
 	{
 		if (!mp_gameEnemyManager->GetEnemyState(i))continue;
 		if (mp_gameEnemyManager->GetEnemyState(i))
@@ -263,12 +282,12 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 				}
 			}
 		}
-	}*/
+	}
 
 	// 弾の表示限界の設定
-	//SimpleMath::Vector3 pPos = mp_player->GetPos();
-	//SimpleMath::Vector3 bPos[5];
-	/*for (int i = 0; i < mp_player->GetBulletManager()->GetMaxBulletNum(); i++)
+	SimpleMath::Vector3 pPos = mp_player->GetPos();
+	SimpleMath::Vector3 bPos[10];
+	for (int i = 0; i < mp_player->GetBulletManager()->GetMaxBulletNum(); i++)
 	{
 		// 発射されている弾のみ計測
 		if (!mp_player->GetBulletManager()->GetBulletState(i))
@@ -277,7 +296,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		}
 
 		// しきい値(100)
-		float length = 100.0f;
+		float length = 50.0f;
 		float len = 0.0f;
 		bPos[i] = mp_player->GetBulletManager()->GetPos(i);
 
@@ -291,7 +310,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		{
 			mp_player->GetBulletManager()->SetBulletState(i, false);
 		}
-	}*/
+	}
 
 	// 道オブジェクトの更新
 	mp_gameRoad->Update(timer);
@@ -326,14 +345,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 /// </summary>
 void ScenePlay::Render()
 {
-	// フェードインの描画(最前面)
-	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
-
-	RECT rect = { 0, 0, 800, 600 };
-	mp_sprite->Draw(mp_fade.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-
-	mp_sprite->End();
-
 	// ビュー行列の作成
 	SimpleMath::Matrix view = SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), SimpleMath::Vector3::Up);
 	// ウインドウサイズからアスペクト比を算出する
@@ -364,7 +375,7 @@ void ScenePlay::Render()
 	//mp_gameTarget->Render(mp_matrixManager);
 
 	// プレイヤーの描画
-	//mp_player->Render(mp_matrixManager);
+	mp_player->Render(mp_matrixManager);
 
 	// 敵の描画
 	mp_gameEnemyManager->Render(mp_matrixManager);
@@ -374,4 +385,15 @@ void ScenePlay::Render()
 	// スコアの描画
 	mp_gameScore->Render();
 
+	//GameDebug::SingletonGetInstance().DebugRender(m_debug, SimpleMath::Vector2(10.0f, 10.0f));
+	//GameDebug::SingletonGetInstance().DebugRender(m_debug2, SimpleMath::Vector2(10.0f, 30.0f));
+	//GameDebug::SingletonGetInstance().Render();
+
+	// フェードインの描画(最前面)
+	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+
+	RECT rect = { 0, 0, 800, 600 };
+	mp_sprite->Draw(mp_fade.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+
+	mp_sprite->End();
 }

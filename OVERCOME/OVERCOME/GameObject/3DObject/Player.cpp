@@ -35,7 +35,7 @@ Player::Player()
 	  m_spawnFlag(false), m_spawnElapsedTime(0), m_assaultPoint(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
-	  /*mp_bulletManager(nullptr),*/ mp_gameCamera(nullptr), mp_gameRoad(nullptr),
+	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
 	  m_posRestartUI(0.0f, 0.0f), m_textureRestart(nullptr),
 	  m_posCountUI(0.0f, 0.0f), m_textureCount(nullptr),
 	  m_texturePointer(nullptr)
@@ -46,8 +46,8 @@ Player::Player()
 /// </summary>
 Player::~Player()
 {
-	/*delete mp_bulletManager;
-	mp_bulletManager = nullptr;*/
+	delete mp_bulletManager;
+	mp_bulletManager = nullptr;
 }
 
 /// <summary>
@@ -64,8 +64,8 @@ void Player::Initialize()
 
 	// 他オブジェクトの初期化
 	mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
-	//mp_bulletManager = new GameBulletManager();
-	//mp_bulletManager->Initialize();
+	mp_bulletManager = new GameBulletManager();
+	mp_bulletManager->Initialize();
 	mp_gameRoad = std::make_unique<GameRoad>();
 	mp_gameRoad->Initialize();
 	mp_gameRoad->Create();
@@ -86,7 +86,7 @@ void Player::Create()
 	// プレイヤーの作成
 	//SetModel(m_modelPlayer.get());
 
-	//mp_bulletManager->Create();
+	mp_bulletManager->Create();
 
 	// リスタートUIの設定
 	m_posRestartUI = SimpleMath::Vector2(175.0f, 450.0f);
@@ -133,7 +133,7 @@ bool Player::Update(DX::StepTimer const & timer)
 	else
 	{
 		// 弾の更新
-		//mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
+		mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
 
 		// プレイヤー移動(ベクトル)
 		if (mp_gameCamera->GetStartPosMouse())
@@ -319,6 +319,12 @@ bool Player::Update(DX::StepTimer const & timer)
 		m_assaultPoint = 0;
 	}
 
+	// 衝突判定用の仮想オブジェクト生成
+	Collision::Box box;
+	box.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
+	box.r = DirectX::SimpleMath::Vector3(1.0f, m_height / 2.0f, 1.0f);                        // 各半径
+	SetCollision(box);
+
 	return true;
 }
 
@@ -327,7 +333,7 @@ bool Player::Update(DX::StepTimer const & timer)
 /// </summary>
 void Player::Render(MatrixManager* matrixManager)
 {
-	//mp_bulletManager->Render(matrixManager);
+	mp_bulletManager->Render(matrixManager);
 
 	// スタートカウントの描画
 	if (!m_playStartFlag)
@@ -363,7 +369,7 @@ void Player::Render(MatrixManager* matrixManager)
 	// ポインターの描画
 	if (mp_gameCamera->GetStartPosMouse() && m_playStartFlag)
 	{
-		DrawManager::SingletonGetInstance().Draw(m_texturePointer.Get(), SimpleMath::Vector2(350.0f, 250.0f));
+		DrawManager::SingletonGetInstance().Draw(m_texturePointer.Get(), SimpleMath::Vector2(350.0f, 300.0f));
 	}
 }
 

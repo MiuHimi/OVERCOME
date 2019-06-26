@@ -60,7 +60,7 @@ void GameMap::Create()
 
 	// 文字列を連結しモデルのパスを生成
 	std::wstringstream ssModel;
-	ssModel << "Resources\\Models\\map0" << fileNumber << ".cmo";
+	ssModel << "Resources\\Models\\stage0" << fileNumber << ".cmo";
 	filePath = ssModel.str();
 	// モデルをロードしてモデルハンドルを取得する
 	mp_modelMap = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), filePath.c_str(), fx);
@@ -72,6 +72,17 @@ void GameMap::Create()
 	// メッシュ衝突判定
 	mp_collisionStage = std::make_unique<CollisionMesh>(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), filePath.c_str());
 
+	mp_modelMap->UpdateEffects([&](IEffect* effect)
+	{
+		auto fog = dynamic_cast<IEffectFog*>(effect);
+		if (fog)
+		{
+			fog->SetFogEnabled(true);
+			fog->SetFogStart(8.0f);
+			fog->SetFogEnd(10.0f);
+			fog->SetFogColor(Colors::Black);
+		}
+	});
 }
 
 /// <summary>

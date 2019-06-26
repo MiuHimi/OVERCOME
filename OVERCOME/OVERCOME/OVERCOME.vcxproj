@@ -173,6 +173,7 @@
     <ClInclude Include="ExclusiveGameObject\BinaryFile.h" />
     <ClInclude Include="ExclusiveGameObject\Collision.h" />
     <ClInclude Include="ExclusiveGameObject\Collision2D.h" />
+    <ClInclude Include="ExclusiveGameObject\CollisionBox.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionMesh.h" />
     <ClInclude Include="ExclusiveGameObject\CollisionSphere.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
@@ -183,6 +184,8 @@
     <ClInclude Include="GameObject\2DObject\Obj2D.h" />
     <ClInclude Include="GameObject\2DObject\String.h" />
     <ClInclude Include="GameObject\3DObject\Camera.h" />
+    <ClInclude Include="GameObject\3DObject\GameBullet.h" />
+    <ClInclude Include="GameObject\3DObject\GameBulletManager.h" />
     <ClInclude Include="GameObject\3DObject\GameCamera.h" />
     <ClInclude Include="GameObject\3DObject\GameEnemy.h" />
     <ClInclude Include="GameObject\3DObject\GameEnemyManager.h" />
@@ -210,6 +213,7 @@
   <ItemGroup>
     <ClCompile Include="ExclusiveGameObject\ADX2Le.cpp" />
     <ClCompile Include="ExclusiveGameObject\BinaryFile.cpp" />
+    <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionMesh.cpp" />
     <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
@@ -219,6 +223,8 @@
     <ClCompile Include="GameObject\2DObject\Obj2D.cpp" />
     <ClCompile Include="GameObject\2DObject\String.cpp" />
     <ClCompile Include="GameObject\3DObject\Camera.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameBullet.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameBulletManager.cpp" />
     <ClCompile Include="GameObject\3DObject\GameCamera.cpp" />
     <ClCompile Include="GameObject\3DObject\GameEnemy.cpp" />
     <ClCompile Include="GameObject\3DObject\GameEnemyManager.cpp" />
@@ -257,10 +263,13 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <MeshContentTask Include="..\FBX\bullet.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
     <MeshContentTask Include="..\FBX\ghost.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
-    <MeshContentTask Include="..\FBX\map01.FBX">
+    <MeshContentTask Include="..\FBX\stage01.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
   </ItemGroup>

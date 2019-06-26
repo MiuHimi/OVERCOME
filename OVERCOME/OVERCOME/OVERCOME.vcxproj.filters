@@ -144,6 +144,15 @@
     <ClInclude Include="GameObject\3DObject\Obj3D.h">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\CollisionBox.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\3DObject\GameBullet.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\3DObject\GameBulletManager.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -242,6 +251,15 @@
     <ClCompile Include="GameObject\3DObject\Obj3D.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\CollisionBox.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\3DObject\GameBullet.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\3DObject\GameBulletManager.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -257,10 +275,13 @@
     </Manifest>
   </ItemGroup>
   <ItemGroup>
-    <MeshContentTask Include="..\FBX\map01.FBX">
+    <MeshContentTask Include="..\FBX\stage01.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\ghost.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\bullet.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
   </ItemGroup>

@@ -30,9 +30,9 @@ public:
 
 private:
 	static const int              m_maxEnemyNum = 100;       // 最大敵数
-	static const int              m_maxAliveDist = 50;		 // 
+	static const int              m_maxAliveDist = 90;		 // 
 
-	static const int              m_needRespawnTime = 90;    // リスポーンに必要な時間(フレーム)
+	static const int              m_needRespawnTime = 40;    // リスポーンに必要な時間(フレーム)
 	int                           m_respawnTime;             // リスポーン時間(フレーム)
 
 	GameEnemy*                    mp_enemy[m_maxEnemyNum];   // 敵管理
