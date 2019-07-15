@@ -32,28 +32,30 @@ class GameEnemyManager
 public:
 
 private:
-	static const int              m_maxEnemyNum = 100;       // 最大敵数
-	static const int              m_maxAliveDist = 90;		 // 
+	static const int			  MAXENEMYNUM = 100;		 // 最大敵数
+	static const int			  MAXALIVEDIST;				 // 最大生存距離
 
-	static const int              m_needRespawnTime = 40;    // リスポーンに必要な時間(フレーム)
+	static const int              SPAWNTIME;                 // 敵が出現していられる時間(フレーム)
+	int							  m_spawnElapsedTime;		 // 敵が出現してからの経過時間(フレーム)
+
+	static const int			  NEEDRESPAWNTIME;			 // リスポーンに必要な時間(フレーム)
 	int                           m_respawnTime;             // リスポーン時間(フレーム)
-
-	GameEnemy*                    mp_enemy[m_maxEnemyNum];   // 敵管理
-	DirectX::SimpleMath::Vector3  m_shockPos[m_maxEnemyNum]; // エフェクトが出る位置
-	int							  m_shockCount[m_maxEnemyNum]; // エフェクトが出てからのカウント
+	
+	GameEnemy*                    mp_enemy[MAXENEMYNUM];     // 敵管理
+	DirectX::SimpleMath::Vector3  m_shockPos[MAXENEMYNUM];   // エフェクトが出る位置
+	int							  m_shockCount[MAXENEMYNUM]; // エフェクトが出てからのカウント
 	Player*                       mp_player;				 // プレイヤーオブジェクト
 	std::unique_ptr<GameCamera>   mp_gameCamera;             // カメラオブジェクト
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-								  m_textureDengerousH;       // テクスチャハンドル(危険サイン横)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-								  m_textureDengerousV;       // テクスチャハンドル(危険サイン縦)
+								  m_textureDengerousV;       // テクスチャハンドル(危険サイン)
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 								  m_textureSmoke;			 // テクスチャハンドル(やられ演出用煙)
 
 	std::unique_ptr<DirectX::AlphaTestEffect> m_batchEffect; // エフェクト
-	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>> m_batch;// プリミティブバッチ
+	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>>
+								  m_batch;					 // プリミティブバッチ
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout; // 入力レイアウト
 
 	enum DIRECTION
@@ -68,10 +70,10 @@ private:
 	DIRECTION                    m_dengerousDirFB;
 	DIRECTION                    m_dengerousDirLR;
 
-	double                       m_compereLength[m_maxEnemyNum]; // 距離を比較
+	double                       m_compereLength[MAXENEMYNUM]; // 距離を比較
 	int                          m_lengthTmp;                 // プレイヤーに最短距離の敵を記憶
 
-	bool                         m_assault;                   // 敵移動中
+	bool                         m_danger;                   // 敵がプレイヤーにとって危険な位置にいたらフラグが立つ
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -85,7 +87,7 @@ public:
 	// 生成
 	void Create();
 	// 更新
-	bool Update(DX::StepTimer const& timer, Player* player, int assaultPoint);
+	bool Update(DX::StepTimer const& timer, Player* player, int playerNowRoadType, int assaultPoint);
 	// 描画
 	void Render(MatrixManager* matrixManager, DirectX::SimpleMath::Vector3 eyePos);
 	// 廃棄処理
@@ -93,7 +95,7 @@ public:
 
 	//-----------------------------------Getter-----------------------------------//
 
-	int GetMaxEnemyNum()                       { return m_maxEnemyNum; }
+	int GetMaxEnemyNum()                       { return MAXENEMYNUM; }
 	DirectX::SimpleMath::Vector3 GetPos(int i) { return mp_enemy[i]->GetPos(); }
 	bool GetEnemyState(int i)				   { return mp_enemy[i]->GetState(); }
 	Collision::Sphere GetEnemyCollide(int i)   { return mp_enemy[i]->GetCollision(); }
