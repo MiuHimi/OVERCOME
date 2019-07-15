@@ -106,8 +106,10 @@ void GameEnemyManager::Create()
 /// 更新
 /// </summary>
 /// <param name="timer">経過時間</param>
+/// <param name="player">プレイヤーの状態</param>
+/// <param name="assaultPoint">襲撃ポイントかどうかをこれで判別</param>
 /// <returns>終了状態</returns>
-bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
+bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player, int assaultPoint)
 {
 	m_respawnTime++;
 
@@ -115,7 +117,7 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 	mp_gameCamera->Update(timer, player);
 
 	// プレイヤーを襲う位置にいなかったら
-	if (player->GetAssaultPoint() == 0)
+	if (assaultPoint == 0)
 	{
 		// 襲撃不可
 		m_assault = false;
@@ -136,7 +138,7 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 			{
 				// まだ出現出来たら出現準備
 				mp_enemy[i]->SetState(true);
-				if (player->GetAssaultPoint() == 0)
+				if (assaultPoint == 0)
 				{
 					mp_enemy[i]->SetState(false);
 					break;
@@ -146,7 +148,7 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player)
 				m_respawnTime = 0;
 
 				// 場所設定
-				switch (player->GetAssaultPoint())
+				switch (assaultPoint)
 				{
 				case 1: mp_enemy[i]->SetPos(SimpleMath::Vector3(30.0f + float(rand() % 10 - 5), 5.0f + float(rand() % 5), -35.0f)); break;
 				case 2: mp_enemy[i]->SetPos(SimpleMath::Vector3(-12.5f + float(rand() % 14 - 7), 5.0f + float(rand() % 5), -32.5f + float(rand() % 14 - 7))); break;

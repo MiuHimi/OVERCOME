@@ -324,7 +324,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_player->Update(timer);
 
 	// 敵の更新
-	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer());
+	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer(), mp_gameRoad->GetRoadObject(mp_player->GetPassingRoad().y, mp_player->GetPassingRoad().x).roadNum);
 
 	// スコアの更新
 	mp_gameScore->Update(timer);

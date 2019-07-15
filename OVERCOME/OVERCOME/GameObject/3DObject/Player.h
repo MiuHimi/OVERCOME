@@ -40,10 +40,10 @@ private:
 	int                                      m_restartTime;               // リスタートするまでの時間
 
 	bool                                     m_spawnFlag;                 // 敵が出てくるフラグ
-	int                                      m_assaultPoint;              // 襲撃される位置(ID)
 	float                                    m_spawnElapsedTime;          // 敵が出現してからの経過時間
 	static const int                         SPAWNTIME;                   // 敵が出てくる時間(フレーム数)
 
+	DirectX::SimpleMath::Vector2             m_passingRoadPos;            // 通過済みの道路(ID)を記憶
 	DirectX::SimpleMath::Vector2             m_passedRoadPos;             // 通過済みの道路を記憶
 	DirectX::SimpleMath::Vector2             m_nextPos;                   // 次に向かう道路の座標を記憶
 	bool                                     m_velFlag;                   // 次の道路マスに向けて移動中ならフラグが立つ
@@ -97,8 +97,8 @@ public:
 	bool GetPlaying()								{ return m_playStartFlag; }
 	// 敵が出てくる時間かどうか
 	bool GetEnemyTime()								{return m_spawnFlag;}
-	// 襲撃を受ける位置
-	int GetAssaultPoint()							{ return m_assaultPoint; }
+	// 通過中の道路(ID)
+	DirectX::SimpleMath::Vector2 GetPassingRoad()   { return m_passingRoadPos; }
 	// プレイヤー情報の取得
 	Player* GetPlayer();
 	// プレイヤー情報の取得

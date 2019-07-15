@@ -32,8 +32,8 @@ Player::Player()
 	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_posTmp(0.0f, 0.0f, 0.0f),
 	  m_playStartFlag(false), m_playStartTime(0),
 	  m_restartFlag(false), m_restartTime(0),
-	  m_spawnFlag(false), m_spawnElapsedTime(0), m_assaultPoint(0),
-	  m_passedRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
+	  m_spawnFlag(false), m_spawnElapsedTime(0),
+	  m_passedRoadPos(0.0f, 0.0f), m_passingRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
 	  m_posRestartUI(0.0f, 0.0f), m_textureRestart(nullptr),
@@ -179,6 +179,8 @@ bool Player::Update(DX::StepTimer const & timer)
 				for (int k = 0; k < OFFSETNUM; k++)
 				{
 					SimpleMath::Vector2 pos = nowPos;
+					// 通過中の道路(ID)を記憶
+					m_passingRoadPos = nowPos;
 					pos += OFFSET[k];
 
 					if (distTmp == 0.0f)
@@ -214,7 +216,6 @@ bool Player::Update(DX::StepTimer const & timer)
 				{
 					m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 					m_spawnFlag = true;
-					m_assaultPoint = mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadNum;
 				}
 				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != mp_gameRoad->NUM)
 				{
@@ -240,10 +241,8 @@ bool Player::Update(DX::StepTimer const & timer)
 
 				m_vel.Normalize();
 				m_vel.x /= 10.0f;
-				//if (m_vel.x > 1.0f || m_vel.x < -1.0f)m_vel.x = 0.0f;
 				m_vel.y = 0.0f;
 				m_vel.z /= 10.0f;
-				//if (m_vel.z > 1.0f || m_vel.z < -1.0f)m_vel.z = 0.0f;
 
 				m_velFlag = true;
 			}
@@ -314,11 +313,6 @@ bool Player::Update(DX::StepTimer const & timer)
 	m_dir = m_pos - m_posTmp;
 	//m_dir.Normalize();
 
-	if (m_vel != SimpleMath::Vector3::Zero)
-	{
-		m_assaultPoint = 0;
-	}
-
 	// 衝突判定用の仮想オブジェクト生成
 	Collision::Box box;
 	box.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
@@ -333,6 +327,7 @@ bool Player::Update(DX::StepTimer const & timer)
 /// </summary>
 void Player::Render(MatrixManager* matrixManager)
 {
+	// 弾の描画
 	mp_bulletManager->Render(matrixManager);
 
 	// スタートカウントの描画

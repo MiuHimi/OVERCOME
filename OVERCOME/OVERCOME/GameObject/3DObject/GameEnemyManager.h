@@ -85,7 +85,7 @@ public:
 	// ¶¬
 	void Create();
 	// XV
-	bool Update(DX::StepTimer const& timer, Player* player);
+	bool Update(DX::StepTimer const& timer, Player* player, int assaultPoint);
 	// •`‰æ
 	void Render(MatrixManager* matrixManager, DirectX::SimpleMath::Vector3 eyePos);
 	// ”pŠüˆ—
