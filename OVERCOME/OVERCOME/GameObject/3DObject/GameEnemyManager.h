@@ -11,6 +11,9 @@
 #include "../../pch.h"
 
 #include <vector>
+#include <Effects.h>
+#include <PrimitiveBatch.h>
+#include <VertexTypes.h>
 
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
@@ -36,6 +39,8 @@ private:
 	int                           m_respawnTime;             // リスポーン時間(フレーム)
 
 	GameEnemy*                    mp_enemy[m_maxEnemyNum];   // 敵管理
+	DirectX::SimpleMath::Vector3  m_shockPos[m_maxEnemyNum]; // エフェクトが出る位置
+	int							  m_shockCount[m_maxEnemyNum]; // エフェクトが出てからのカウント
 	Player*                       mp_player;				 // プレイヤーオブジェクト
 	std::unique_ptr<GameCamera>   mp_gameCamera;             // カメラオブジェクト
 
@@ -43,6 +48,13 @@ private:
 								  m_textureDengerousH;       // テクスチャハンドル(危険サイン横)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 								  m_textureDengerousV;       // テクスチャハンドル(危険サイン縦)
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+								  m_textureSmoke;			 // テクスチャハンドル(やられ演出用煙)
+
+	std::unique_ptr<DirectX::AlphaTestEffect> m_batchEffect; // エフェクト
+	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>> m_batch;// プリミティブバッチ
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout; // 入力レイアウト
 
 	enum DIRECTION
 	{
@@ -75,7 +87,7 @@ public:
 	// 更新
 	bool Update(DX::StepTimer const& timer, Player* player);
 	// 描画
-	void Render(MatrixManager* matrixManager);
+	void Render(MatrixManager* matrixManager, DirectX::SimpleMath::Vector3 eyePos);
 	// 廃棄処理
 	void Depose();
 
@@ -93,7 +105,11 @@ public:
 	void SetEnemyState(int i, bool flag) {mp_enemy[i]->SetState(flag); }
 	//----------------------------------------------------------------------------//
 
+	// やられ演出設定
+	void ShockEnemy(int i);
+	
 private:
-
+	// やられ演出
+	void DrawSmoke(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world,int &drawAlpha);
 
 };

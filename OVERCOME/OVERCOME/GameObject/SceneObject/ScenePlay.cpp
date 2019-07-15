@@ -277,6 +277,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 						mp_gameScore->FluctuationScore(20);
 						// Œİ‚¢‚Ìstate‚ğfalse‚É
 						mp_gameEnemyManager->SetEnemyState(i, false);
+						mp_gameEnemyManager->ShockEnemy(i);
 						mp_player->GetBulletManager()->SetBulletState(j, false);
 					}
 				}
@@ -378,7 +379,9 @@ void ScenePlay::Render()
 	mp_player->Render(mp_matrixManager);
 
 	// “G‚Ì•`‰æ
-	mp_gameEnemyManager->Render(mp_matrixManager);
+	SimpleMath::Vector3 playerGlance = mp_player->GetPos();
+	playerGlance.y = mp_player->GetHeight();
+	mp_gameEnemyManager->Render(mp_matrixManager, playerGlance);
 	
 	//mp_effectManager->Render();
 

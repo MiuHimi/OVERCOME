@@ -27,6 +27,7 @@ private:
 	DirectX::SimpleMath::Vector3             m_dir;                   // 向き
 
 	bool                                     m_state;                 // 生存
+	bool									 m_shock;                 // 自機の弾が当たったタイミングのみフラグが立つ
 	Collision::Sphere                        m_sphere;                // 衝突判定情報
 
 	DirectX::SimpleMath::Quaternion          m_rotaX;                 // X軸回転
@@ -56,8 +57,10 @@ public:
 	DirectX::SimpleMath::Vector3 GetPos() { return m_pos; }
 	DirectX::SimpleMath::Vector3 GetVel() { return m_vel; }
 	DirectX::SimpleMath::Vector3 GetDir() { return m_dir; }
+	DirectX::SimpleMath::Matrix GetMatrix() { return m_world; }
 
 	bool GetState()						  { return m_state; }
+	bool GetShock()						  { return m_shock; }
 	Collision::Sphere GetCollide()		  { return m_sphere; }
 
 	const DirectX::Model& GetModel() const
@@ -78,6 +81,7 @@ public:
 	void SetDir(DirectX::SimpleMath::Vector3 dir)			 { m_dir = dir; }
 
 	void SetState(bool stateFlag)							 { m_state = stateFlag; }
+	void SetShock(bool shockFlag)							 { m_shock = shockFlag; }
 	void SetCollide(Collision::Sphere collide)				 { m_sphere = collide; }
 
 	void SetRotateX(float angle)							 { m_rotaX = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f), angle); }

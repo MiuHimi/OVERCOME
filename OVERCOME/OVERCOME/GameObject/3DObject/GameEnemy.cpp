@@ -29,6 +29,7 @@ GameEnemy::GameEnemy(DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vect
 	  m_rotaX(SimpleMath::Quaternion::Identity),
    	  m_rotaY(SimpleMath::Quaternion::Identity),
 	  m_state(false),
+	  m_shock(false),
 	  m_world(DirectX::SimpleMath::Matrix::Identity),
 	  mp_modelEnemy(nullptr)
 {
