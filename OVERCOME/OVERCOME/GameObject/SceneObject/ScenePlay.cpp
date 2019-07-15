@@ -197,7 +197,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			//	}
 			//}
 
-			SimpleMath::Vector3 roadpos = mp_gameRoad->GetRoadObject((int)mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x, (int)mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y).pos;
+			SimpleMath::Vector3 roadpos = mp_gameRoad->GetRoadObject(mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x, mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y).pos;
 			SimpleMath::Vector3 playerpos = mp_player->GetPos();
 			float distX = roadpos.z - playerpos.x;
 			float distY = roadpos.x - playerpos.z;
@@ -324,9 +324,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_player->Update(timer);
 
 	// 敵の更新
-	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer(), 
-								mp_gameRoad->GetRoadObject((int)mp_player->GetPassingRoad().y, (int)mp_player->GetPassingRoad().x).roadType, 
-								mp_gameRoad->GetRoadObject((int)mp_player->GetPassingRoad().y, (int)mp_player->GetPassingRoad().x).roadNum);
+	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer(), mp_gameRoad->GetRoadObject(mp_player->GetPassingRoad().y, mp_player->GetPassingRoad().x).roadNum);
 
 	// スコアの更新
 	mp_gameScore->Update(timer);

@@ -20,6 +20,7 @@
 using namespace DirectX;
 
 // constディレクトリ
+const int Player::SPAWNTIME = 600;
 
 
 /// <summary>
@@ -31,6 +32,7 @@ Player::Player()
 	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_posTmp(0.0f, 0.0f, 0.0f),
 	  m_playStartFlag(false), m_playStartTime(0),
 	  m_restartFlag(false), m_restartTime(0),
+	  m_spawnFlag(false), m_spawnElapsedTime(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_passingRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
@@ -67,8 +69,6 @@ void Player::Initialize()
 	mp_gameRoad = std::make_unique<GameRoad>();
 	mp_gameRoad->Initialize();
 	mp_gameRoad->Create();
-
-	count = 0;
 	
 }
 /// <summary>
@@ -150,7 +150,7 @@ bool Player::Update(DX::StepTimer const & timer)
 			SimpleMath::Vector2 nowPos = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
 			if (abs(m_pos.x - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x) < 0.01f &&
 				abs(m_pos.z - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z) < 0.01f &&
-				flag == true)
+				m_spawnFlag == false)
 			{
 				m_pos.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x;
 				m_pos.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z;
@@ -215,7 +215,7 @@ bool Player::Update(DX::StepTimer const & timer)
 				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType == 3 && m_velFlag == true)
 				{
 					m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-					flag = true;
+					m_spawnFlag = true;
 				}
 				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != mp_gameRoad->NUM)
 				{
@@ -223,17 +223,17 @@ bool Player::Update(DX::StepTimer const & timer)
 					m_velFlag = false;
 				}
 			}
-			else if (flag)
+			else if (m_spawnFlag)
 			{
-				count++;
-				if (m_velFlag == true && count > 300)
+				m_spawnElapsedTime++;
+				if (m_velFlag == true && m_spawnElapsedTime > SPAWNTIME)
 				{
-					count = 0;
+					m_spawnElapsedTime = 0;
 					m_velFlag = false;
-					flag = false;
+					m_spawnFlag = false;
 				}
 			}
-			if(!m_velFlag)
+			else if(!m_velFlag)
 			{
 				// 次の行き先に近づくまで差分で移動し続ける
 				m_vel.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x;
