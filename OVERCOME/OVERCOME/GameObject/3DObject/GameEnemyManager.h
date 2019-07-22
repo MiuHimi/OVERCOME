@@ -42,7 +42,6 @@ private:
 	DirectX::SimpleMath::Vector3  m_shockPos[m_maxEnemyNum]; // エフェクトが出る位置
 	int							  m_shockCount[m_maxEnemyNum]; // エフェクトが出てからのカウント
 	Player*                       mp_player;				 // プレイヤーオブジェクト
-	std::unique_ptr<GameCamera>   mp_gameCamera;             // カメラオブジェクト
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 								  m_textureDengerousH;       // テクスチャハンドル(危険サイン横)
@@ -85,7 +84,7 @@ public:
 	// 生成
 	void Create();
 	// 更新
-	bool Update(DX::StepTimer const& timer, Player* player, int assaultPoint);
+	bool Update(DX::StepTimer const& timer, Player* player, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir);
 	// 描画
 	void Render(MatrixManager* matrixManager, DirectX::SimpleMath::Vector3 eyePos);
 	// 廃棄処理

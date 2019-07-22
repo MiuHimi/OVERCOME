@@ -109,7 +109,7 @@ void Player::Create()
 bool Player::Update(DX::StepTimer const & timer)
 {
 	// カメラの更新
-	mp_gameCamera->Update(timer,this);
+	mp_gameCamera->Update(timer, m_pos, m_height, m_dir);
 
 	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());

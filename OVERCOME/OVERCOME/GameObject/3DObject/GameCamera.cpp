@@ -61,7 +61,7 @@ GameCamera::~GameCamera()
 /// <param name="timer">経過時間</param>
 /// <param name="player">プレイヤー情報</param>
 /// <returns>終了状態</returns>
-bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
+bool GameCamera::Update(DX::StepTimer const & timer, DirectX::SimpleMath::Vector3& playerPos, float playerHeight, DirectX::SimpleMath::Vector3& playerDir)
 {
 	SimpleMath::Vector3 target(0.0f, 0.0f, 0.0f);
 	SimpleMath::Vector3 debugPos(0.0f, 0.0f, 0.0f);
@@ -82,9 +82,9 @@ bool GameCamera::Update(DX::StepTimer const & timer, Player* player)
 		break;
 	case SCENE_PLAY:
 		// マウス操作のカメラ
-		target = SimpleMath::Vector3(player->GetPos().x, player->GetPos().y + player->GetHeight(), player->GetPos().z);
+		target = SimpleMath::Vector3(playerPos.x, playerPos.y + playerHeight, playerPos.z);
 		// 注視点はプレイヤーの目線の位置
-		MouseOperateCamera(target, player);
+		MouseOperateCamera(target, playerDir);
 		break;
 	case SCENE_RESULT:
 		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
@@ -224,7 +224,7 @@ void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float d
 /// <summary>
 /// マウスで視点移動するカメラ
 /// </summary>
-void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player* player)
+void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 playerDirction)
 {
 	RECT desktopWndRect;                         // デスクトップのサイズ
 	HWND desktopWnd = GetDesktopWindow();        // この関数でデスクトップのハンドルを取得
@@ -260,10 +260,10 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player*
 	{
 		// ベクトルの長さを求める
 		double lengthA = pow((m_cameraDir.x * m_cameraDir.x) + (m_cameraDir.z * m_cameraDir.z), 0.5);
-		double lengthB = pow(((player->GetDir().x / 2.0f) * (player->GetDir().x / 2.0f)) +
-			                 ((player->GetDir().z / 2.0f) * (player->GetDir().z / 2.0f)), 0.5);
+		double lengthB = pow(((playerDirction.x / 2.0f) * (playerDirction.x / 2.0f)) +
+			                 ((playerDirction.z / 2.0f) * (playerDirction.z / 2.0f)), 0.5);
 		// 内積とベクトルの長さを使ってcosθを求める
-		double cos_sita = m_cameraDir.x * (player->GetDir().x / 2.0f) + m_cameraDir.z * (player->GetDir().z / 2.0f) / (lengthA * lengthB);
+		double cos_sita = m_cameraDir.x * (playerDirction.x / 2.0f) + m_cameraDir.z * (playerDirction.z / 2.0f) / (lengthA * lengthB);
 
 		// cosθからθを求める
 		double sita = acos(cos_sita);
@@ -271,8 +271,8 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player*
 		sita = sita * 180.0 / double(XM_PI);
 
 		// 正の値なら右回転、負の値なら左回転
-		float s = (player->GetDir().x / 2.0f) * m_cameraDir.z -
-			      (player->GetDir().z / 2.0f) * m_cameraDir.x;
+		float s = (playerDirction.x / 2.0f) * m_cameraDir.z -
+			      (playerDirction.z / 2.0f) * m_cameraDir.x;
 
 		// 回転制限
 		// 進行方向より20度以上先を見ていたら制限範囲内に戻す

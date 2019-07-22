@@ -56,7 +56,7 @@ public:
 	~GameCamera();
 
 	// 更新(主にカメラの切り替えを行う)
-	bool Update(DX::StepTimer const & timer, Player* player);
+	bool Update(DX::StepTimer const & timer, DirectX::SimpleMath::Vector3& playerPos, float playerHeight, DirectX::SimpleMath::Vector3& playerDir);
 
 	//-----------------------------------Getter-----------------------------------//
 
@@ -112,5 +112,5 @@ private:
 	/// マウスで視点移動するカメラ
 	/// </summary>
 	/// <param name="target">注視点</param>
-	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, Player* player);
+	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 playerDirction);
 };

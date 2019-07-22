@@ -175,7 +175,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	InputManager::SingletonGetInstance().Update();
 
 	// カメラの更新
-	mp_camera->Update(timer, mp_player->GetPlayer());
+	mp_camera->Update(timer, mp_player->GetPos(), mp_player->GetHeight(), mp_player->GetDir());
 
 	// 道路とプレイヤーの衝突判定
 	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
@@ -197,7 +197,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			//	}
 			//}
 
-			SimpleMath::Vector3 roadpos = mp_gameRoad->GetRoadObject(mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x, mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y).pos;
+			SimpleMath::Vector3 roadpos = mp_gameRoad->GetRoadObject((int)mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x, (int)mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y).pos;
 			SimpleMath::Vector3 playerpos = mp_player->GetPos();
 			float distX = roadpos.z - playerpos.x;
 			float distY = roadpos.x - playerpos.z;
@@ -324,7 +324,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_player->Update(timer);
 
 	// 敵の更新
-	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer(), mp_gameRoad->GetRoadObject(mp_player->GetPassingRoad().y, mp_player->GetPassingRoad().x).roadNum);
+	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer(), mp_gameRoad->GetRoadObject((int)mp_player->GetPassingRoad().y, (int)mp_player->GetPassingRoad().x).roadNum, mp_camera->GetCameraAngle());
 
 	// スコアの更新
 	mp_gameScore->Update(timer);

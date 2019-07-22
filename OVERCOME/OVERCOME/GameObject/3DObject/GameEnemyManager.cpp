@@ -55,7 +55,6 @@ void GameEnemyManager::Initialize()
 {
 	// 乱数初期化
 	srand((unsigned int)time(NULL));
-	mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
 
 	for (int i = 0; i < m_maxEnemyNum; i++)
 	{
@@ -109,12 +108,9 @@ void GameEnemyManager::Create()
 /// <param name="player">プレイヤーの状態</param>
 /// <param name="assaultPoint">襲撃ポイントかどうかをこれで判別</param>
 /// <returns>終了状態</returns>
-bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player, int assaultPoint)
+bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir)
 {
 	m_respawnTime++;
-
-	// カメラの更新
-	mp_gameCamera->Update(timer, player);
 
 	// プレイヤーを襲う位置にいなかったら
 	if (assaultPoint == 0)
@@ -220,7 +216,7 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, Player* player, int as
 				}
 
 				// プレイヤーとの位置の差分
-				SimpleMath::Vector3 pDir = mp_gameCamera->GetCameraAngle();
+				SimpleMath::Vector3 pDir = cameraDir;
 				pDir.Normalize();
 				SimpleMath::Vector3 playerDir = SimpleMath::Vector3(pDir);
 				// 敵の向き
