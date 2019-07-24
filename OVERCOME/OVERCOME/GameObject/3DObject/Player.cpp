@@ -15,12 +15,13 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/DrawManager.h"
+#include "../../Utility/GameDebug.h"
 
 // usingディレクトリ
 using namespace DirectX;
 
 // constディレクトリ
-const int Player::SPAWNTIME = 600;
+const int Player::SPAWNTIME = 300;
 
 
 /// <summary>
@@ -114,154 +115,10 @@ bool Player::Update(DX::StepTimer const & timer)
 	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 
-	// マウスが初期位置についてからのカウントダウン
-	if (!m_playStartFlag)
-	{
-		if (mp_gameCamera->GetStartPosMouse())
-		{
-			m_playStartTime++;
-		}
-
-		if (m_playStartTime > 180)
-		{
-			m_playStartTime = 0;
-			m_playStartFlag = true;
-			// マウスカーソルの非表示
-			ShowCursor(FALSE);
-		}
-	}
-	else
-	{
-		// 弾の更新
-		mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
-
-		// プレイヤー移動(ベクトル)
-		if (mp_gameCamera->GetStartPosMouse())
-		{
-			const int OFFSETNUM = 8;
-			// 特定のマスの周囲八マス分の相対座標
-			SimpleMath::Vector2 OFFSET[OFFSETNUM] =
-			{
-				{ -1,-1 },{ 0,-1 },{ 1,-1 },
-				{ -1, 0 },{ 1, 0 },
-				{ -1, 1 },{ 0, 1 },{ 1, 1 }
-			};
-
-			SimpleMath::Vector2 nowPos = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
-			if (abs(m_pos.x - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x) < 0.01f &&
-				abs(m_pos.z - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z) < 0.01f &&
-				m_spawnFlag == false)
-			{
-				m_pos.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x;
-				m_pos.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z;
-
-				if (abs(m_vel.x) > abs(m_vel.z))
-				{
-					if (m_vel.x < 0.00f)
-						m_passedRoadPos.x = m_nextPos.x + 1;
-					else if (m_vel.x > 0.00f)
-						m_passedRoadPos.x = m_nextPos.x - 1;
-					m_passedRoadPos.y = m_nextPos.y;
-				}
-				else if (abs(m_vel.x) < abs(m_vel.z))
-				{
-					if (m_vel.z < 0.00f)
-						m_passedRoadPos.y = m_nextPos.y + 1;
-					else if (m_vel.z > 0.00f)
-						m_passedRoadPos.y = m_nextPos.y - 1;
-					m_passedRoadPos.x = m_nextPos.x;
-				}
-
-				SimpleMath::Vector2 now = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
-
-				// 次の行き先を決定
-				float distTmp = 0.0f;
-				for (int k = 0; k < OFFSETNUM; k++)
-				{
-					SimpleMath::Vector2 pos = nowPos;
-					// 通過中の道路(ID)を記憶
-					m_passingRoadPos = nowPos;
-					pos += OFFSET[k];
-
-					if (distTmp == 0.0f)
-					{
-						// 仮の行き先登録
-						distTmp = (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x) +
-							(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z);
-					}
-
-					if (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).roadType != 0)
-					{
-						float dist = (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x) +
-							(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z);
-
-						if (dist <= distTmp)
-						{
-							int pX = (int)m_passedRoadPos.x;
-							int pY = (int)m_passedRoadPos.y;
-							SimpleMath::Vector2 p = SimpleMath::Vector2((float)pX, (float)pY);
-
-							// 既に通過したところでなければ次の移動先に決定
-							if (p != pos && nowPos != pos)
-							{
-								m_nextPos = pos;
-
-								distTmp = dist;
-							}
-						}
-					}
-				}
-
-				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType == 3 && m_velFlag == true)
-				{
-					m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-					m_spawnFlag = true;
-				}
-				if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != mp_gameRoad->NUM)
-				{
-					// 道のIDに設定していないところでなければ移動を開始する
-					m_velFlag = false;
-				}
-			}
-			else if (m_spawnFlag)
-			{
-				m_spawnElapsedTime++;
-				if (m_velFlag == true && m_spawnElapsedTime > SPAWNTIME)
-				{
-					m_spawnElapsedTime = 0;
-					m_velFlag = false;
-					m_spawnFlag = false;
-				}
-			}
-			else if(!m_velFlag)
-			{
-				// 次の行き先に近づくまで差分で移動し続ける
-				m_vel.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x;
-				m_vel.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z;
-
-				m_vel.Normalize();
-				m_vel.x /= 10.0f;
-				m_vel.y = 0.0f;
-				m_vel.z /= 10.0f;
-
-				m_velFlag = true;
-			}
-		}
-	}
-
 	// スタートするまでは初期位置で固定
 	if(!mp_gameCamera->GetStartPosMouse())
 	{
-		const int OFFSETNUM = 8;
-		// 特定のマスの周囲八マス分の相対座標
-		SimpleMath::Vector2 OFFSET[OFFSETNUM] =
-		{
-			{ -1,-1 },{ 0,-1 },{ 1,-1 },
-			{ -1, 0 },{ 1, 0 },
-			{ -1, 1 },{ 0, 1 },{ 1, 1 }
-		};
-
-		// 初期位置で固定
+		// スタート位置で固定
 		if (mp_gameRoad->GetPosType(mp_gameRoad->START).x != m_pos.x ||
 			mp_gameRoad->GetPosType(mp_gameRoad->START).y != m_pos.z)
 		{
@@ -269,42 +126,233 @@ bool Player::Update(DX::StepTimer const & timer)
 			m_pos.z = mp_gameRoad->GetRoadObject((int)(mp_gameRoad->GetPosType(mp_gameRoad->START).y), (int)(mp_gameRoad->GetPosType(mp_gameRoad->START).x)).pos.z;
 		}
 
+		const int OFFSETNUM = 8;
+		// 特定のマスの周囲八マス分の相対座標
+		SimpleMath::Vector2 OFFSET[OFFSETNUM] =
+		{
+			{ -1,-1 },{ 0,-1 },{ 1,-1 },
+			{ -1, 0 },		   { 1, 0 },
+			{ -1, 1 },{ 0, 1 },{ 1, 1 }
+		};
+
 		// 通過済みの道路を記憶
 		m_passedRoadPos = SimpleMath::Vector2(mp_gameRoad->GetPosType(mp_gameRoad->START).x,
-			mp_gameRoad->GetPosType(mp_gameRoad->START).y);
+											  mp_gameRoad->GetPosType(mp_gameRoad->START).y);
 
-		// 次の行き先を決定
+		// 次の行き先を決定(周囲八マスを調べる)
 		float distTmp = 0.0f;
 		for (int k = 0; k < OFFSETNUM; k++)
 		{
-			SimpleMath::Vector2 pos = SimpleMath::Vector2(m_passedRoadPos.x, m_passedRoadPos.y);
-			pos += OFFSET[k];
+			// マス目上の位置座標
+			SimpleMath::Vector2 comparePos = SimpleMath::Vector2(m_passedRoadPos.x, m_passedRoadPos.y);
+			comparePos += OFFSET[k];
 
+			// 比べるものがないため仮決定
 			if (k == 0)
 			{
-				m_nextPos = pos;
+				// 次の行き先(マス目上の座標)
+				m_nextPos = comparePos;
 
-				// 仮の行き先登録
+				// 次の行き先(仮)と今の位置の距離を求める
 				distTmp = (mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x) +
-					(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z);
+						  (mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z);
 			}
-
-			if (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).roadType != 0)
+			// 最初に調べる座標でもなく、道が存在しているところなら
+			else if (k != 0 && mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).roadType != (int)mp_gameRoad->NONE)
 			{
-				float dist = (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x) +
-					(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z);
+				// 次の行き先と今の位置の距離を求める
+				float dist = (mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos.x - m_pos.x) +
+							 (mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos.z - m_pos.z);
 
+				// distのほうが小さい(ここで比べたところのほうが近い)なら
 				if (dist < distTmp)
 				{
 					// 既に通過したところじゃなければ次の移動先に決定
-					if (m_passedRoadPos != pos) m_nextPos = pos;
+					if (m_passedRoadPos != comparePos) m_nextPos = comparePos;
 
 					distTmp = dist;
 				}
 			}
 		}
 	}
-	
+	// マウスでクリックされてからの処理
+	else
+	{
+		// マウスで中心をクリックしてからカウントダウン
+		if (!m_playStartFlag)
+		{
+			m_playStartTime++;
+
+			// 3秒経過でゲーム開始
+			if (m_playStartTime > 180)
+			{
+				// カウントダウン用タイムリセット
+				m_playStartTime = 0;
+				// ゲーム開始フラグを立てる
+				m_playStartFlag = true;
+				// 移動開始
+				m_velFlag = true;
+				// マウスカーソルの非表示
+				ShowCursor(FALSE);
+			}
+		}
+	}
+
+	// ゲームが開始されてからの処理
+	if (m_playStartFlag)
+	{
+		// 弾の更新
+		mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
+
+		// プレイヤー移動(ベクトル)
+		const int OFFSETNUM = 8;
+		// 特定のマスの周囲八マス分の相対座標
+		SimpleMath::Vector2 OFFSET[OFFSETNUM] =
+		{
+			{ -1,-1 },{ 0,-1 },{ 1,-1 },
+			{ -1, 0 },		   { 1, 0 },
+			{ -1, 1 },{ 0, 1 },{ 1, 1 }
+		};
+
+		SimpleMath::Vector2 nowPos = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
+		// 次の行き先に決定した位置と現在座標が限りなく近い位置にいたら
+		if (abs(m_pos.x - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x) < 0.01f &&
+			abs(m_pos.z - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z) < 0.01f)
+		{
+			// 次の位置に現在座標をずらす
+			m_pos.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x;
+			m_pos.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z;
+
+			// どの方向に進んでいたか比べる
+			if (abs(m_vel.x) > abs(m_vel.z))
+			{
+				// X軸方向に進んでいた場合
+				// 今通った道を通過済みにする
+				if (m_vel.x < 0.00f)      m_passedRoadPos.x = m_nextPos.x + 1;
+				else if (m_vel.x > 0.00f) m_passedRoadPos.x = m_nextPos.x - 1;
+				// 同時に軸違いのほうも記憶しておく
+				m_passedRoadPos.y = m_nextPos.y;
+			}
+			else if (abs(m_vel.x) < abs(m_vel.z))
+			{
+				// Z軸方向に進んでいた場合
+				// 今通った道を通過済みにする
+				if (m_vel.z < 0.00f)      m_passedRoadPos.y = m_nextPos.y + 1;
+				else if (m_vel.z > 0.00f) m_passedRoadPos.y = m_nextPos.y - 1;
+				// 同時に軸違いのほうも記憶しておく
+				m_passedRoadPos.x = m_nextPos.x;
+			}
+
+			// 次の位置に着いたためnextからnowに変えておく(わかりやすくするため)
+			SimpleMath::Vector2 now = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
+
+			// 次の行き先を決定
+			float distTmp = 0.0f;
+			for (int k = 0; k < OFFSETNUM; k++)
+			{
+				SimpleMath::Vector2 pos = nowPos;
+				// 通過中の道路(ID)を記憶
+				m_passingRoadPos = nowPos;
+				// マス目上の位置座標
+				pos += OFFSET[k];
+
+				// 比べるものがないため設定しておく
+				if (distTmp == 0.0f)
+				{
+					// 仮の行き先登録
+					distTmp = (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x) +
+							  (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z);
+				}
+
+				// 道が存在しているところなら
+				if (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).roadType != mp_gameRoad->NONE)
+				{
+					// 調べている行き先と今の位置の距離を求める
+					float dist = (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.x - m_pos.x) +
+								 (mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)pos.y, (int)pos.x).pos.z - m_pos.z);
+
+					// distのほうが小さい(ここで比べたところのほうが近い)なら
+					if (dist <= distTmp)
+					{
+						// 移動してきたマスの情報を取得
+						int pX = (int)m_passedRoadPos.x;
+						int pY = (int)m_passedRoadPos.y;
+						SimpleMath::Vector2 p = SimpleMath::Vector2((float)pX, (float)pY);
+
+						// 既に通過したところでなければ次の移動先に決定
+						if (p != pos && nowPos != pos)
+						{
+							// 次の行き先決定
+							m_nextPos = pos;
+							// 最短距離更新、次はこれと比べる
+							distTmp = dist;
+						}
+					}
+				}
+			}
+
+			//if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != mp_gameRoad->NONE)
+			//{
+			//	// 道のIDに設定していないところでなければ移動を開始する
+			//	m_velFlag = false;
+			//}
+
+			// 到着した道が襲撃ポイントだったら
+			if (mp_gameRoad->GetRoadObject((int)m_passingRoadPos.y, (int)m_passingRoadPos.x).roadType == 3)
+			{
+				// 移動をやめる
+				/*m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+				m_velFlag = false;*/
+				m_spawnFlag = true;
+
+				// カウント
+				/*m_spawnElapsedTime++;
+
+				// 一定数を超えたら
+				if (m_spawnElapsedTime > SPAWNTIME)
+				{
+					// カウントリセット
+					m_spawnElapsedTime = 0;
+					// 移動を開始する
+					m_velFlag = true;
+				}*/
+			}
+		}
+		if (m_spawnFlag)
+		{
+			// 移動をやめる
+			m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+			m_velFlag = false;
+
+			// カウント
+			m_spawnElapsedTime++;
+
+			// 一定数を超えたら
+			if (m_spawnElapsedTime > SPAWNTIME)
+			{
+				// カウントリセット
+				m_spawnElapsedTime = 0;
+				// 移動を開始する
+				m_velFlag = true;
+				m_spawnFlag = false;
+			}
+		}
+		// 移動可能だったら
+		if(m_velFlag)
+		{
+			// 次の行き先に近づくまで差分で移動し続ける
+			m_vel.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x;
+			m_vel.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z;
+
+			m_vel.Normalize();
+			m_vel.x /= 10.0f;
+			m_vel.y = 0.0f;
+			m_vel.z /= 10.0f;
+
+			m_velFlag = true;
+		}
+	}
+
 	// 移動前の座標を記憶
 	m_posTmp = m_pos;
 	// プレイヤー移動(座標)
@@ -360,6 +408,8 @@ void Player::Render(MatrixManager* matrixManager)
 
 	if (!m_playStartFlag)
 		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestartUI);
+
+	GameDebug::SingletonGetInstance().Render();
 
 	// ポインターの描画
 	if (mp_gameCamera->GetStartPosMouse() && m_playStartFlag)

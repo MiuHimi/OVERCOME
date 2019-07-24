@@ -85,7 +85,7 @@ void GameRoad::Initialize()
 		{
 			// 文字を数値に変換
 			int roadType = std::atoi(buf.c_str());
-			// 二桁のうち、十の桁を道の種類、一の桁を道の数に設定
+			// 二桁のうち、十の桁を道の種類(襲撃ポイントやスタートゴールなど)、一の桁を襲撃するタイミング順に設定
 			m_road[j][i].roadType = roadType / 10;
 			m_road[j][i].roadNum = roadType % 10;
 			i++;

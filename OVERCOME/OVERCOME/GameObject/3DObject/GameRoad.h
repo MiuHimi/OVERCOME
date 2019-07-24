@@ -21,9 +21,26 @@ public:
 	{
 		START,
 		GOAL,
-		WAY,
 
 		NUM
+	};
+
+	enum RoadType
+	{
+		NONE,
+		WAY,
+		START_GOAL,
+		ASSAULT,
+	};
+
+	enum AssaultPoint
+	{
+		PEACE,
+		DANGER_ONE,
+		DANGER_TWO,
+		DANGER_THREE,
+		DANGER_FOUR,
+		DANGER_FIVE,
 	};
 
 private:

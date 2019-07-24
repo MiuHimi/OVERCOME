@@ -35,6 +35,9 @@ private:
 	static const int              m_maxEnemyNum = 100;       // 最大敵数
 	static const int              m_maxAliveDist = 90;		 // 
 
+	float						  m_spawnElapsedTime;		 // 敵が出現してからの経過時間
+	static const int			  SPAWNTIME;				 // 敵が出てくる時間(フレーム数)
+
 	static const int              m_needRespawnTime = 40;    // リスポーンに必要な時間(フレーム)
 	int                           m_respawnTime;             // リスポーン時間(フレーム)
 
@@ -84,7 +87,7 @@ public:
 	// 生成
 	void Create();
 	// 更新
-	bool Update(DX::StepTimer const& timer, Player* player, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir);
+	bool Update(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, int roadType, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir);
 	// 描画
 	void Render(MatrixManager* matrixManager, DirectX::SimpleMath::Vector3 eyePos);
 	// 廃棄処理

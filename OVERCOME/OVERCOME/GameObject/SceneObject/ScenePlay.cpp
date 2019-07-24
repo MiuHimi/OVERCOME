@@ -14,7 +14,7 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
-//#include "../../Utility/GameDebug.h"
+
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
@@ -324,7 +324,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_player->Update(timer);
 
 	// 敵の更新
-	mp_gameEnemyManager->Update(timer, mp_player->GetPlayer(), mp_gameRoad->GetRoadObject((int)mp_player->GetPassingRoad().y, (int)mp_player->GetPassingRoad().x).roadNum, mp_camera->GetCameraAngle());
+	mp_gameEnemyManager->Update(timer, mp_player->GetPos(), mp_gameRoad->GetRoadObject((int)mp_player->GetPassingRoad().y, (int)mp_player->GetPassingRoad().x).roadType, mp_gameRoad->GetRoadObject((int)mp_player->GetPassingRoad().y, (int)mp_player->GetPassingRoad().x).roadNum, mp_camera->GetCameraAngle());
 
 	// スコアの更新
 	mp_gameScore->Update(timer);
@@ -387,10 +387,6 @@ void ScenePlay::Render()
 
 	// スコアの描画
 	mp_gameScore->Render();
-
-	//GameDebug::SingletonGetInstance().DebugRender(m_debug, SimpleMath::Vector2(10.0f, 10.0f));
-	//GameDebug::SingletonGetInstance().DebugRender(m_debug2, SimpleMath::Vector2(10.0f, 30.0f));
-	//GameDebug::SingletonGetInstance().Render();
 
 	// フェードインの描画(最前面)
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
