@@ -376,7 +376,7 @@ void ScenePlay::Render()
 	//mp_gameTarget->Render(mp_matrixManager);
 
 	// ƒvƒŒƒCƒ„[‚Ì•`‰æ
-	mp_player->Render(mp_matrixManager);
+	mp_player->Render(mp_matrixManager, mp_gameEnemyManager->GetDangerDir());
 
 	// “G‚Ì•`‰æ
 	SimpleMath::Vector3 playerGlance = mp_player->GetPos();

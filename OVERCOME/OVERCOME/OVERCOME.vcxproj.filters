@@ -150,9 +150,6 @@
     <ClInclude Include="GameObject\3DObject\GameBulletManager.h">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\GameDebug.h">
-      <Filter>Game\Utility</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -233,9 +230,6 @@
     <ClCompile Include="GameObject\3DObject\GameRoad.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\3DObject\GameMap.cpp">
-      <Filter>Game\GameObject\3DObject</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject\3DObject\GameEnemy.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
@@ -257,8 +251,8 @@
     <ClCompile Include="GameObject\3DObject\GameBulletManager.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\GameDebug.cpp">
-      <Filter>Game\Utility</Filter>
+    <ClCompile Include="GameObject\3DObject\GameMap.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

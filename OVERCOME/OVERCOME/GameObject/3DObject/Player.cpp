@@ -15,7 +15,8 @@
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/DrawManager.h"
-#include "../../Utility/GameDebug.h"
+
+#include "../../GameObject/3DObject/GameEnemyManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -39,7 +40,7 @@ Player::Player()
 	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
 	  m_posRestartUI(0.0f, 0.0f), m_textureRestart(nullptr),
 	  m_posCountUI(0.0f, 0.0f), m_textureCount(nullptr),
-	  m_texturePointer(nullptr)
+	  m_texturePointer(nullptr), m_textureDengerous(nullptr)
 {
 }
 /// <summary>
@@ -91,15 +92,17 @@ void Player::Create()
 
 	// リスタートUIの設定
 	m_posRestartUI = SimpleMath::Vector2(175.0f, 450.0f);
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\clicktocenter.png", nullptr, m_textureRestart.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\clicktocenter.png", nullptr, m_textureRestart.GetAddressOf());
 
 	// カウント数字の設定
 	m_posCountUI = SimpleMath::Vector2(360.0f, 260.0f);
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\count\\count_len.png", nullptr, m_textureCount.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\count\\count_len.png", nullptr, m_textureCount.GetAddressOf());
 	
 	// ポインターの設定
-	DirectX::CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\pointer.png", nullptr, m_texturePointer.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\pointer.png", nullptr, m_texturePointer.GetAddressOf());
 
+	// 危険サインのテクスチャ読み込み
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\dangerous_signV.png", nullptr, m_textureDengerous.GetAddressOf());
 }
 
 /// <summary>
@@ -363,8 +366,8 @@ bool Player::Update(DX::StepTimer const & timer)
 
 	// 衝突判定用の仮想オブジェクト生成
 	Collision::Box box;
-	box.c = DirectX::SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
-	box.r = DirectX::SimpleMath::Vector3(1.0f, m_height / 2.0f, 1.0f);                        // 各半径
+	box.c = SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
+	box.r = SimpleMath::Vector3(1.0f, m_height / 2.0f, 1.0f);                        // 各半径
 	SetCollision(box);
 
 	return true;
@@ -373,7 +376,7 @@ bool Player::Update(DX::StepTimer const & timer)
 /// <summary>
 /// 描画処理
 /// </summary>
-void Player::Render(MatrixManager* matrixManager)
+void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECTION dangerDir)
 {
 	// 弾の描画
 	mp_bulletManager->Render(matrixManager);
@@ -409,12 +412,20 @@ void Player::Render(MatrixManager* matrixManager)
 	if (!m_playStartFlag)
 		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestartUI);
 
-	GameDebug::SingletonGetInstance().Render();
-
 	// ポインターの描画
 	if (mp_gameCamera->GetStartPosMouse() && m_playStartFlag)
 	{
 		DrawManager::SingletonGetInstance().Draw(m_texturePointer.Get(), SimpleMath::Vector2(350.0f, 330.0f));
+	}
+
+	// 敵がいたら危険サイン表示
+	if (dangerDir == GameEnemyManager::DANGERDIRECTION::DIR_RIGHT)
+	{
+		DrawManager::SingletonGetInstance().Draw(m_textureDengerous.Get(), SimpleMath::Vector2(700.0f, 50.0f));
+	}
+	else if (dangerDir == GameEnemyManager::DANGERDIRECTION::DIR_LEFT)
+	{
+		DrawManager::SingletonGetInstance().Draw(m_textureDengerous.Get(), SimpleMath::Vector2(50.0f, 50.0f));
 	}
 }
 

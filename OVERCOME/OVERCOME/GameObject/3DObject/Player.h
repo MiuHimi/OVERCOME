@@ -15,9 +15,11 @@
 
 #include "GameRoad.h"
 #include "GameBulletManager.h"
+#include "GameEnemyManager.h"
 #include "GameCamera.h"
 
 class GameCamera;
+class GameEnemyManager;
 class GameRoad;
 class MatrixManager;
 class Player : public CollisionBox
@@ -63,9 +65,11 @@ private:
 	DirectX::SimpleMath::Vector2             m_posCountUI;                // カウント位置
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 		                                     m_textureCount;              // テクスチャハンドル(カウント)
-
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     
 		                                     m_texturePointer;            // テクスチャハンドル(ポインター)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+											 m_textureDengerous;          // テクスチャハンドル(危険サイン)
+
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -81,7 +85,7 @@ public:
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
-	void Render(MatrixManager* matrixManager);
+	void Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECTION dangerDir);
 	// 廃棄
 	void Depose();
 
@@ -110,21 +114,6 @@ public:
 	// プレイヤーの高さのみの位置を設定
 	void SetHeightPos(float pos)                    { m_pos.y = pos; }
 	//----------------------------------------------------------------------------//
-
-	/*// 弾情報取得
-	const GameBulletManager& GetBulletManager() const
-	{
-		if (!mp_bulletManager)
-		{
-			throw std::domain_error("null pointer");
-		}
-		return *mp_bulletManager;
-	}
-	// 弾情報設定
-	void SetBulletManager(std::unique_ptr<GameBulletManager>&& newData)
-	{
-		mp_bulletManager = std::move(newData);
-	}*/
 
 private:
 

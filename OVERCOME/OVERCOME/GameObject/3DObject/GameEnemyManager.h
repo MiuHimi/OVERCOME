@@ -1,15 +1,13 @@
 //////////////////////////////////////////////////////////////
 // File.    GameEnemyManager.h
 // Summary. GameEnemyManagerClass
-// Date.    2019/03/26
+// Date.    2019/07/28
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
 #pragma once
 
 // インクルードディレクトリ
-#include "../../pch.h"
-
 #include <vector>
 #include <Effects.h>
 #include <PrimitiveBatch.h>
@@ -23,57 +21,54 @@
 #include "../../ExclusiveGameObject/CollisionSphere.h"
 
 class GameEnemy;
-class GameCamera;
 class MatrixManager;
-class Player;
 class GameEnemyManager
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
 public:
+	// 危険方向
+	enum DANGERDIRECTION
+	{
+		NONE,
+
+		DIR_FRONT,
+		DIR_BACK,
+		DIR_RIGHT,
+		DIR_LEFT,
+	};
 
 private:
-	static const int              m_maxEnemyNum = 100;       // 最大敵数
-	static const int              m_maxAliveDist = 90;		 // 
+	static const int			  MAX_ENEMY = 100;			  // 最大敵数
 
-	float						  m_spawnElapsedTime;		 // 敵が出現してからの経過時間
-	static const int			  SPAWNTIME;				 // 敵が出てくる時間(フレーム数)
+	static const int			  MAX_SPAWN_TIME;			  // 敵が出現できる最大時間(フレーム数)
+	int							  m_spawnElapsedTime;		  // 敵が出現してからの経過時間(フレーム数)
+	
+	static const int			  RESPAWN_NEED_TIME;		  // リスポーンに必要な時間(フレーム数)
+	int                           m_respawnTime;              // リスポーン時間(フレーム数)
 
-	static const int              m_needRespawnTime = 40;    // リスポーンに必要な時間(フレーム)
-	int                           m_respawnTime;             // リスポーン時間(フレーム)
+	static const float			  CONTROL_VELOCITY;			  // 速度調整
 
-	GameEnemy*                    mp_enemy[m_maxEnemyNum];   // 敵管理
-	DirectX::SimpleMath::Vector3  m_shockPos[m_maxEnemyNum]; // エフェクトが出る位置
-	int							  m_shockCount[m_maxEnemyNum]; // エフェクトが出てからのカウント
-	Player*                       mp_player;				 // プレイヤーオブジェクト
+	GameEnemy*					  mp_enemy[MAX_ENEMY];		  // 敵オブジェクト
+	DirectX::SimpleMath::Vector3  m_shockPos[MAX_ENEMY];	  // エフェクトが出る位置
+	static const float			  SMOKE_SPEED;				  // 煙の昇る速さ
+	static const int			  MAX_SMOKE_COUNT;			  // 煙の昇る速さ
+	int							  m_shockCount[MAX_ENEMY];	  // エフェクトが出てからのカウント
+
+	DANGERDIRECTION				  m_dengerousDirLR;			  // 危険方向
+
+	static const int			  BASE_LENGTH;				  // 基準となる距離
+	float						  m_compereLength[MAX_ENEMY]; // 距離を比較
+	int							  m_lengthTmp;				  // プレイヤーとの最短距離の敵を記憶
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-								  m_textureDengerousH;       // テクスチャハンドル(危険サイン横)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-								  m_textureDengerousV;       // テクスチャハンドル(危険サイン縦)
+								  m_textureSmoke;			  // テクスチャハンドル(やられ演出用煙)
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-								  m_textureSmoke;			 // テクスチャハンドル(やられ演出用煙)
-
-	std::unique_ptr<DirectX::AlphaTestEffect> m_batchEffect; // エフェクト
-	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>> m_batch;// プリミティブバッチ
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout; // 入力レイアウト
-
-	enum DIRECTION
-	{
-		FRONT,
-		BACK,
-		RIGHT,
-		LEFT,
-
-		NONE
-	};
-	DIRECTION                    m_dengerousDirFB;
-	DIRECTION                    m_dengerousDirLR;
-
-	double                       m_compereLength[m_maxEnemyNum]; // 距離を比較
-	int                          m_lengthTmp;                 // プレイヤーに最短距離の敵を記憶
-
-	bool                         m_assault;                   // 敵移動中
+	std::unique_ptr<DirectX::AlphaTestEffect> 
+								  m_batchEffect;			  // エフェクト
+	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>> 
+								  m_batch;					  // プリミティブバッチ
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> 
+								  m_inputLayout;			  // 入力レイアウト
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -82,36 +77,97 @@ public:
 	// デストラクタ
 	~GameEnemyManager();
 
-	// 初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
-	// 生成
+	/// <summary>
+	/// 生成
+	/// </summary>
 	void Create();
-	// 更新
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="timer">経過時間</param>
+	/// <param name="playerPos">プレイヤーの位置</param>
+	/// <param name="roadType">道の種類</param>
+	/// <param name="assaultPoint">道の番号(何番目かを取得)</param>
+	/// <param name="cameraDir">プレイヤーの向き(カメラの向き)</param>
+	/// <returns>終了状態</returns>
 	bool Update(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, int roadType, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir);
-	// 描画
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="matrixManager">行列管理</param>
+	/// <param name="eyePos">プレイヤーの視点</param>
 	void Render(MatrixManager* matrixManager, DirectX::SimpleMath::Vector3 eyePos);
-	// 廃棄処理
+	/// <summary>
+	/// 廃棄処理
+	/// </summary>
 	void Depose();
 
 	//-----------------------------------Getter-----------------------------------//
-
-	int GetMaxEnemyNum()                       { return m_maxEnemyNum; }
-	DirectX::SimpleMath::Vector3 GetPos(int i) { return mp_enemy[i]->GetPos(); }
-	bool GetEnemyState(int i)				   { return mp_enemy[i]->GetState(); }
-	Collision::Sphere GetEnemyCollide(int i)   { return mp_enemy[i]->GetCollision(); }
-
+	// 敵の最大数を取得
+	int							   GetMaxEnemyNum()       { return MAX_ENEMY; }
+	// 敵の位置を取得
+	DirectX::SimpleMath::Vector3   GetPos(int i)		  { return mp_enemy[i]->GetPos(); }
+	// 敵の状態を取得
+	bool						   GetEnemyState(int i)   { return mp_enemy[i]->GetState(); }
+	// 敵の衝突判定情報を取得
+	Collision::Sphere			   GetEnemyCollide(int i) { return mp_enemy[i]->GetCollision(); }
+	// プレイヤーから見た敵の方向を取得
+	DANGERDIRECTION				   GetDangerDir()         { return m_dengerousDirLR; }
 	//----------------------------------------------------------------------------//
 
 	//-----------------------------------Setter-----------------------------------//
-
-	void SetEnemyState(int i, bool flag) {mp_enemy[i]->SetState(flag); }
+	// 敵の状態を設定
+	void	SetEnemyState(int i, bool flag)		{mp_enemy[i]->SetState(flag); }
 	//----------------------------------------------------------------------------//
 
-	// やられ演出設定
+	/// <summary>
+	/// やられ演出設定
+	/// </summary>
+	/// <param name="i">敵の配列</param>
 	void ShockEnemy(int i);
 	
 private:
-	// やられ演出
+	//-----------------------------------更新関数-----------------------------------//
+	/// <summary>
+	/// やられ演出更新
+	/// </summary>
+	void UpdateSmoke();
+
+	/// <summary>
+	/// 襲撃可能かどうかを返す
+	/// </summary>
+	/// <param name="roadType">チェックする道の種類</param>
+	/// <returns>true=襲撃可能、false=襲撃不可</returns>
+	bool IsAssault(int roadType);
+
+	/// <summary>
+	/// 敵生成管理
+	/// </summary>
+	/// <param name="assultP">襲撃ポイント</param>
+	/// <param name="playerPos">プレイヤーの位置</param>
+	void CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos);
+
+	/// <summary>
+	/// 敵移動管理
+	/// </summary>
+	/// <param name="timer">経過時間</param>
+	/// <param name="playerPos">プレイヤーの位置</param>
+	/// <param name="cameraDir">プレイヤーの向き(カメラの向き)</param>
+	void MoveEnemy(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, DirectX::SimpleMath::Vector3& cameraDir);
+	//------------------------------------------------------------------------------//
+
+	//-----------------------------------描画関数-----------------------------------//
+	/// <summary>
+	/// やられ演出表示
+	/// </summary>
+	/// <param name="matrixManager">行列管理オブジェクト</param>
+	/// <param name="world">ワールド行列</param>
+	/// <param name="drawAlpha">透明度</param>
 	void DrawSmoke(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world,int &drawAlpha);
+	//------------------------------------------------------------------------------//
 
 };

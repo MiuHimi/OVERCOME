@@ -58,7 +58,7 @@ void GameEnemy::Create()
 	Obj3D::SetModel(mp_modelEnemy.get());
 
 	// フォグの設定
-	SetFogEffectDistance(4.0f, 8.0f);
+	SetFogEffectDistance(4.0f, 10.0f);
 
 	// 衝突判定用オブジェクト設定
 	m_sphere.c = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);

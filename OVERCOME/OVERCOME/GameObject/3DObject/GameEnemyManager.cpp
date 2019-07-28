@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    GameEnemyManager.cpp
 // Summary. GameEnemyManagerClass
-// Date.    2019/03/26
+// Date.    2019/07/28
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -18,21 +18,28 @@
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/DrawManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
 
 // constディレクトリ
-const int GameEnemyManager::SPAWNTIME = 600;
+const int GameEnemyManager::MAX_SPAWN_TIME = 600;
+const int GameEnemyManager::RESPAWN_NEED_TIME = 40;
+const int GameEnemyManager::BASE_LENGTH = 150;
+const float GameEnemyManager::CONTROL_VELOCITY = 100.0f;
+const float GameEnemyManager::SMOKE_SPEED = 0.1f;
+const int GameEnemyManager::MAX_SMOKE_COUNT = 20;
 
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 GameEnemyManager::GameEnemyManager()
-	: m_respawnTime(0), m_dengerousDirFB(DIRECTION::NONE), m_dengerousDirLR(DIRECTION::NONE), m_lengthTmp(0),m_assault(false),
-	  mp_player(nullptr) ,m_textureDengerousH(nullptr), m_textureDengerousV(nullptr),m_textureSmoke(nullptr)
+	: m_spawnElapsedTime(0), m_respawnTime(0), mp_enemy{ nullptr }, 
+	  m_shockPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_shockCount{0},
+	  m_dengerousDirLR(DANGERDIRECTION::NONE), m_compereLength{0.0f}, m_lengthTmp(0), 
+	  m_textureSmoke(nullptr),
+	  m_batchEffect(nullptr), m_batch(nullptr), m_inputLayout(nullptr)
 {
 }
 /// <summary>
@@ -41,15 +48,11 @@ GameEnemyManager::GameEnemyManager()
 GameEnemyManager::~GameEnemyManager()
 {
 	// 敵オブジェクト削除
-	for (int i = 0; i < m_maxEnemyNum; i++)
+	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 		delete mp_enemy[i];
 		mp_enemy[i] = nullptr;
 	}
-
-	// プレイヤーオブジェクト削除
-	delete mp_player;
-	mp_player = nullptr;
 }
 
 /// <summary>
@@ -59,12 +62,6 @@ void GameEnemyManager::Initialize()
 {
 	// 乱数初期化
 	srand((unsigned int)time(NULL));
-
-	for (int i = 0; i < m_maxEnemyNum; i++)
-	{
-		m_shockPos[i] = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		m_shockCount[i] = 0;
-	}
 }
 /// <summary>
 /// 生成
@@ -72,22 +69,13 @@ void GameEnemyManager::Initialize()
 void GameEnemyManager::Create()
 {
 	// 敵の初期化、生成
-	for (int i = 0; i < m_maxEnemyNum; i++)
+	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 		mp_enemy[i] = new GameEnemy(SimpleMath::Vector3(0.0f, 0.0f, 0.0f), SimpleMath::Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
 		mp_enemy[i]->Create();
 	}
 
-	// 敵の初期化、生成
-	for (int i = 0; i < m_maxEnemyNum; i++)
-	{
-		m_compereLength[i] = 0.0;
-	}
-
-	// 危険サインの設定
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\dangerous_signH.png", nullptr, m_textureDengerousH.GetAddressOf());
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\dangerous_signV.png", nullptr, m_textureDengerousV.GetAddressOf());
-
+	// やられ演出用煙の設定
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\smoke.png", nullptr, m_textureSmoke.GetAddressOf());
 
 	// エフェクトの作成
@@ -112,17 +100,120 @@ void GameEnemyManager::Create()
 /// <param name="playerPos">プレイヤーの位置</param>
 /// <param name="roadType">道の種類</param>
 /// <param name="assaultPoint">襲撃ポイントの番号</param>
+/// <param name="cameraDir">カメラの向き(プレイヤーの視線)</param>
 /// <returns>終了状態</returns>
 bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, int roadType, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir)
+{
+	// やられ演出関連
+	UpdateSmoke();
+
+	// 襲撃可能かどうか
+	bool isAssault = IsAssault(roadType);
+	// falseだったら襲撃しない
+	if (!isAssault)return false;
+
+	// 敵生成カウント
+	m_respawnTime++;
+
+	// 敵生成管理
+	CreateEnemy(assaultPoint, playerPos);
+
+	// 敵移動管理
+	MoveEnemy(timer, playerPos, cameraDir);
+
+	return true;
+}
+/// <summary>
+/// 描画
+/// </summary>
+void GameEnemyManager::Render(MatrixManager* matrixManager, SimpleMath::Vector3 eyePos)
+{
+	for (int i = 0; i < MAX_ENEMY; i++)
+	{
+		// 敵が生存していたら
+		if (mp_enemy[i]->GetState())
+		{
+			// 敵を描画
+			mp_enemy[i]->Render(matrixManager);
+		}
+
+		// 自弾の攻撃を受けていたら
+		if (mp_enemy[i]->GetShock())
+		{
+			// 表示位置設定(ビルボードで表示)
+			SimpleMath::Matrix world =
+				SimpleMath::Matrix::CreateConstrainedBillboard(
+					m_shockPos[i], eyePos, SimpleMath::Vector3::Up);
+			// やられ演出を描画
+			int alpha = 255 - (10 * m_shockCount[i]);
+			DrawSmoke(matrixManager, world, alpha);
+		}
+	}
+}
+
+/// <summary>
+/// 廃棄
+/// </summary>
+void GameEnemyManager::Depose()
+{
+}
+
+/// <summary>
+/// やられ演出設定
+/// </summary>
+/// <param name="i">敵の番号(配列)</param>
+void GameEnemyManager::ShockEnemy(int i)
+{
+	// やられ演出を行っていなかったら
+	if (!mp_enemy[i]->GetShock())
+	{
+		// 演出フラグを立てる
+		mp_enemy[i]->SetShock(true);
+		// 自弾が当たった時の敵の位置を設定
+		m_shockPos[i] = mp_enemy[i]->GetPos();
+	}
+}
+
+/// <summary>
+/// やられ演出更新
+/// </summary>
+void GameEnemyManager::UpdateSmoke()
+{
+	for (int i = 0; i < MAX_ENEMY; i++)
+	{
+		// 自弾に当たったら
+		if (mp_enemy[i]->GetShock())
+		{
+			// 当たった位置から少しずつ上へ
+			m_shockPos[i].y += SMOKE_SPEED;
+			// カウントを進める
+			m_shockCount[i]++;
+		}
+		// 既定フレームを超えたら
+		if (m_shockCount[i] > MAX_SMOKE_COUNT)
+		{
+			// カウントリセット
+			m_shockCount[i] = 0;
+			// 位置を元に戻す
+			m_shockPos[i] = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+			// やられ演出サインを伏せる
+			mp_enemy[i]->SetShock(false);
+		}
+	}
+}
+
+/// <summary>
+/// 襲撃可能かどうかを返す
+/// </summary>
+/// <param name="roadType">チェックする道の種類</param>
+bool GameEnemyManager::IsAssault(int roadType)
 {
 	// 襲撃ポイントだったら襲撃、そうでなければ襲撃しない
 	if (roadType == (int)GameRoad::RoadType::ASSAULT)
 	{
-		// 襲撃可
-		m_assault = true;
-
+		// 出現できる時間まで襲撃する
 		m_spawnElapsedTime++;
-		if (m_spawnElapsedTime > SPAWNTIME)
+		if (m_spawnElapsedTime > MAX_SPAWN_TIME)
 		{
 			m_spawnElapsedTime = 0;
 		}
@@ -132,28 +223,39 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::V
 		// カウントリセット
 		m_respawnTime = 0;
 
-		for (int i = 0; i < m_maxEnemyNum; i++)
+		// 襲撃ポイントにいなければ襲撃しない
+		for (int i = 0; i < MAX_ENEMY; i++)
 		{
-			// 襲撃ポイントにいなかったら襲撃を中止する
-			if (roadType == !(int)GameRoad::RoadType::ASSAULT)
+			// 残った敵を片付ける
+			if (mp_enemy[i]->GetState())
 			{
+				// 演出して片付ける
 				mp_enemy[i]->SetState(false);
+				ShockEnemy(i);
 			}
+
 		}
 
 		// 襲撃不可
-		m_assault = false;
+		m_dengerousDirLR = DANGERDIRECTION::NONE;
 		return false;
 	}
 
-	// 敵生成カウント
-	m_respawnTime++;
+	return true;
+}
 
+/// <summary>
+/// 敵生成管理
+/// </summary>
+/// <param name="assultP">襲撃ポイント</param>
+/// <param name="playerPos">プレイヤーの位置</param>
+void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos)
+{
 	// 生成時間になったら
-	if (m_respawnTime % m_needRespawnTime == 0)
+	if (m_respawnTime % RESPAWN_NEED_TIME == 0)
 	{
 		// 敵の襲撃時間だったら更新する
-		for (int i = 0; i < m_maxEnemyNum; i++)
+		for (int i = 0; i < MAX_ENEMY; i++)
 		{
 			// 敵生成～プレイヤーへ向ける
 			if (!mp_enemy[i]->GetState())
@@ -162,7 +264,7 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::V
 				mp_enemy[i]->SetState(true);
 
 				// 場所設定
-				switch (assaultPoint)
+				switch (assultP)
 				{
 				case 1: mp_enemy[i]->SetPos(SimpleMath::Vector3(30.0f + float(rand() % 10 - 5), 5.0f + float(rand() % 5), -35.0f)); break;
 				case 2: mp_enemy[i]->SetPos(SimpleMath::Vector3(-12.5f + float(rand() % 14 - 7), 5.0f + float(rand() % 5), -32.5f + float(rand() % 14 - 7))); break;
@@ -174,9 +276,9 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::V
 				}
 
 				// プレイヤーとの位置の差分(プレイヤーに向かった距離が求められる)
-				SimpleMath::Vector3 toPlayerDir = 
-					SimpleMath::Vector3(playerPos.x - mp_enemy[i]->GetPos().x, 
-										playerPos.y - mp_enemy[i]->GetPos().y, 
+				SimpleMath::Vector3 toPlayerDir =
+					SimpleMath::Vector3(playerPos.x - mp_enemy[i]->GetPos().x,
+										playerPos.y - mp_enemy[i]->GetPos().y,
 										playerPos.z - mp_enemy[i]->GetPos().z);
 				// 敵の向き
 				SimpleMath::Vector3 enemyDir = SimpleMath::Vector3(mp_enemy[i]->GetDir());
@@ -199,160 +301,72 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::V
 
 		}
 	}
+}
 
+/// <summary>
+/// 敵移動管理
+/// </summary>
+/// <param name="timer">経過時間</param>
+/// <param name="playerPos">プレイヤーの位置</param>
+/// <param name="cameraDir">プレイヤーの向き(カメラの向き)</param>
+void GameEnemyManager::MoveEnemy(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, DirectX::SimpleMath::Vector3& cameraDir)
+{
 	// 敵移動
-	for (int i = 0; i < m_maxEnemyNum; i++)
+	int initID = -1;
+	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 		// 敵が生存していたら
 		if (mp_enemy[i]->GetState())
 		{
-			mp_enemy[i]->SetVel(SimpleMath::Vector3((playerPos.x - mp_enemy[i]->GetPos().x) / 80.0f,
-													(playerPos.y - mp_enemy[i]->GetPos().y) / 80.0f,
-													(playerPos.z - mp_enemy[i]->GetPos().z) / 80.0f));
+			// 速度設定
+			mp_enemy[i]->SetVel(SimpleMath::Vector3((playerPos.x - mp_enemy[i]->GetPos().x) / CONTROL_VELOCITY,
+													(playerPos.y - mp_enemy[i]->GetPos().y) / CONTROL_VELOCITY,
+													(playerPos.z - mp_enemy[i]->GetPos().z) / CONTROL_VELOCITY));
 
+			// 敵更新
 			mp_enemy[i]->Update(timer);
 
-			double baseLength = 150.0;
 			m_compereLength[i] = (mp_enemy[i]->GetPos().x - playerPos.x)*(mp_enemy[i]->GetPos().x - playerPos.x) +
-				(mp_enemy[i]->GetPos().y - playerPos.y)*(mp_enemy[i]->GetPos().y - playerPos.y) +
-				(mp_enemy[i]->GetPos().z - playerPos.z)*(mp_enemy[i]->GetPos().z - playerPos.z);
-			if (baseLength*baseLength > m_compereLength[i] * m_compereLength[i])
+								 (mp_enemy[i]->GetPos().y - playerPos.y)*(mp_enemy[i]->GetPos().y - playerPos.y) +
+								 (mp_enemy[i]->GetPos().z - playerPos.z)*(mp_enemy[i]->GetPos().z - playerPos.z);
+			// 危険サインを出せる位置にまで来たら
+			if (BASE_LENGTH * BASE_LENGTH > m_compereLength[i] * m_compereLength[i])
 			{
+				// 最初だけ比較用に保存しておく
+				if (initID == -1)
+				{
+					initID = i;
+					m_lengthTmp = initID;
+				}
+				// 一番近い敵の配列番号を保存
 				if (m_compereLength[i] <= m_compereLength[m_lengthTmp])
 				{
 					m_lengthTmp = i;
 				}
 
-				// プレイヤーとの位置の差分
-				SimpleMath::Vector3 pDir = cameraDir;
-				pDir.Normalize();
-				SimpleMath::Vector3 playerDir = SimpleMath::Vector3(pDir);
-				// 敵の向き
-				SimpleMath::Vector3 eDir = mp_enemy[m_lengthTmp]->GetVel();
-				eDir.Normalize();
-				SimpleMath::Vector3 enemyPos = SimpleMath::Vector3(eDir);
+				// 外積を使ってプレイヤーから見てどちら側にいるかを判定
+				SimpleMath::Vector3 pointA = playerPos;
+				SimpleMath::Vector3 camDir = cameraDir;
+				SimpleMath::Vector3 pointB = pointA + camDir;
+				SimpleMath::Vector3 pointC = mp_enemy[m_lengthTmp]->GetPos();
 
-				// ベクトルの長さを求める
-				double lengthA = pow((playerDir.x * playerDir.x) + (playerDir.z * playerDir.z), 0.5);
-				double lengthB = pow((enemyPos.x * enemyPos.x) + (enemyPos.z * enemyPos.z), 0.5);
-				// 内積とベクトルの長さを使ってcosθを求める
-				double cos_sita = playerDir.x * enemyPos.x + playerDir.z * enemyPos.z / (lengthA * lengthB);
+				float p = (pointB.x - pointA.x)*(pointC.z - pointA.z) -
+						  (pointB.z - pointA.z)*(pointC.x - pointA.x);
 
-				// cosθからθを求める
-				double sita = acos(cos_sita);
-				// デグリーで求める
-				sita = sita * 180.0 / double(XM_PI);
-
-				// 正の値だったらプレイヤーに対して左側、逆だったら右側
-				float dirRL = -playerDir.z * enemyPos.x + playerDir.x * enemyPos.z;
-
-				if (dirRL < 0.0f)m_dengerousDirLR = DIRECTION::RIGHT;
-				else m_dengerousDirLR = DIRECTION::LEFT;
-				if (dirRL > -0.3f && dirRL < 0.3f)
+				// 左右判定
+				if (p > 0.0f)m_dengerousDirLR = DANGERDIRECTION::DIR_RIGHT;
+				else if (p < 0.0f) m_dengerousDirLR = DANGERDIRECTION::DIR_LEFT;
+				// ほぼ真ん中に居たらサインを表示しない
+				else
 				{
-					m_assault = false;
-					m_dengerousDirLR = DIRECTION::NONE;
+					m_dengerousDirLR = DANGERDIRECTION::NONE;
 				}
-
 			}
 			else
 			{
-				m_dengerousDirFB = DIRECTION::NONE;
-				m_dengerousDirLR = DIRECTION::NONE;
-			}
-
-
-			// マップの中心から50ｍ離れたら消える
-			float dist = (mp_enemy[i]->GetPos().x - 0.0f)*(mp_enemy[i]->GetPos().x - 0.0f) +
-				(mp_enemy[i]->GetPos().y - 0.0f)*(mp_enemy[i]->GetPos().y - 0.0f) +
-				(mp_enemy[i]->GetPos().z - 0.0f)*(mp_enemy[i]->GetPos().z - 0.0f);
-			if (m_maxAliveDist * m_maxAliveDist < dist)
-			{
-				mp_enemy[i]->SetState(false);
+				m_dengerousDirLR = DANGERDIRECTION::NONE;
 			}
 		}
-	}
-
-	// やられ演出関連
-	for (int i = 0; i < m_maxEnemyNum; i++)
-	{
-		// やられ演出サインが出たら
-		if (mp_enemy[i]->GetShock())
-		{
-			// やられた位置から少しずつ上へ
-			m_shockPos[i].y += 0.1f;
-			// カウントを進める
-			m_shockCount[i]++;
-		}
-		// 既定フレームを超えたら
-		if (m_shockCount[i] > 20)
-		{
-			// カウントリセット
-			m_shockCount[i] = 0;
-			// 位置を元に戻す
-			m_shockPos[i] = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-			// やられ演出サインを伏せる
-			mp_enemy[i]->SetShock(false);
-		}
-	}
-
-	return true;
-}
-/// <summary>
-/// 描画
-/// </summary>
-void GameEnemyManager::Render(MatrixManager* matrixManager, SimpleMath::Vector3 eyePos)
-{
-	for (int i = 0; i < m_maxEnemyNum; i++)
-	{
-		if (mp_enemy[i]->GetState())
-		{
-			// 敵を描画
-			mp_enemy[i]->Render(matrixManager);
-		}
-
-		if (mp_enemy[i]->GetShock())
-		{
-			SimpleMath::Matrix world =
-				SimpleMath::Matrix::CreateConstrainedBillboard(
-					m_shockPos[i], eyePos, SimpleMath::Vector3::Up);
-			// やられ演出を描画
-			int alpha = 255 - (10 * m_shockCount[i]);
-			DrawSmoke(matrixManager, world, alpha);
-		}
-	}
-	
-	// 敵がいたら危険サイン表示
-	if (m_assault == true)
-	{
-		if (m_dengerousDirLR == DIRECTION::RIGHT)
-		{
-			DrawManager::SingletonGetInstance().Draw(m_textureDengerousV.Get(), SimpleMath::Vector2(700.0f, 50.0f));
-		}
-		else if (m_dengerousDirLR == DIRECTION::LEFT)
-		{
-			DrawManager::SingletonGetInstance().Draw(m_textureDengerousV.Get(), SimpleMath::Vector2(50.0f, 50.0f));
-		}
-	}
-}
-
-/// <summary>
-/// 廃棄
-/// </summary>
-void GameEnemyManager::Depose()
-{
-}
-
-/// <summary>
-/// やられ演出設定
-/// </summary>
-/// <param name="i">敵の番号(配列)</param>
-void GameEnemyManager::ShockEnemy(int i)
-{
-	if (!mp_enemy[i]->GetShock())
-	{
-		mp_enemy[i]->SetShock(true);
-		m_shockPos[i] = mp_enemy[i]->GetPos();
 	}
 }
 
