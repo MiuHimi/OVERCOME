@@ -262,25 +262,41 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// “G‚Æ’e‚ÌÕ“Ë”»’è
 	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
 	{
+		// “G‚ª¶‘¶‚µ‚Ä‚¢‚½‚çÕ“Ë”»’è‚ğÀs
 		if (!mp_gameEnemyManager->GetEnemyState(i))continue;
-		if (mp_gameEnemyManager->GetEnemyState(i))
+		for (int j = 0; j < mp_player->GetBulletManager()->GetMaxBulletNum(); j++)
 		{
-			for (int j = 0; j < mp_player->GetBulletManager()->GetMaxBulletNum(); j++)
+			// ’e‚ª”­Ë‚³‚ê‚Ä‚¢‚½‚çÕ“Ë”»’è‚ğÀs
+			if (!mp_player->GetBulletManager()->GetBulletState(j))continue;
+			if (Collision::HitCheck_Sphere2Sphere(mp_gameEnemyManager->GetEnemyCollide(i),
+				mp_player->GetBulletManager()->GetBulletCollide(j)))
 			{
-				if (!mp_player->GetBulletManager()->GetBulletState(j))continue;
-				if (mp_player->GetBulletManager()->GetBulletState(j))
+				// HP‚ğí‚é
+				mp_gameEnemyManager->SetEnemyHP(i, mp_gameEnemyManager->GetEnemyHP(i) - 1);
+				// HP‚ª0‚É‚È‚Á‚½‚ç
+				if (mp_gameEnemyManager->GetEnemyHP(i) == 0)
 				{
-					if (Collision::HitCheck_Sphere2Sphere(mp_gameEnemyManager->GetEnemyCollide(i),
-						mp_player->GetBulletManager()->GetBulletCollide(j)))
+					// í—Ş•Ê‚Å“¾“_Šl“¾
+					switch (mp_gameEnemyManager->GetEnemyType(i))
 					{
-						// 20“_Šl“¾
-						mp_gameScore->FluctuationScore(20);
-						// Œİ‚¢‚Ìstate‚ğfalse‚É
-						mp_gameEnemyManager->SetEnemyState(i, false);
-						mp_gameEnemyManager->ShockEnemy(i);
-						mp_player->GetBulletManager()->SetBulletState(j, false);
+					case GameEnemy::EnemyType::NORMAL:
+						mp_gameScore->FluctuationScore((int)GameEnemy::NORMAL_ENEMY_POINT);
+						break;
+					case GameEnemy::EnemyType::POWER:
+						mp_gameScore->FluctuationScore((int)GameEnemy::POWER_ENEMY_POINT);
+						break;
+					case GameEnemy::EnemyType::SPEED:
+						mp_gameScore->FluctuationScore((int)GameEnemy::SPEED_ENEMY_POINT);
+						break;
 					}
+
+					// “G‚ğ“|‚·
+					mp_gameEnemyManager->SetEnemyState(i, false);
+					mp_gameEnemyManager->ShockEnemy(i);
 				}
+
+				// state‚ğfalse‚É
+				mp_player->GetBulletManager()->SetBulletState(j, false);
 			}
 		}
 	}
@@ -324,7 +340,11 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_player->Update(timer);
 
 	// “G‚ÌXV
-	mp_gameEnemyManager->Update(timer, mp_player->GetPos(), mp_gameRoad->GetRoadObject((int)mp_player->GetPassingRoad().y, (int)mp_player->GetPassingRoad().x).roadType, mp_gameRoad->GetRoadObject((int)mp_player->GetPassingRoad().y, (int)mp_player->GetPassingRoad().x).roadNum, mp_camera->GetCameraAngle());
+	SimpleMath::Vector3 playerPassPos = mp_player->GetPassingRoad();
+	mp_gameEnemyManager->Update(timer, mp_player->GetPos(), 
+		mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType, 
+		mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum, 
+		mp_camera->GetCameraAngle());
 
 	// ƒXƒRƒA‚ÌXV
 	mp_gameScore->Update(timer);

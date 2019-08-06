@@ -18,6 +18,13 @@
 // usingディレクトリ
 using namespace DirectX;
 
+// constディレクトリ
+//-----合計値が100になるように設定する-----//
+const int GameEnemy::NORMAL_ENEMY_PROBABILITY = 50;
+const int GameEnemy::POWER_ENEMY_PROBABILITY = 30;
+const int GameEnemy::SPEED_ENEMY_PROBABILITY = 20;
+//-----------------------------------------//
+
 
 /// <summary>
 /// コンストラクタ
@@ -26,6 +33,8 @@ GameEnemy::GameEnemy(DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vect
 	: m_pos(0.0f, 0.0f, 0.0f),
 	  m_vel(0.0f, 0.0f, 0.0f),
 	  m_dir(0.0f, 0.0f, 0.0f),
+	  m_size(0.0f),
+	  m_prob{ 0 }, m_type(EnemyType::NUM),m_hp(0),
 	  m_rotaX(SimpleMath::Quaternion::Identity),
    	  m_rotaY(SimpleMath::Quaternion::Identity),
 	  m_state(false),
@@ -35,7 +44,39 @@ GameEnemy::GameEnemy(DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vect
 {
 	m_pos = pos;
 	m_vel = vel;
+	m_size = 1.2f;
 	m_dir = SimpleMath::Vector3(0.0f, 0.0f, 1.0f);
+
+	int probability = 100;
+	for (int i = 0; i < EnemyType::NUM; i++)
+	{
+		// それぞれのタイプの確立を設定
+		switch (i)
+		{
+		case EnemyType::NORMAL:
+			probability -= NORMAL_ENEMY_PROBABILITY;
+			m_prob[i] = probability;
+			break;
+		case EnemyType::POWER:
+			probability -= POWER_ENEMY_PROBABILITY;
+			m_prob[i] = probability;
+			break;
+		case EnemyType::SPEED:
+			probability -= SPEED_ENEMY_PROBABILITY;
+			m_prob[i] = probability;
+			break;
+		default:
+			// 存在しないもの
+			throw std::range_error("None Objects.");
+			break;
+		}
+		// 確率設定ミス
+		if (probability < 0)
+		{
+			throw std::range_error("Set probability failure.");
+		}
+	}
+	
 
 	m_state = stateFlag;
 }
@@ -46,14 +87,37 @@ GameEnemy::~GameEnemy()
 {
 }
 
-void GameEnemy::Create()
+void GameEnemy::Create(int probability)
 {
 	// エフェクトファクトリー
 	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
-	// モデルを作成
-	mp_modelEnemy = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\ghost.cmo", fx);
+	// それぞれのモデルを作成
+	if (probability >= m_prob[(int)GameEnemy::SPEED] && probability < m_prob[(int)GameEnemy::POWER])
+	{
+		m_type = EnemyType::SPEED;
+		m_hp = 1;
+		mp_modelEnemy = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\ghost_speed.cmo", fx);
+	}
+	else if (probability >= m_prob[(int)GameEnemy::POWER] && probability < m_prob[(int)GameEnemy::NORMAL])
+	{
+		m_type = EnemyType::POWER;
+		m_hp = 3;
+		mp_modelEnemy = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\ghost_power.cmo", fx);
+	}
+	else if (probability >= m_prob[(int)GameEnemy::NORMAL])
+	{
+		m_type = EnemyType::NORMAL;
+		m_hp = 2;
+		mp_modelEnemy = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\ghost.cmo", fx);
+	}
+	else
+	{
+		// 存在しないもの
+		throw std::range_error("None Objects.");
+	}
+	
 	// 衝突判定用モデル設定
 	Obj3D::SetModel(mp_modelEnemy.get());
 
@@ -62,7 +126,7 @@ void GameEnemy::Create()
 
 	// 衝突判定用オブジェクト設定
 	m_sphere.c = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-	m_sphere.r = 1.0f;
+	m_sphere.r = 0.5f;
 	SetCollision(m_sphere);
 }
 

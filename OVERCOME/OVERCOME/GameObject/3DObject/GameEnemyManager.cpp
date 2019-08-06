@@ -8,6 +8,10 @@
 #pragma once
 
 // インクルードディレクトリ
+#include <fstream>
+#include <string>
+#include <sstream>
+
 #include "../../pch.h"
 #include <math.h>
 #include <time.h>
@@ -26,7 +30,9 @@ using namespace DirectX;
 const int GameEnemyManager::MAX_SPAWN_TIME = 600;
 const int GameEnemyManager::RESPAWN_NEED_TIME = 40;
 const int GameEnemyManager::BASE_LENGTH = 150;
-const float GameEnemyManager::CONTROL_VELOCITY = 100.0f;
+const float GameEnemyManager::CONTROL_NORMAL_VELOCITY = 200.0f;
+const float GameEnemyManager::CONTROL_POWER_VELOCITY = 300.0f;
+const float GameEnemyManager::CONTROL_SPEED_VELOCITY = 100.0f;
 const float GameEnemyManager::SMOKE_SPEED = 0.1f;
 const int GameEnemyManager::MAX_SMOKE_COUNT = 20;
 
@@ -35,9 +41,10 @@ const int GameEnemyManager::MAX_SMOKE_COUNT = 20;
 /// コンストラクタ
 /// </summary>
 GameEnemyManager::GameEnemyManager()
-	: m_spawnElapsedTime(0), m_respawnTime(0), mp_enemy{ nullptr }, 
-	  m_shockPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_shockCount{0},
-	  m_dengerousDirLR(DANGERDIRECTION::NONE), m_compereLength{0.0f}, m_lengthTmp(0), 
+	: m_spawnElapsedTime(0), m_respawnTime(0), 
+	  m_entryEnemyPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_entryEnemyDistribute{ SimpleMath::Vector3(0.0f,0.0f,0.0f) },mp_enemy{ nullptr },
+	  m_hpPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) },m_shockPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_shockCount{0},
+	  m_dengerousDirLR(DANGERDIRECTION::DIR_NONE), m_compereLength{0.0f}, m_lengthTmp(0), 
 	  m_textureSmoke(nullptr),
 	  m_batchEffect(nullptr), m_batch(nullptr), m_inputLayout(nullptr)
 {
@@ -71,10 +78,143 @@ void GameEnemyManager::Create()
 	// 敵の初期化、生成
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
+		// 1～100で生成の種類を分岐させる
+		int probability = ((rand() % 100) + 1);
 		mp_enemy[i] = new GameEnemy(SimpleMath::Vector3(0.0f, 0.0f, 0.0f), SimpleMath::Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
-		mp_enemy[i]->Create();
+		mp_enemy[i]->Create(probability);
 	}
 
+	// 敵配置マップファイルパスの生成
+	std::string filePath = "Resources\\EnemyLayout\\Stage";
+	std::ostringstream os;
+	int stageNum = 1;
+	os << stageNum;
+	filePath += os.str() + ".csv";
+
+	// 敵配置マップの取得
+	std::ifstream ifs(filePath);
+	std::string line;
+	if (!ifs)
+	{
+		// ファイル読み込み失敗
+		throw std::range_error("Read failure.");
+	}
+
+	// 敵配置マップの記憶
+	int j = 0;
+	while (getline(ifs, line))
+	{
+		std::istringstream stream(line);
+		std::string buf;
+		int i = 0;
+		// 軸(x,y,z)ごとに設定した回数をカウント
+		int axisCount = 0;
+		// 調整する値を加算した回数をカウント
+		int distributeCount = 0;
+		while (getline(stream, buf, ','))
+		{
+			i++;
+			// 値取得
+			int num = std::atoi(buf.c_str());
+			// 値が0なら現行の軸の位置設定は終了
+			if (num == 0)continue;
+
+			if (i == ENTRYCOUNT::NONE)
+			{
+				//無効な値
+				throw("Invalid value.");
+			}
+			if (i >= ENTRYCOUNT::ENTRY_X && i <= ENTRYCOUNT::END_X)
+			{
+				// カウント数が同じ(まだ未設定)
+				if (axisCount == distributeCount)
+				{
+					// x値の位置設定
+					m_entryEnemyPos[j].x = (float)num;
+					// 設定が終了したためカウントを進める
+					axisCount++;
+					continue;
+				}
+				// 軸設定カウントのほうが大きい(基準となる位置は設定済み)
+				if (axisCount > distributeCount)
+				{
+					// x値の調整値設定
+					m_entryEnemyDistribute[j].x = (float)num;
+					// 設定が終了したためカウントを進める
+					distributeCount++;
+					continue;
+				}
+			}
+			else if (i >= ENTRYCOUNT::ENTRY_Y && i <= ENTRYCOUNT::END_Y)
+			{
+				// カウント数が同じ(まだ未設定)
+				if (axisCount == distributeCount)
+				{
+					// y値の位置設定
+					m_entryEnemyPos[j].y = (float)num;
+					// 設定が終了したためカウントを進める
+					axisCount++;
+					continue;
+				}
+				// 軸設定カウントのほうが大きい(基準となる位置は設定済み)
+				if (axisCount > distributeCount)
+				{
+					// y値の調整値設定
+					m_entryEnemyDistribute[j].y = (float)num;
+					// 設定が終了したためカウントを進める
+					distributeCount++;
+					continue;
+				}
+			}
+			else if (i >= ENTRYCOUNT::ENTRY_Z && i <= ENTRYCOUNT::END_Z)
+			{
+				// カウント数が同じ(まだ未設定)
+				if (axisCount == distributeCount)
+				{
+					// z値の位置設定
+					m_entryEnemyPos[j].z = (float)num;
+					// 設定が終了したためカウントを進める
+					axisCount++;
+					continue;
+				}
+				// 軸設定カウントのほうが大きい(基準となる位置は設定済み)
+				if (axisCount > distributeCount)
+				{
+					// z値の調整値設定
+					m_entryEnemyDistribute[j].z = (float)num;
+					// 設定が終了したためカウントを進める
+					distributeCount++;
+					continue;
+				}
+			}
+		}
+		j++;
+	}
+	
+	for (int i = 0; i < GameEnemyManager::HP_NUM; i++)
+	{
+		// HPバーの設定
+		switch (i)
+		{
+		case (int)GameEnemyManager::HP_MAX:
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_max.png", nullptr, m_textureHP[GameEnemyManager::HP_MAX].GetAddressOf());
+			break;
+		case (int)GameEnemyManager::HP_NORMAL_DAMAGE:
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_normal_damage.png", nullptr, m_textureHP[GameEnemyManager::HP_NORMAL_DAMAGE].GetAddressOf());
+			break;
+		case (int)GameEnemyManager::HP_POWER_DAMAGE:
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_power_damage.png", nullptr, m_textureHP[GameEnemyManager::HP_POWER_DAMAGE].GetAddressOf());
+			break;
+		case (int)GameEnemyManager::HP_POWER_CRITICAL:
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_power_critical.png", nullptr, m_textureHP[GameEnemyManager::HP_POWER_CRITICAL].GetAddressOf());
+			break;
+		case (int)GameEnemyManager::HP_NUM:
+			break;
+		default:
+			break;
+		}
+	}
+	
 	// やられ演出用煙の設定
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\smoke.png", nullptr, m_textureSmoke.GetAddressOf());
 
@@ -104,6 +244,10 @@ void GameEnemyManager::Create()
 /// <returns>終了状態</returns>
 bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, int roadType, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir)
 {
+	// サイン波が変動するための値
+	static float wave;
+	wave += 0.1f;
+
 	// やられ演出関連
 	UpdateSmoke();
 
@@ -119,13 +263,15 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::V
 	CreateEnemy(assaultPoint, playerPos);
 
 	// 敵移動管理
-	MoveEnemy(timer, playerPos, cameraDir);
+	MoveEnemy(timer, playerPos, cameraDir, wave);
 
 	return true;
 }
 /// <summary>
 /// 描画
 /// </summary>
+/// <param name="matrixManager">行列管理</param>
+/// <param name="eyePos">プレイヤーの視点</param>
 void GameEnemyManager::Render(MatrixManager* matrixManager, SimpleMath::Vector3 eyePos)
 {
 	for (int i = 0; i < MAX_ENEMY; i++)
@@ -135,6 +281,12 @@ void GameEnemyManager::Render(MatrixManager* matrixManager, SimpleMath::Vector3 
 		{
 			// 敵を描画
 			mp_enemy[i]->Render(matrixManager);
+			// 表示位置設定(ビルボードで表示)
+			SimpleMath::Matrix world =
+				SimpleMath::Matrix::CreateConstrainedBillboard(
+					m_hpPos[i], eyePos, SimpleMath::Vector3::Up);
+			// HPを描画
+			DrawHP(matrixManager, world,i);
 		}
 
 		// 自弾の攻撃を受けていたら
@@ -237,7 +389,7 @@ bool GameEnemyManager::IsAssault(int roadType)
 		}
 
 		// 襲撃不可
-		m_dengerousDirLR = DANGERDIRECTION::NONE;
+		m_dengerousDirLR = DANGERDIRECTION::DIR_NONE;
 		return false;
 	}
 
@@ -251,54 +403,51 @@ bool GameEnemyManager::IsAssault(int roadType)
 /// <param name="playerPos">プレイヤーの位置</param>
 void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos)
 {
-	// 生成時間になったら
-	if (m_respawnTime % RESPAWN_NEED_TIME == 0)
+	// 生成時間になったら敵の設定をする
+	if (m_respawnTime % RESPAWN_NEED_TIME != 0)return;
+
+	// 敵の襲撃時間だったら更新する
+	for (int i = 0; i < MAX_ENEMY; i++)
 	{
-		// 敵の襲撃時間だったら更新する
-		for (int i = 0; i < MAX_ENEMY; i++)
+		// 敵生成～プレイヤーへ向ける処理
+		if (!mp_enemy[i]->GetState())
 		{
-			// 敵生成～プレイヤーへ向ける
-			if (!mp_enemy[i]->GetState())
+			// まだ出現出来たら出現準備
+			mp_enemy[i]->SetState(true);
+
+			// 場所設定
+			int point = assultP - 1;
+			mp_enemy[i]->SetPos(SimpleMath::Vector3(m_entryEnemyPos[point].x + (rand() % (int)m_entryEnemyDistribute[point].x - (m_entryEnemyDistribute[point].x / 2)),
+													m_entryEnemyPos[point].y + (rand() % (int)m_entryEnemyDistribute[point].y),
+													m_entryEnemyPos[point].z));
+
+			// 体力設定
+			switch (mp_enemy[i]->GetType())
 			{
-				// まだ出現出来たら出現準備
-				mp_enemy[i]->SetState(true);
-
-				// 場所設定
-				switch (assultP)
-				{
-				case 1: mp_enemy[i]->SetPos(SimpleMath::Vector3(30.0f + float(rand() % 10 - 5), 5.0f + float(rand() % 5), -35.0f)); break;
-				case 2: mp_enemy[i]->SetPos(SimpleMath::Vector3(-12.5f + float(rand() % 14 - 7), 5.0f + float(rand() % 5), -32.5f + float(rand() % 14 - 7))); break;
-				case 3: mp_enemy[i]->SetPos(SimpleMath::Vector3(17.5f + float(rand() % 14 - 7), 5.0f + float(rand() % 5), 32.5f + float(rand() % 14 - 7))); break;
-				case 4: mp_enemy[i]->SetPos(SimpleMath::Vector3(-10.0f + float(rand() % 20 - 10), 5.0f + float(rand() % 5), 5.0f)); break;
-				case 5: mp_enemy[i]->SetPos(SimpleMath::Vector3(22.5f + float(rand() % 40 - 20), 7.0f, -42.5f)); break;
-				case 6: mp_enemy[i]->SetPos(SimpleMath::Vector3(12.5f + float(rand() % 60 - 30), 7.0f, float(rand() & 10))); break;
-				case 7: mp_enemy[i]->SetPos(SimpleMath::Vector3(32.5f + float(rand() % 60 - 30), 7.0f, 7.5f + float(rand() % 30 - 15))); break;
-				}
-
-				// プレイヤーとの位置の差分(プレイヤーに向かった距離が求められる)
-				SimpleMath::Vector3 toPlayerDir =
-					SimpleMath::Vector3(playerPos.x - mp_enemy[i]->GetPos().x,
-										playerPos.y - mp_enemy[i]->GetPos().y,
-										playerPos.z - mp_enemy[i]->GetPos().z);
-				// 敵の向き
-				SimpleMath::Vector3 enemyDir = SimpleMath::Vector3(mp_enemy[i]->GetDir());
-
-				// ベクトルの長さを求める
-				double lengthA = pow((toPlayerDir.x * toPlayerDir.x) + (toPlayerDir.z * toPlayerDir.z), 0.5);
-				double lengthB = pow((enemyDir.x * enemyDir.x) + (enemyDir.z * enemyDir.z), 0.5);
-				// 内積とベクトルの長さを使ってcosθを求める
-				double cos_sita = toPlayerDir.x * enemyDir.x + toPlayerDir.z * enemyDir.z / (lengthA * lengthB);
-
-				// cosθからθを求める
-				double sita = acos(cos_sita);
-				// デグリーで求める
-				//sita = sita * 180.0 / double(XM_PI);
-
-				mp_enemy[i]->SetRotateY(float(sita));
-
+			case (int)GameEnemy::EnemyType::NORMAL:
+				mp_enemy[i]->SetHP(2);
+				break;
+			case (int)GameEnemy::EnemyType::POWER:
+				mp_enemy[i]->SetHP(3);
+				break;
+			case (int)GameEnemy::EnemyType::SPEED:
+				mp_enemy[i]->SetHP(1);
 				break;
 			}
 
+			// プレイヤーの位置
+			SimpleMath::Vector3 pointA = playerPos;
+			// 敵の位置
+			SimpleMath::Vector3 pointB = mp_enemy[i]->GetPos();
+			// プレイヤーから敵に向かうベクトル
+			SimpleMath::Vector3 subVector = pointA - pointB;
+
+			// θを求める
+			float sita = std::atan2(subVector.x, subVector.z);
+			// 算出した値で回転しプレイヤーに向ける
+			mp_enemy[i]->SetRotateY(sita);
+
+			break;
 		}
 	}
 }
@@ -309,7 +458,7 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 /// <param name="timer">経過時間</param>
 /// <param name="playerPos">プレイヤーの位置</param>
 /// <param name="cameraDir">プレイヤーの向き(カメラの向き)</param>
-void GameEnemyManager::MoveEnemy(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, DirectX::SimpleMath::Vector3& cameraDir)
+void GameEnemyManager::MoveEnemy(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, DirectX::SimpleMath::Vector3& cameraDir, float& waveValue)
 {
 	// 敵移動
 	int initID = -1;
@@ -318,13 +467,33 @@ void GameEnemyManager::MoveEnemy(DX::StepTimer const& timer, DirectX::SimpleMath
 		// 敵が生存していたら
 		if (mp_enemy[i]->GetState())
 		{
+			float controlSpeed = 0.0f;
+			switch (mp_enemy[i]->GetType())
+			{
+			case GameEnemy::EnemyType::NORMAL:
+				controlSpeed = CONTROL_NORMAL_VELOCITY;
+				break;
+			case GameEnemy::EnemyType::POWER:
+				controlSpeed = CONTROL_POWER_VELOCITY;
+				break;
+			case GameEnemy::EnemyType::SPEED:
+				controlSpeed = CONTROL_SPEED_VELOCITY;
+				break;
+			}
+
+			// ふわふわさせるためにサイン波を使用
+			float sinWave = sin(waveValue + float(i*2)) * 2.0f;
 			// 速度設定
-			mp_enemy[i]->SetVel(SimpleMath::Vector3((playerPos.x - mp_enemy[i]->GetPos().x) / CONTROL_VELOCITY,
-													(playerPos.y - mp_enemy[i]->GetPos().y) / CONTROL_VELOCITY,
-													(playerPos.z - mp_enemy[i]->GetPos().z) / CONTROL_VELOCITY));
+			mp_enemy[i]->SetVel(SimpleMath::Vector3((playerPos.x - mp_enemy[i]->GetPos().x) / controlSpeed,
+												   ((playerPos.y - mp_enemy[i]->GetPos().y) + sinWave) / controlSpeed,
+													(playerPos.z - mp_enemy[i]->GetPos().z) / controlSpeed));
 
 			// 敵更新
 			mp_enemy[i]->Update(timer);
+
+			// HPバー表示位置設定
+			m_hpPos[i] = mp_enemy[i]->GetPos();
+			m_hpPos[i].y -= mp_enemy[i]->GetSize() /2.0f;
 
 			m_compereLength[i] = (mp_enemy[i]->GetPos().x - playerPos.x)*(mp_enemy[i]->GetPos().x - playerPos.x) +
 								 (mp_enemy[i]->GetPos().y - playerPos.y)*(mp_enemy[i]->GetPos().y - playerPos.y) +
@@ -359,15 +528,103 @@ void GameEnemyManager::MoveEnemy(DX::StepTimer const& timer, DirectX::SimpleMath
 				// ほぼ真ん中に居たらサインを表示しない
 				else
 				{
-					m_dengerousDirLR = DANGERDIRECTION::NONE;
+					m_dengerousDirLR = DANGERDIRECTION::DIR_NONE;
 				}
 			}
 			else
 			{
-				m_dengerousDirLR = DANGERDIRECTION::NONE;
+				m_dengerousDirLR = DANGERDIRECTION::DIR_NONE;
 			}
 		}
 	}
+}
+
+/// <summary>
+/// HP表示
+/// </summary>
+/// <param name="matrixManager">行列管理オブジェクト</param>
+/// <param name="world">ワールド行列</param>
+void GameEnemyManager::DrawHP(MatrixManager * matrixManager, DirectX::SimpleMath::Matrix & world, int enemyID)
+{
+	auto m_states = CommonStateManager::SingletonGetInstance().GetStates();
+	auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
+
+	// 頂点情報
+	VertexPositionTexture vertex[4] =
+	{
+		VertexPositionTexture(SimpleMath::Vector3(0.5f,  0.1f,  0.0f), SimpleMath::Vector2(0.0f, 0.0f)),
+		VertexPositionTexture(SimpleMath::Vector3(-0.5f, 0.1f,  0.0f), SimpleMath::Vector2(1.0f, 0.0f)),
+		VertexPositionTexture(SimpleMath::Vector3(-0.5f, -0.1f, 0.0f), SimpleMath::Vector2(1.0f, 1.0f)),
+		VertexPositionTexture(SimpleMath::Vector3(0.5f,  -0.1f, 0.0f), SimpleMath::Vector2(0.0f, 1.0f)),
+	};
+	// テクスチャサンプラーの設定（クランプテクスチャアドレッシングモード）
+	ID3D11SamplerState* samplers[1] = { m_states->LinearClamp() };
+	context->PSSetSamplers(0, 1, samplers);
+	// 不透明に設定
+	context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+	// 深度バッファに書き込み参照する
+	context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	// カリングは左周り
+	context->RSSetState(m_states->CullCounterClockwise());
+	// 不透明のみ描画する設定
+	m_batchEffect->SetAlphaFunction(D3D11_COMPARISON_EQUAL);
+	m_batchEffect->SetReferenceAlpha(255);
+	m_batchEffect->SetWorld(world);
+	m_batchEffect->SetView(matrixManager->GetView());
+	m_batchEffect->SetProjection(matrixManager->GetProjection());
+	switch (mp_enemy[enemyID]->GetType())
+	{
+	// 通常敵の場合
+	case GameEnemy::EnemyType::NORMAL:
+		if(mp_enemy[enemyID]->GetHP() == 2)
+			m_batchEffect->SetTexture(m_textureHP[ENEMYHP::HP_MAX].Get());
+		else if(mp_enemy[enemyID]->GetHP() == 1)
+			m_batchEffect->SetTexture(m_textureHP[ENEMYHP::HP_NORMAL_DAMAGE].Get());
+		else 
+			// 無効なHP
+			throw std::range_error("Invalid HP.");
+		break;
+	// パワー敵の場合
+	case GameEnemy::EnemyType::POWER:
+		if (mp_enemy[enemyID]->GetHP() == 3)
+			m_batchEffect->SetTexture(m_textureHP[ENEMYHP::HP_MAX].Get());
+		else if (mp_enemy[enemyID]->GetHP() == 2)
+			m_batchEffect->SetTexture(m_textureHP[ENEMYHP::HP_POWER_DAMAGE].Get());
+		else if (mp_enemy[enemyID]->GetHP() == 1)
+			m_batchEffect->SetTexture(m_textureHP[ENEMYHP::HP_POWER_CRITICAL].Get());
+		else
+			// 無効なHP
+			throw std::range_error("Invalid HP.");
+		break;
+	// スピード敵の場合
+	case GameEnemy::EnemyType::SPEED:
+		if (mp_enemy[enemyID]->GetHP() == 1)
+			m_batchEffect->SetTexture(m_textureHP[ENEMYHP::HP_MAX].Get());
+		else
+			// 無効なHP
+			throw std::range_error("Invalid HP.");
+		break;
+	default:
+		break;
+	}
+	
+	m_batchEffect->Apply(context);
+	context->IASetInputLayout(m_inputLayout.Get());
+	// 不透明部分を描画
+	m_batch->Begin();
+	m_batch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
+	m_batch->End();
+	// 不透明以外の半透明部分を描画する設定
+	m_batchEffect->SetAlphaFunction(D3D11_COMPARISON_NOT_EQUAL);
+	m_batchEffect->Apply(context);
+	// 半透明で描画
+	context->OMSetBlendState(m_states->NonPremultiplied(), nullptr, 0xFFFFFFFF);
+	// 深度バッファに書き込まないが参照だけする
+	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
+	// 半透明部分を描画
+	m_batch->Begin();
+	m_batch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
+	m_batch->End();
 }
 
 /// <summary>

@@ -29,16 +29,39 @@ public:
 	// 危険方向
 	enum DANGERDIRECTION
 	{
-		NONE,
+		DIR_NONE,
 
 		DIR_FRONT,
 		DIR_BACK,
 		DIR_RIGHT,
 		DIR_LEFT,
 	};
+	enum ENTRYCOUNT
+	{
+		NONE,
+
+		ENTRY_X,
+		DISTRIBUTE_X,
+		END_X,
+		ENTRY_Y,
+		DISTRIBUTE_Y,
+		END_Y,
+		ENTRY_Z,
+		DISTRIBUTE_Z,
+		END_Z,
+	};
+	enum ENEMYHP
+	{
+		HP_MAX,
+		HP_NORMAL_DAMAGE,
+		HP_POWER_DAMAGE,
+		HP_POWER_CRITICAL,
+		HP_NUM,
+	};
 
 private:
 	static const int			  MAX_ENEMY = 100;			  // 最大敵数
+	static const int			  MAX_ENTRY_POS = 10;		  // 最大敵出現場所数
 
 	static const int			  MAX_SPAWN_TIME;			  // 敵が出現できる最大時間(フレーム数)
 	int							  m_spawnElapsedTime;		  // 敵が出現してからの経過時間(フレーム数)
@@ -46,10 +69,18 @@ private:
 	static const int			  RESPAWN_NEED_TIME;		  // リスポーンに必要な時間(フレーム数)
 	int                           m_respawnTime;              // リスポーン時間(フレーム数)
 
-	static const float			  CONTROL_VELOCITY;			  // 速度調整
+	DirectX::SimpleMath::Vector3  m_entryEnemyPos[MAX_ENTRY_POS];
+															  // 敵出現位置
+	DirectX::SimpleMath::Vector3  m_entryEnemyDistribute[MAX_ENTRY_POS];
+															  // 敵出現位置分布
+
+	static const float			  CONTROL_NORMAL_VELOCITY;	  // 速度調整(通常敵用)
+	static const float			  CONTROL_POWER_VELOCITY;	  // 速度調整(パワー敵用)
+	static const float			  CONTROL_SPEED_VELOCITY;	  // 速度調整(スピード敵用)
 
 	GameEnemy*					  mp_enemy[MAX_ENEMY];		  // 敵オブジェクト
-	DirectX::SimpleMath::Vector3  m_shockPos[MAX_ENEMY];	  // エフェクトが出る位置
+	DirectX::SimpleMath::Vector3  m_hpPos[MAX_ENEMY];		  // HPを表示する位置
+	DirectX::SimpleMath::Vector3  m_shockPos[MAX_ENEMY];	  // 煙が出る位置
 	static const float			  SMOKE_SPEED;				  // 煙の昇る速さ
 	static const int			  MAX_SMOKE_COUNT;			  // 煙の昇る速さ
 	int							  m_shockCount[MAX_ENEMY];	  // エフェクトが出てからのカウント
@@ -60,6 +91,8 @@ private:
 	float						  m_compereLength[MAX_ENEMY]; // 距離を比較
 	int							  m_lengthTmp;				  // プレイヤーとの最短距離の敵を記憶
 
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+								  m_textureHP[HP_NUM];		  // テクスチャハンドル(HPバー)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 								  m_textureSmoke;			  // テクスチャハンドル(やられ演出用煙)
 
@@ -113,6 +146,10 @@ public:
 	DirectX::SimpleMath::Vector3   GetPos(int i)		  { return mp_enemy[i]->GetPos(); }
 	// 敵の状態を取得
 	bool						   GetEnemyState(int i)   { return mp_enemy[i]->GetState(); }
+	// 敵の種類を取得
+	GameEnemy::EnemyType		   GetEnemyType(int i)    { return mp_enemy[i]->GetType(); }
+	// 敵のHPを取得
+	int							   GetEnemyHP(int i)	  { return mp_enemy[i]->GetHP(); }
 	// 敵の衝突判定情報を取得
 	Collision::Sphere			   GetEnemyCollide(int i) { return mp_enemy[i]->GetCollision(); }
 	// プレイヤーから見た敵の方向を取得
@@ -122,6 +159,8 @@ public:
 	//-----------------------------------Setter-----------------------------------//
 	// 敵の状態を設定
 	void	SetEnemyState(int i, bool flag)		{mp_enemy[i]->SetState(flag); }
+	// 敵のHPを設定
+	void	SetEnemyHP(int i, int hp)			{ mp_enemy[i]->SetHP(hp); }
 	//----------------------------------------------------------------------------//
 
 	/// <summary>
@@ -157,10 +196,17 @@ private:
 	/// <param name="timer">経過時間</param>
 	/// <param name="playerPos">プレイヤーの位置</param>
 	/// <param name="cameraDir">プレイヤーの向き(カメラの向き)</param>
-	void MoveEnemy(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, DirectX::SimpleMath::Vector3& cameraDir);
+	/// <param name="waveValue">サイン波で動かす用の値</param>
+	void MoveEnemy(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, DirectX::SimpleMath::Vector3& cameraDir, float& waveValue);
 	//------------------------------------------------------------------------------//
 
 	//-----------------------------------描画関数-----------------------------------//
+	/// <summary>
+	/// HP表示
+	/// </summary>
+	/// <param name="matrixManager">行列管理オブジェクト</param>
+	/// <param name="world">ワールド行列</param>
+	void DrawHP(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world, int enemyID);
 	/// <summary>
 	/// やられ演出表示
 	/// </summary>

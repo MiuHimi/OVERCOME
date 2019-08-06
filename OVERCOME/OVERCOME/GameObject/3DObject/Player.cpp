@@ -22,7 +22,7 @@
 using namespace DirectX;
 
 // constディレクトリ
-const int Player::SPAWNTIME = 300;
+const int Player::SPAWNTIME = 600;
 
 
 /// <summary>

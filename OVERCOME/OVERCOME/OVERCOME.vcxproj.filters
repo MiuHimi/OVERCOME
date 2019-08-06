@@ -278,5 +278,11 @@
     <MeshContentTask Include="..\FBX\bullet.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\ghost_power.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\ghost_speed.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>
