@@ -62,7 +62,7 @@ void SceneTitle::Initialize()
 
 	// テクスチャのロード
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_background.png", nullptr, mp_textureBackground.GetAddressOf());
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title.png", nullptr, mp_textureTitle.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_image.png", nullptr, mp_textureTitle.GetAddressOf());
 
 	// スプライトバッチの初期化
 	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
