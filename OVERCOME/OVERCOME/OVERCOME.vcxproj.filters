@@ -150,6 +150,9 @@
     <ClInclude Include="GameObject\3DObject\GameBulletManager.h">
       <Filter>Game\GameObject\3DObject</Filter>
     </ClInclude>
+    <ClInclude Include="ExclusiveGameObject\EffectManager.h">
+      <Filter>Game\ExclusiveGameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -253,6 +256,9 @@
     </ClCompile>
     <ClCompile Include="GameObject\3DObject\GameMap.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ExclusiveGameObject\EffectManager.cpp">
+      <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

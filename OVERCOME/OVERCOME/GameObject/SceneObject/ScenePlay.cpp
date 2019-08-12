@@ -153,7 +153,7 @@ void ScenePlay::Finalize()
 	}
 
 	/*if (mp_effectManager != nullptr) {
-		mp_effectManager->Lost();
+		mp_effectManager->Finalize();
 		delete mp_effectManager;
 		mp_effectManager = nullptr;
 	}*/

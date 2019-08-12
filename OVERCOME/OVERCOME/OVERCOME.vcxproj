@@ -178,6 +178,7 @@
     <ClInclude Include="ExclusiveGameObject\CollisionSphere.h" />
     <ClInclude Include="ExclusiveGameObject\DebugBox.h" />
     <ClInclude Include="ExclusiveGameObject\DebugSphere.h" />
+    <ClInclude Include="ExclusiveGameObject\EffectManager.h" />
     <ClInclude Include="ExclusiveGameObject\SingletonBase.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject\2DObject\GameScore.h" />
@@ -217,6 +218,7 @@
     <ClCompile Include="ExclusiveGameObject\CollisionSphere.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugBox.cpp" />
     <ClCompile Include="ExclusiveGameObject\DebugSphere.cpp" />
+    <ClCompile Include="ExclusiveGameObject\EffectManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject\2DObject\GameScore.cpp" />
     <ClCompile Include="GameObject\2DObject\Obj2D.cpp" />
