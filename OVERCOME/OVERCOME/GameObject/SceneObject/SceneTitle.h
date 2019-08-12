@@ -13,6 +13,8 @@
 
 #include "../3DObject/GameCamera.h"
 
+#include "../../ExclusiveGameObject/EffectManager.h"
+
 class MatrixManager;
 class SceneTitle : public SceneBase
 {
@@ -38,6 +40,8 @@ private:
 	std::unique_ptr<DirectX::Model>					   mp_modelHouse;			  // 家モデルオブジェクト
 
 	MatrixManager*                                     mp_matrixManager;          // 行列管理変数
+
+	EffectManager*									   mp_effectManager;		  // エフェクト管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:

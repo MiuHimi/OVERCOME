@@ -37,7 +37,8 @@ SceneTitle::SceneTitle(SceneManager * sceneManager)
 	  m_TitlePos(0.0f, 0.0f),
 	  mp_camera(nullptr),
 	  mp_modelHouse(nullptr),
-	  mp_matrixManager(nullptr)
+	  mp_matrixManager(nullptr),
+	  mp_effectManager(nullptr)
 {
 }
 /// <summary>
@@ -105,6 +106,13 @@ void SceneTitle::Initialize()
 	// 行列を設定
 	mp_matrixManager->SetViewProjection(view, projection);
 
+	// エフェクトマネージャーの初期化
+	mp_effectManager = new EffectManager();
+	mp_effectManager->Create();
+	mp_effectManager->Initialize();
+	mp_effectManager->SetRenderState(view, projection);
+
+
 	// サウンド再生
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->LoadAcb(L"SceneTitle.acb", L"SceneTitle.awb");
@@ -122,6 +130,13 @@ void SceneTitle::Finalize()
 		mp_matrixManager = nullptr;
 	}
 
+	// エフェクト管理変数の削除
+	if (mp_effectManager != nullptr) {
+		mp_effectManager->Finalize();
+		delete mp_effectManager;
+		mp_effectManager = nullptr;
+	}
+
 	// サウンドの停止
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Stop();
@@ -136,6 +151,9 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	// サウンドの更新
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Update();
+
+	// エフェクトの更新
+	mp_effectManager->Update(timer);
 
 	// カメラの更新
 	mp_camera->Update(timer, SimpleMath::Vector3(0.0f,0.0f,0.0f), 0.0f, SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
@@ -194,6 +212,9 @@ void SceneTitle::Render()
 	// 家の描画
 	mp_modelHouse->Draw(DX::DeviceResources().SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(),
 		world, mp_matrixManager->GetView(), mp_matrixManager->GetProjection());
+
+	// エフェクトの描画
+	mp_effectManager->Render();
 
 	// タイトルの描画
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());

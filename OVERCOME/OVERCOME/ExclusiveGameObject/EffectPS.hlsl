@@ -231,7 +231,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 
 	if (random(
 		(random(floor(texUV.y * 500) + float2(diffuse.y, diffuse.y)) - 0.5f) + float2(diffuse.y, diffuse.y)
-	) < 0.1f)
+	) < 0.05f)
 	{
 		col.r = random(uv + float2(123 + diffuse.y, 0));
 		col.g = random(uv + float2(123 + diffuse.y, 1));

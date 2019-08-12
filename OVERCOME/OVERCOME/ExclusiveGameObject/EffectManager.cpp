@@ -48,7 +48,7 @@ void EffectManager::Create()
 	auto device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
 
 	// テクスチャの読み込み
-	const wchar_t* texPath1 = L"Resources\\Images\\black.png";
+	const wchar_t* texPath1 = L"Resources\\Images\\black_alpha_half.png";
 	const wchar_t* texPath2 = L"Resources\\Images\\dis.jpg";
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), texPath1, nullptr, m_texture1.GetAddressOf());
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), texPath2, nullptr, m_texture2.GetAddressOf());
@@ -195,4 +195,9 @@ void EffectManager::Draw(SimpleMath::Matrix world, SimpleMath::Matrix view, Simp
 	m_batch->Begin();
 	m_batch->Draw(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST, &m_vertex[0], m_vertex.size());
 	m_batch->End();
+
+	// 2Dスプライトを共に描画する場合元に戻さないとエラーになる
+	context->VSSetShader(nullptr, nullptr, 0);
+	context->GSSetShader(nullptr, nullptr, 0);
+	context->PSSetShader(nullptr, nullptr, 0);
 }
