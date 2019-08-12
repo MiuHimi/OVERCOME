@@ -284,5 +284,8 @@
     <MeshContentTask Include="..\FBX\ghost_speed.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\house.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>

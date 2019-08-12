@@ -11,6 +11,8 @@
 #include "SceneBase.h"
 #include <SpriteBatch.h>
 
+#include "../3DObject/GameCamera.h"
+
 class MatrixManager;
 class SceneTitle : public SceneBase
 {
@@ -30,6 +32,10 @@ private:
 	float											   m_titleWidth;			  // タイトルの幅
 	float											   m_titleHeight;			  // タイトルの高さ
 	DirectX::SimpleMath::Vector2					   m_TitlePos;				  // タイトルの表示位置
+
+	std::unique_ptr<GameCamera>						   mp_camera;			      // ゲームカメラオブジェクト
+
+	std::unique_ptr<DirectX::Model>					   mp_modelHouse;			  // 家モデルオブジェクト
 
 	MatrixManager*                                     mp_matrixManager;          // 行列管理変数
 

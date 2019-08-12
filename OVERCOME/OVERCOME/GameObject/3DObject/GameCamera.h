@@ -23,7 +23,8 @@ private:
 	static const float                DEFAULT_CAMERA_DISTANCE;   // カメラの距離
 	static const float                ROTATE_MAG;                // 回転倍率(100～500がベスト)
 
-	float                             m_aroundAngle;             // 回転角
+	float                             m_aroundAngleX;            // 回転角(度、X軸)
+	float                             m_aroundAngleY;            // 回転角(度、Y軸)
 
 	DirectX::SimpleMath::Vector2      m_angle;                   // 現在の回転角
 	DirectX::SimpleMath::Vector2      m_angleTmp;                // 保存している回転角
@@ -107,6 +108,23 @@ private:
 	/// <param name="target">注視点</param>
 	/// <param name="direction">進行方向</param>
 	void FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float direction);
+
+	/// <summary>
+	/// 定点カメラ
+	/// </summary>
+	/// <param name="target">注視点</param>
+	/// <param name="cameraPoint">カメラの位置</param>
+	void FixedPointCamera(DirectX::SimpleMath::Vector3 &target, DirectX::SimpleMath::Vector3 &cameraPoint);
+
+	/// <summary>
+	/// 基準点から領域のサイズ分の中を流れるように動くカメラ
+	/// </summary>
+	/// <param name="basePoint">基準点</param>
+	/// <param name="width">幅(X)</param>
+	/// <param name="height">高さ(Y)</param>
+	/// <param name="depth">奥行(Z)</param>
+	/// <param name="areaSize">領域のサイズ</param>
+	void FadeCamera(DirectX::SimpleMath::Vector3 basePoint, float width, float height, float depth, float areaSize);
 
 	/// <summary>
 	/// マウスで視点移動するカメラ

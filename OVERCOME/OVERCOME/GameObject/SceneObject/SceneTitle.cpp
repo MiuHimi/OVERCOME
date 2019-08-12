@@ -35,6 +35,8 @@ SceneTitle::SceneTitle(SceneManager * sceneManager)
 	  m_titleWidth(0.0f),
 	  m_titleHeight(0.0f),
 	  m_TitlePos(0.0f, 0.0f),
+	  mp_camera(nullptr),
+	  mp_modelHouse(nullptr),
 	  mp_matrixManager(nullptr)
 {
 }
@@ -52,6 +54,11 @@ void SceneTitle::Initialize()
 {
 	m_toStageSelectMoveOnChecker = false;
 
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+	// カメラオブジェクトの作成
+	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
+
 	// テクスチャのロード
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_background.png", nullptr, mp_textureBackground.GetAddressOf());
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title.png", nullptr, mp_textureTitle.GetAddressOf());
@@ -67,6 +74,14 @@ void SceneTitle::Initialize()
 	// α値の設定(初期化)
 	m_colorAlpha = 1.0f;
 
+	// エフェクトファクトリー
+	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
+	// モデルのテクスチャの入っているフォルダを指定する
+	fx.SetDirectory(L"Resources\\Models");
+	// 家モデルを作成
+	mp_modelHouse = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\house.cmo", fx);
+
+
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
 	
@@ -74,7 +89,6 @@ void SceneTitle::Initialize()
 	SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
 
 	// ウインドウサイズからアスペクト比を算出する
-	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
 	float angle = 45.0f;
@@ -122,13 +136,17 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	// サウンドの更新
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Update();
+
+	// カメラの更新
+	mp_camera->Update(timer, SimpleMath::Vector3(0.0f,0.0f,0.0f), 0.0f, SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
 	
 	// マウスの更新
 	//	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 	InputManager::SingletonGetInstance().Update();
 
 	// 右クリックでシーン遷移開始
-	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	if (/*InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED*/
+		InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(Keyboard::Space))
 	{
 		m_toStageSelectMoveOnChecker = true;
 		adx2le->Play(1);
@@ -152,13 +170,38 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneTitle::Render()
 {
+	// ビュー行列の作成
+	SimpleMath::Matrix view = SimpleMath::Matrix::CreateLookAt(mp_camera->GetEyePosition(), mp_camera->GetTargetPosition(), SimpleMath::Vector3::Up);
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
+
+	float aspectRatio = float(size.right) / float(size.bottom);
+	// 画角を設定
+	float angle = 45.0f;
+	float fovAngleY = XMConvertToRadians(angle);
+
+	// 射影行列を作成
+	SimpleMath::Matrix projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		200.0f
+	);
+	// 行列を設定
+	mp_matrixManager->SetViewProjection(view, projection);
+
+	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
+	// 家の描画
+	mp_modelHouse->Draw(DX::DeviceResources().SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(),
+		world, mp_matrixManager->GetView(), mp_matrixManager->GetProjection());
+
 	// タイトルの描画
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 	
 	RECT rectTiteBG = { 0, 0, 800, 600 };
 	RECT rectTite = { 0, 0, int(m_titleWidth), int(m_titleHeight) };
 
-	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectTiteBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	//mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectTiteBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	mp_sprite->Draw(mp_textureTitle.Get(), m_TitlePos, &rectTite, SimpleMath::Vector4( 1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	
 	mp_sprite->End();

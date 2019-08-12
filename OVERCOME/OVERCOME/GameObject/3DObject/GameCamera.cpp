@@ -28,11 +28,11 @@ SceneId SceneManager::m_activeScene;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-GameCamera::GameCamera() :m_aroundAngle(0.0f)
+GameCamera::GameCamera() :m_aroundAngleY(0.0f)
 {
 }
 GameCamera::GameCamera(int windowWidth, int windowHeight)
-	: m_aroundAngle(0.0f),
+	: m_aroundAngleX(0.0f), m_aroundAngleY(0.0f),
 	m_angle(0.0f, 0.0f),
 	m_angleTmp(0.0f, 0.0f),
 	m_cameraDir(0.0f, 0.0f, 0.0f),
@@ -73,8 +73,8 @@ bool GameCamera::Update(DX::StepTimer const & timer, DirectX::SimpleMath::Vector
 		DebugCamera(debugPos);
 		break;
 	case SCENE_TITLE:
-		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
-		DebugCamera(debugPos);
+		// 定点カメラ
+		FixedPointCamera(SimpleMath::Vector3(0.0f, 50.0f, 0.0f), SimpleMath::Vector3(0.0f, 50.0f, 150.0f));
 		break;
 	case SCENE_SELECTSTAGE:
 		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
@@ -104,9 +104,9 @@ void GameCamera::OriginPointAroundCamera(DirectX::SimpleMath::Vector3 eyePos)
 	SimpleMath::Vector3 eye(/*20.0f, 8.0f, 0.0f*/eyePos);
 
 	// 注視点は(0,0,0)でカメラをY軸回転させる
-	m_aroundAngle += 0.5f;
-	if (m_aroundAngle > 360)m_aroundAngle = 0.0f;
-	SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(m_aroundAngle));
+	m_aroundAngleY += 0.5f;
+	if (m_aroundAngleY > 360)m_aroundAngleY = 0.0f;
+	SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(m_aroundAngleY));
 	eye = SimpleMath::Vector3::Transform(eye, rotY);
 	//SetPositionTarget(eye, SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
 
@@ -218,6 +218,46 @@ void GameCamera::FollowPlayerCamera(DirectX::SimpleMath::Vector3 target, float d
 
 	// 補間しない場合
 	m_eyePt = eye;
+	m_targetPt = target;
+}
+
+/// <summary>
+/// 定点カメラ
+/// </summary>
+/// <param name="target">注視点</param>
+/// <param name="cameraPoint">カメラの位置</param>
+void GameCamera::FixedPointCamera(DirectX::SimpleMath::Vector3 &target, DirectX::SimpleMath::Vector3 &cameraPoint)
+{
+	m_eyePt = cameraPoint;
+	m_targetPt = target;
+}
+
+/// <summary>
+/// 基準点から領域のサイズ分の中を流れるように動くカメラ
+/// </summary>
+/// <param name="basePoint">基準点</param>
+/// <param name="width">幅(X)</param>
+/// <param name="height">高さ(Y)</param>
+/// <param name="depth">奥行(Z)</param>
+/// <param name="areaSize">領域のサイズ</param>
+void GameCamera::FadeCamera(DirectX::SimpleMath::Vector3 basePoint, float width, float height, float depth, float areaSize)
+{
+	// カメラの初期位置設定
+	SimpleMath::Vector3 eye(20.0f, 40.0f, 0.0f);
+
+	// 回転
+	m_aroundAngleX += 0.5f;
+	m_aroundAngleY += 0.5f;
+	// 回転矯正
+	if (m_aroundAngleY > 360)m_aroundAngleY = 0.0f;
+	if (m_aroundAngleY > 360)m_aroundAngleY = 0.0f;
+	SimpleMath::Matrix rotZ = SimpleMath::Matrix::CreateRotationZ(XMConvertToRadians(m_aroundAngleX));
+	SimpleMath::Matrix rotY = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(m_aroundAngleY));
+	SimpleMath::Matrix rot = rotY * rotZ;
+	eye = SimpleMath::Vector3::Transform(eye, rot);
+
+	m_eyePt = eye;
+	SimpleMath::Vector3 target(0.0f, 20.0f, 0.0f);
 	m_targetPt = target;
 }
 
