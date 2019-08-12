@@ -48,15 +48,15 @@ void EffectManager::Create()
 	auto device = DX::DeviceResources::SingletonGetInstance().GetD3DDevice();
 
 	// テクスチャの読み込み
-	const wchar_t* texPath1 = L"Resources\\Textures\\melon.png";
-	const wchar_t* texPath2 = L"Resources\\Textures\\floor.png";
+	const wchar_t* texPath1 = L"Resources\\Images\\black.png";
+	const wchar_t* texPath2 = L"Resources\\Images\\dis.jpg";
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), texPath1, nullptr, m_texture1.GetAddressOf());
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), texPath2, nullptr, m_texture2.GetAddressOf());
 
 	// コンパイルされたシェーダファイルを読み込み
-	BinaryFile VSData = BinaryFile::LoadFile(L"Resources/Shaders/ParticleVS.cso");
-	BinaryFile GSData = BinaryFile::LoadFile(L"Resources/Shaders/ParticleGS.cso");
-	BinaryFile PSData = BinaryFile::LoadFile(L"Resources/Shaders/ParticlePS.cso");
+	BinaryFile VSData = BinaryFile::LoadFile(L"Resources/Shaders/EffectVS.cso");
+	BinaryFile GSData = BinaryFile::LoadFile(L"Resources/Shaders/EffectGS.cso");
+	BinaryFile PSData = BinaryFile::LoadFile(L"Resources/Shaders/EffectPS.cso");
 
 	device->CreateInputLayout(&INPUT_LAYOUT[0],
 		INPUT_LAYOUT.size(),

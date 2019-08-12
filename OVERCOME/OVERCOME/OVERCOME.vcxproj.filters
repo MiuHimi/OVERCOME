@@ -35,6 +35,9 @@
     <Filter Include="Game\GameObject\3DObject">
       <UniqueIdentifier>{dc0ad331-a898-40a1-9f5e-547fdb9edd3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\ExclusiveGameObject\Shader">
+      <UniqueIdentifier>{72b3b843-c0ca-4ce7-b45d-e7d5cff5d4d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -293,5 +296,21 @@
     <MeshContentTask Include="..\FBX\house.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ExclusiveGameObject\Effect.hlsli">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ExclusiveGameObject\EffectGS.hlsl">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ExclusiveGameObject\EffectPS.hlsl">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ExclusiveGameObject\EffectVS.hlsl">
+      <Filter>Game\ExclusiveGameObject\Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
