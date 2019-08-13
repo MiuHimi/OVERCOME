@@ -101,8 +101,8 @@ void SceneTitle::Initialize()
 										(((activeWndRect.bottom - activeWndRect.top) - (m_startBtnHeight * 2.0f))));
 
 	// フェード画像の幅、高さ、位置設定
-	m_fadeImageWidth = activeWndRect.right - activeWndRect.left;
-	m_fadeImageHeight = activeWndRect.bottom - activeWndRect.top;
+	m_fadeImageWidth = float(activeWndRect.right - activeWndRect.left);
+	m_fadeImageHeight = float(activeWndRect.bottom - activeWndRect.top);
 	m_fadeImagePos = SimpleMath::Vector2(0.0f, 0.0f);
 
 	// α値の設定(初期化)
@@ -144,7 +144,6 @@ void SceneTitle::Initialize()
 	mp_effectManager->Create();
 	mp_effectManager->Initialize();
 	mp_effectManager->SetRenderState(view, projection);
-
 
 	// サウンド再生
 	ADX2Le* adx2le = ADX2Le::GetInstance();
@@ -188,7 +187,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	// エフェクトの更新
 	mp_effectManager->Update(timer);
 
-	// カメラの更新
+	// カメラの更新(タイトルシーンのカメラは定点カメラ)
 	mp_camera->Update(timer, SimpleMath::Vector3(0.0f,0.0f,0.0f), 0.0f, SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
 	
 	// マウスの更新
@@ -227,7 +226,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 		if (m_colorAlpha < 0.0f) m_colorAlpha = 0.0f;
 
 		// フェードアウト
-		m_fadeAlpha += 0.01f;
+		if(m_fadeAlpha != 1.0f)m_fadeAlpha += 0.01f;
 		if (m_fadeAlpha > 1.0f) m_fadeAlpha = 1.0f;
 	}
 
@@ -236,7 +235,6 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_SELECTSTAGE);
 	}
-
 }
 
 /// <summary>
@@ -267,7 +265,7 @@ void SceneTitle::Render()
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	// 家の描画
 	mp_modelHouse->Draw(DX::DeviceResources().SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(),
-		world, mp_matrixManager->GetView(), mp_matrixManager->GetProjection());
+						world, mp_matrixManager->GetView(), mp_matrixManager->GetProjection());
 
 	// エフェクトの描画
 	mp_effectManager->Render();
@@ -288,14 +286,14 @@ void SceneTitle::Render()
 	}
 
 	// スタートボタンの表示
-	RECT rectStartBtn = { 0, 0, int(m_startBtnWidth), int(m_startBtnHeight) };
+	RECT rectStartBtn = { 0, 0, (LONG)m_startBtnWidth, (LONG)m_startBtnHeight };
 	if(m_isHoverBtn)
 		mp_sprite->Draw(mp_textureStartBtnHvr.Get(), m_startBtnPos, &rectStartBtn, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	else
 		mp_sprite->Draw(mp_textureStartBtn.Get(), m_startBtnPos, &rectStartBtn, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	
 	// フェード画像の表示
-	RECT rectFade = { 0, 0, m_fadeImageWidth, m_fadeImageHeight };
+	RECT rectFade = { 0, 0, (LONG)m_fadeImageWidth, (LONG)m_fadeImageHeight };
 	mp_sprite->Draw(mp_textureFade.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectFade, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_fadeAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 
 	mp_sprite->End();
