@@ -28,8 +28,8 @@ bool SceneManager::m_clearSceneState;
 /// コンストラクタ
 /// </summary>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-ScenePlay::ScenePlay(SceneManager* sceneManager)
-	: SceneBase(sceneManager),
+ScenePlay::ScenePlay(SceneManager* sceneManager, bool isFullScreen)
+	: SceneBase(sceneManager, isFullScreen),
 	  m_toResultMoveOnChecker(false),
 	  m_returnToTitleChecker(false),
 	  m_colorAlpha(0.0f),

@@ -43,11 +43,12 @@ private:
 	bool                  m_requestSceneFlag;          // シーン遷移を要求されたらフラグが立つ
 
 	bool                  m_gameStateFlag;             // ゲームの更新中はフラグが立つ
+	bool				  m_isFullScreen;			   // フルスクリーンかどうか(true=フルスクリーン)
 
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
-	SceneManager(SceneId startSceneId);
+	SceneManager(SceneId startSceneId, bool isFullScreen);
 	// デストラクタ
 	~SceneManager();
 
@@ -73,6 +74,9 @@ public:
 
 	// ゲームの更新中フラグの取得
 	bool GetGameState()							{ return m_gameStateFlag; }
+
+	// ゲームがフルスクリーンかどうか取得
+	bool GetFullScreen()						{ return m_isFullScreen; }
 	//----------------------------------------------------------------------------//
 
 	//-----------------------------------Setter-----------------------------------//

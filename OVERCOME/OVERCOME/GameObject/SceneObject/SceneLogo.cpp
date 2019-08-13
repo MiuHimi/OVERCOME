@@ -26,8 +26,8 @@ const int SceneLogo::SCENE_CHANGE_NEED_SECOND = 4;
 /// コンストラクタ
 /// </summary>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneLogo::SceneLogo(SceneManager * sceneManager)
-	: SceneBase(sceneManager),
+SceneLogo::SceneLogo(SceneManager * sceneManager, bool isFullScreen)
+	: SceneBase(sceneManager, isFullScreen),
 	  m_toTitleMoveOnChecker(false),
 	  m_colorAlpha(0.0f),
 	  mp_textureLogo(nullptr),

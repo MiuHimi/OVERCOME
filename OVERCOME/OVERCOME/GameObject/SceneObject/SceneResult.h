@@ -15,7 +15,7 @@ class MatrixManager;
 class SceneResult : public SceneBase
 {
 // メンバー変数(構造体、enum、列挙子 etc...)
-public:
+//public:
 
 private:
 	bool												 m_toTitleMoveOnChecker;  // タイトルシーンに進めるかどうかのチェック
@@ -48,7 +48,7 @@ private:
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
-	SceneResult(SceneManager* sceneManager);
+	SceneResult(SceneManager* sceneManager, bool isFullScreen);
 	// デストラクタ
 	~SceneResult();
 
@@ -61,6 +61,6 @@ public:
 	// 終了
 	virtual void Finalize() override;
 
-private:
+//private:
 
 };

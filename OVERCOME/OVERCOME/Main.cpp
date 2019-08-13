@@ -27,6 +27,9 @@ extern "C"
     __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
+// フルスクリーンにするかどうか
+static bool s_fullscreen = false;
+
 // Entry point
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -42,7 +45,17 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     if (FAILED(hr))
         return 1;
 
-    g_game = std::make_unique<Game>();
+	// 画面モード選択
+	if (MessageBox(NULL, L"フルスクリーンにしますか？", L"画面モード設定", MB_YESNO) == IDYES)
+	{
+		s_fullscreen = true;
+	}
+	else
+	{
+		s_fullscreen = false;
+	}
+
+    g_game = std::make_unique<Game>(s_fullscreen);
 
     // Register class and create window
     {
@@ -92,6 +105,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         GetClientRect(hwnd, &rc);
 
         g_game->Initialize(hwnd, rc.right - rc.left, rc.bottom - rc.top);
+
+		if (s_fullscreen)
+		{
+			// フルスクリーンモードへ
+			g_game->ChangeFullscreen(TRUE);
+		}
     }
 
     // Main message loop
@@ -108,6 +127,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             g_game->Tick();
         }
     }
+
+	if (s_fullscreen)
+	{
+		// ウインドウモードへ戻す
+		g_game->ChangeFullscreen(FALSE);
+	}
 
     g_game.reset();
 

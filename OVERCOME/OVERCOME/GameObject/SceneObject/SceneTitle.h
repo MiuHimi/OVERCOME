@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneTitle.h
 // Summary. SceneTitleClass
-// Date.    2019/06/06
+// Date.    2019/08/13
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -18,22 +18,34 @@
 class MatrixManager;
 class SceneTitle : public SceneBase
 {
-// メンバー変数(構造体、enum、列挙子 etc...)
-public:
+// メンバー変数
+//public:
 
 private:
 	bool                                               m_toStageSelectMoveOnChecker;
 																				  // ステージセレクトシーンに進めるかどうかのチェック
 
+	float											   m_fadeAlpha;				  // フェード用のα値
 	float											   m_colorAlpha;			  // α値を変更
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureBackground;      // テクスチャハンドル(背景)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureFade;			  // テクスチャハンドル(背景)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureTitle;		      // テクスチャハンドル(タイトル)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureStartBtn;		  // テクスチャハンドル(スタートボタン)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureStartBtnHvr;	  // テクスチャハンドル(スタートボタン(ホバー))
 	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;				  // スプライトバッチ
 
 	float											   m_titleWidth;			  // タイトルの幅
 	float											   m_titleHeight;			  // タイトルの高さ
 	DirectX::SimpleMath::Vector2					   m_TitlePos;				  // タイトルの表示位置
+
+	float											   m_startBtnWidth;			  // スタートボタンの幅
+	float											   m_startBtnHeight;		  // スタートボタンの高さ
+	DirectX::SimpleMath::Vector2					   m_startBtnPos;			  // スタートボタンの表示位置
+	bool											   m_isHoverBtn;			  // スタートボタンにカーソルが乗っているか
+
+	float											   m_fadeImageWidth;		  // フェード画像の幅
+	float											   m_fadeImageHeight;		  // フェード画像の高さ
+	DirectX::SimpleMath::Vector2					   m_fadeImagePos;			  // フェード画像の表示位置
 
 	std::unique_ptr<GameCamera>						   mp_camera;			      // ゲームカメラオブジェクト
 
@@ -43,10 +55,10 @@ private:
 
 	EffectManager*									   mp_effectManager;		  // エフェクト管理変数
 
-// メンバー関数(関数、Getter、Setter)
+// メンバー関数
 public:
 	// コンストラクタ
-	SceneTitle(SceneManager* sceneManager);
+	SceneTitle(SceneManager* sceneManager, bool isFullScreen);
 	// デストラクタ
 	~SceneTitle();
 
@@ -58,4 +70,7 @@ public:
 	virtual void Render() override;
 	// 終了
 	virtual void Finalize() override;
+
+//private:
+
 };

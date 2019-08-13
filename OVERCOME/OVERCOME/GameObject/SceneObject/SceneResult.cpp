@@ -29,8 +29,8 @@ int GameScore::m_score;
 /// コンストラクタ
 /// </summary>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneResult::SceneResult(SceneManager * sceneManager)
-	: SceneBase(sceneManager),
+SceneResult::SceneResult(SceneManager * sceneManager, bool isFullScreen)
+	: SceneBase(sceneManager, isFullScreen),
 	  m_toTitleMoveOnChecker(false),
 	  m_returnToPlayChecker(false),
 	  m_resultState(false),

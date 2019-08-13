@@ -18,29 +18,30 @@
 // usingディレクトリ
 
 // constディレクトリ
-const int SceneManager::MAXSTAGE = 2;   // 前ステージ数
+const int SceneManager::MAXSTAGE = 2;   // 全ステージ数
 
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 /// <param name="startSceneId">開始シーンのID</param>
-SceneManager::SceneManager(SceneId startSceneId)
-	: mp_scene(nullptr)
-	, m_nextScene(SceneId::SCENE_LOGO)
-	, m_requestSceneFlag(false)
-	, m_gameStateFlag(true)
+SceneManager::SceneManager(SceneId startSceneId, bool isFullScreen)
+	: mp_scene(nullptr),
+	  m_nextScene(SceneId::SCENE_LOGO),
+	  m_requestSceneFlag(false),
+	  m_gameStateFlag(true),
+	  m_isFullScreen(isFullScreen)
 {
 	// 開始シーンの設定
 	RequestToChangeScene(startSceneId);
 
 	switch (startSceneId)
 	{
-	case SCENE_LOGO:          mp_scene = new SceneLogo(this);          break;
-	case SCENE_TITLE:         mp_scene = new SceneTitle(this);         break;
-	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(this);   break;
-	case SCENE_PLAY:          mp_scene = new ScenePlay(this);          break;
-	case SCENE_RESULT:        mp_scene = new SceneResult(this);        break;
+	case SCENE_LOGO:		mp_scene = new SceneLogo(this, isFullScreen);          break;
+	case SCENE_TITLE:		mp_scene = new SceneTitle(this, isFullScreen);         break;
+	case SCENE_SELECTSTAGE:	mp_scene = new SceneStageSelect(this, isFullScreen);   break;
+	case SCENE_PLAY:		mp_scene = new ScenePlay(this, isFullScreen);          break;
+	case SCENE_RESULT:		mp_scene = new SceneResult(this, isFullScreen);        break;
 	}
 }
 /// <summary>
@@ -154,11 +155,11 @@ void SceneManager::ChangeScene()
 	// 次のシーンを設定
 	switch (m_nextScene)
 	{
-	case SCENE_LOGO:          mp_scene = new SceneLogo(this);          m_activeScene = SCENE_LOGO;          break;
-	case SCENE_TITLE:         mp_scene = new SceneTitle(this);         m_activeScene = SCENE_TITLE;         break;
-	case SCENE_SELECTSTAGE:   mp_scene = new SceneStageSelect(this);   m_activeScene = SCENE_SELECTSTAGE;   break;
-	case SCENE_PLAY:          mp_scene = new ScenePlay(this);          m_activeScene = SCENE_PLAY;          break;
-	case SCENE_RESULT:        mp_scene = new SceneResult(this);        m_activeScene = SCENE_RESULT;        break;
+	case SCENE_LOGO:		mp_scene = new SceneLogo(this, m_isFullScreen);			m_activeScene = SCENE_LOGO;          break;
+	case SCENE_TITLE:		mp_scene = new SceneTitle(this, m_isFullScreen);		m_activeScene = SCENE_TITLE;         break;
+	case SCENE_SELECTSTAGE:	mp_scene = new SceneStageSelect(this, m_isFullScreen);	m_activeScene = SCENE_SELECTSTAGE;   break;
+	case SCENE_PLAY:		mp_scene = new ScenePlay(this, m_isFullScreen);			m_activeScene = SCENE_PLAY;          break;
+	case SCENE_RESULT:		mp_scene = new SceneResult(this, m_isFullScreen);		m_activeScene = SCENE_RESULT;        break;
 	}
 	
 	// 新たに活動中になったシーンを初期化する

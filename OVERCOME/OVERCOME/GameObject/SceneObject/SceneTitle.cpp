@@ -25,16 +25,17 @@ using namespace DirectX;
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneTitle::SceneTitle(SceneManager * sceneManager)
-	: SceneBase(sceneManager),
+SceneTitle::SceneTitle(SceneManager * sceneManager, bool isFullScreen)
+	: SceneBase(sceneManager, isFullScreen),
 	  m_toStageSelectMoveOnChecker(false),
-      m_colorAlpha(0.0f),
-	  mp_textureBackground(nullptr),
+	  m_fadeAlpha(0.0f), m_colorAlpha(0.0f),
+	  mp_textureFade(nullptr),
 	  mp_textureTitle(nullptr),
+	  mp_textureStartBtn(nullptr), mp_textureStartBtnHvr(nullptr),
 	  mp_sprite(nullptr),
-	  m_titleWidth(0.0f),
-	  m_titleHeight(0.0f),
-	  m_TitlePos(0.0f, 0.0f),
+	  m_titleWidth(0.0f), m_titleHeight(0.0f), m_TitlePos(0.0f, 0.0f),
+	  m_startBtnWidth(0.0f), m_startBtnHeight(0.0f), m_startBtnPos(0.0f, 0.0f), m_isHoverBtn(false),
+	  m_fadeImageWidth(0.0f), m_fadeImageHeight(0.0f), m_fadeImagePos(0.0f, 0.0f),
 	  mp_camera(nullptr),
 	  mp_modelHouse(nullptr),
 	  mp_matrixManager(nullptr),
@@ -61,18 +62,51 @@ void SceneTitle::Initialize()
 	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
 
 	// テクスチャのロード
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_background.png", nullptr, mp_textureBackground.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\black.png", nullptr, mp_textureFade.GetAddressOf());
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_image.png", nullptr, mp_textureTitle.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_gamestart.png", nullptr, mp_textureStartBtn.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_gamestart_hover.png", nullptr, mp_textureStartBtnHvr.GetAddressOf());
 
 	// スプライトバッチの初期化
 	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
 
-	// タイトルの幅、高さ、位置設定
-	m_titleWidth = 500.0f;
-	m_titleHeight = 120.0f;
-	m_TitlePos = SimpleMath::Vector2(150.0f, 100.0f);
+	// アクティブなウィンドウのサイズ
+	RECT activeWndRect;
+	// アクティブなウィンドウのハンドルを取得
+	HWND activeWnd = GetActiveWindow();
+	// アクティブなウィンドウのハンドルからその画面の大きさを取得
+	GetWindowRect(activeWnd, &activeWndRect);
+
+	// タイトルバーの高さを取得
+	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
+
+	// タイトルの幅、高さ、位置初期化
+	if (GetFullScreen())
+	{
+		m_titleWidth = 500.0f * 2.0f;
+		m_titleHeight = 120.0f * 2.0f;
+	}
+	else
+	{
+		m_titleWidth = 500.0f;
+		m_titleHeight = 120.0f;
+	}
+	m_TitlePos = SimpleMath::Vector2(((activeWndRect.right - activeWndRect.left) * 0.5f) - (m_titleWidth * 0.5f),
+									 ((activeWndRect.bottom - activeWndRect.top) * 0.5f) - (m_titleHeight * 1.5f) - titlebarHeight);
+	
+	// スタートボタンの幅、高さ、位置設定
+	m_startBtnWidth = 640.0f;
+	m_startBtnHeight = 100.0f;
+	m_startBtnPos = SimpleMath::Vector2(((activeWndRect.right - activeWndRect.left) * 0.5f) - (m_startBtnWidth * 0.5f),
+										(((activeWndRect.bottom - activeWndRect.top) - (m_startBtnHeight * 2.0f))));
+
+	// フェード画像の幅、高さ、位置設定
+	m_fadeImageWidth = activeWndRect.right - activeWndRect.left;
+	m_fadeImageHeight = activeWndRect.bottom - activeWndRect.top;
+	m_fadeImagePos = SimpleMath::Vector2(0.0f, 0.0f);
 
 	// α値の設定(初期化)
+	m_fadeAlpha = 1.0f;
 	m_colorAlpha = 1.0f;
 
 	// エフェクトファクトリー
@@ -81,7 +115,6 @@ void SceneTitle::Initialize()
 	fx.SetDirectory(L"Resources\\Models");
 	// 家モデルを作成
 	mp_modelHouse = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\house.cmo", fx);
-
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
@@ -162,9 +195,28 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	//	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 	InputManager::SingletonGetInstance().Update();
 
-	// 右クリックでシーン遷移開始
-	if (/*InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED*/
-		InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(Keyboard::Space))
+	// スタートボタンとマウスカーソルの衝突判定
+	SimpleMath::Vector2 mousePos = SimpleMath::Vector2((float)InputManager::SingletonGetInstance().GetMousePosX(), 
+													   (float)InputManager::SingletonGetInstance().GetMousePosY());
+	if (m_startBtnPos.x < mousePos.x && mousePos.x < (m_startBtnPos.x + m_startBtnWidth) &&
+		m_startBtnPos.y < mousePos.y && mousePos.y < (m_startBtnPos.y + m_startBtnHeight))
+	{
+		m_isHoverBtn = true;
+	}
+	else
+	{
+		m_isHoverBtn = false;
+	}
+
+	// シーン遷移せず、α値が0でなかったら
+	if (!m_toStageSelectMoveOnChecker && m_fadeAlpha != 0.0f)
+	{
+		// フェードイン
+		m_fadeAlpha -= 0.01f;
+	}
+
+	// スタートボタン左クリックでシーン遷移開始
+	if (m_isHoverBtn && InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		m_toStageSelectMoveOnChecker = true;
 		adx2le->Play(1);
@@ -173,10 +225,14 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	{
 		m_colorAlpha -= 0.01f;
 		if (m_colorAlpha < 0.0f) m_colorAlpha = 0.0f;
+
+		// フェードアウト
+		m_fadeAlpha += 0.01f;
+		if (m_fadeAlpha > 1.0f) m_fadeAlpha = 1.0f;
 	}
 
 	// シーン遷移
-	if (m_toStageSelectMoveOnChecker && m_colorAlpha <= 0.0f)
+	if (m_toStageSelectMoveOnChecker && m_colorAlpha <= 0.0f && m_fadeAlpha >= 1.0f)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_SELECTSTAGE);
 	}
@@ -216,14 +272,31 @@ void SceneTitle::Render()
 	// エフェクトの描画
 	mp_effectManager->Render();
 
-	// タイトルの描画
+	// タイトル画面の描画
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 	
-	RECT rectTiteBG = { 0, 0, 800, 600 };
-	RECT rectTite = { 0, 0, int(m_titleWidth), int(m_titleHeight) };
+	// タイトルの表示
+	if (GetFullScreen())
+	{
+		RECT rectTitle = { 0, 0, int(m_titleWidth * 0.5f), int(m_titleHeight * 0.5f) };
+		mp_sprite->Draw(mp_textureTitle.Get(), m_TitlePos, &rectTitle, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 2.0f, SpriteEffects_None, 0);
+	}
+	else
+	{
+		RECT rectTitle = { 0, 0, int(m_titleWidth), int(m_titleHeight) };
+		mp_sprite->Draw(mp_textureTitle.Get(), m_TitlePos, &rectTitle, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	}
 
-	//mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectTiteBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-	mp_sprite->Draw(mp_textureTitle.Get(), m_TitlePos, &rectTite, SimpleMath::Vector4( 1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	// スタートボタンの表示
+	RECT rectStartBtn = { 0, 0, int(m_startBtnWidth), int(m_startBtnHeight) };
+	if(m_isHoverBtn)
+		mp_sprite->Draw(mp_textureStartBtnHvr.Get(), m_startBtnPos, &rectStartBtn, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	else
+		mp_sprite->Draw(mp_textureStartBtn.Get(), m_startBtnPos, &rectStartBtn, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	
+	// フェード画像の表示
+	RECT rectFade = { 0, 0, m_fadeImageWidth, m_fadeImageHeight };
+	mp_sprite->Draw(mp_textureFade.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectFade, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_fadeAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+
 	mp_sprite->End();
 }

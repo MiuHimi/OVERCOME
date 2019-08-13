@@ -18,14 +18,16 @@ class SceneBase
 public:
 
 protected:
-	SceneManager* m_sceneManager;   // SceneManagerへのポインタ
+	SceneManager*	m_sceneManager;		// SceneManagerへのポインタ
+
+	bool			m_isFullScreen;		// フルスクリーンかどうか(true=フルスクリーン)
 
 private:
 
 // メンバー関数(関数、Getter、Setter)
 public:
 	// コンストラクタ
-	SceneBase(SceneManager* sceneManager);
+	SceneBase(SceneManager* sceneManager, bool fullScreenFlag);
 	// デストラクタ
 	virtual ~SceneBase();
 
@@ -37,4 +39,9 @@ public:
 	virtual void Render() = 0;
 	// 終了
 	virtual void Finalize() = 0;
+
+protected:
+	// フルスクリーン設定
+	virtual void SetFullScreen(bool flag)	{ m_isFullScreen = flag; }
+	virtual bool GetFullScreen()			{ return m_isFullScreen; }
 };

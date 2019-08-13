@@ -24,14 +24,17 @@ class Game : public DX::IDeviceNotify
 public:
 
 private:
-	DX::StepTimer                            m_timer;               // Rendering loop timer.
+	DX::StepTimer                           m_timer;				// Rendering loop timer.
 	
-	std::unique_ptr<SceneManager>            mp_sceneManager;       // シーン管理オブジェクト
+	std::unique_ptr<SceneManager>           mp_sceneManager;		// シーン管理オブジェクト
+
+	bool									m_isFullScreen;			// フルスクリーンかどうか
 
 // メンバー関数(関数、Getter、Setter)
 public:
 	// Constructor
     Game();
+	Game(bool isFullScreen);
 	~Game();
 
     // Initialization and management
@@ -56,6 +59,9 @@ public:
 
 	// CloseGame
 	void CloseGame();
+
+	// ChangeFullscreen
+	void ChangeFullscreen(BOOL flag);
 
 private:
     void Update(DX::StepTimer const& timer);

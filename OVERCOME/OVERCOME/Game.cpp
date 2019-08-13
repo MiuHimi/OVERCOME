@@ -34,6 +34,12 @@ Game::Game()
 {
 	DX::DeviceResources::SingletonGetInstance().RegisterDeviceNotify(this);
 }
+Game::Game(bool isFullScreen)
+{
+	DX::DeviceResources::SingletonGetInstance().RegisterDeviceNotify(this);
+
+	m_isFullScreen = isFullScreen;
+}
 // Destructor
 Game::~Game()
 {
@@ -58,7 +64,7 @@ void Game::Initialize(HWND window, int width, int height)
 	adx2le->Initialize(L"OVERCOME.acf");
 
 	// スタートシーンの設定
-	mp_sceneManager = std::make_unique<SceneManager>(SceneId::SCENE_LOGO);
+	mp_sceneManager = std::make_unique<SceneManager>(SceneId::SCENE_LOGO, m_isFullScreen);
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -190,6 +196,12 @@ void Game::CloseGame()
 	mp_sceneManager->DeleteScene();
 	// ゲームを終了する
 	mp_sceneManager->SetGameState(false);
+}
+
+// ChangeFullscreen
+void Game::ChangeFullscreen(BOOL flag)
+{
+	DX::DeviceResources::SingletonGetInstance().GetSwapChain()->SetFullscreenState(flag, NULL);
 }
 #pragma endregion
 

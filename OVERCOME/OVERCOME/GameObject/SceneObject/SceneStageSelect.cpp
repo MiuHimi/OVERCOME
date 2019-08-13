@@ -28,8 +28,8 @@ const int SceneStageSelect::STAGE_ICON_SIZE = 80;
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneStageSelect::SceneStageSelect(SceneManager * sceneManager)
-	: SceneBase(sceneManager),
+SceneStageSelect::SceneStageSelect(SceneManager * sceneManager, bool isFullScreen)
+	: SceneBase(sceneManager, isFullScreen),
 	  m_toPlayMoveOnChecker(false),
 	  m_selectedStage(0),
 	  m_colorAlpha(0.0f),

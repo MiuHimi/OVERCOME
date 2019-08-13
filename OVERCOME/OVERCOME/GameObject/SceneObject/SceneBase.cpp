@@ -15,9 +15,10 @@
 /// コンストラクタ
 /// </summary>
 /// <param name="sceneManager">登録されているシーンマネージャー</param>
-SceneBase::SceneBase(SceneManager* sceneManager)
+SceneBase::SceneBase(SceneManager* sceneManager, bool fullScreenFlag)
 	: m_sceneManager(sceneManager)
 {
+	SetFullScreen(fullScreenFlag);
 }
 /// <summary>
 /// デストラクタ
