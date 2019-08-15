@@ -31,10 +31,9 @@ SceneTitle::SceneTitle(SceneManager * sceneManager, bool isFullScreen)
 	  m_fadeAlpha(0.0f), m_colorAlpha(0.0f),
 	  mp_textureFade(nullptr),
 	  mp_textureTitle(nullptr),
-	  mp_textureStartBtn(nullptr), mp_textureStartBtnHvr(nullptr),
 	  mp_sprite(nullptr),
 	  m_titleWidth(0.0f), m_titleHeight(0.0f), m_TitlePos(0.0f, 0.0f),
-	  m_startBtnWidth(0.0f), m_startBtnHeight(0.0f), m_startBtnPos(0.0f, 0.0f), m_isHoverBtn(false),
+	  mp_startBtn(nullptr),
 	  m_fadeImageWidth(0.0f), m_fadeImageHeight(0.0f), m_fadeImagePos(0.0f, 0.0f),
 	  mp_camera(nullptr),
 	  mp_modelHouse(nullptr),
@@ -64,8 +63,6 @@ void SceneTitle::Initialize()
 	// テクスチャのロード
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\black.png", nullptr, mp_textureFade.GetAddressOf());
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_image.png", nullptr, mp_textureTitle.GetAddressOf());
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_gamestart.png", nullptr, mp_textureStartBtn.GetAddressOf());
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Title\\title_gamestart_hover.png", nullptr, mp_textureStartBtnHvr.GetAddressOf());
 
 	// スプライトバッチの初期化
 	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
@@ -93,12 +90,13 @@ void SceneTitle::Initialize()
 	}
 	m_TitlePos = SimpleMath::Vector2(((activeWndRect.right - activeWndRect.left) * 0.5f) - (m_titleWidth * 0.5f),
 									 ((activeWndRect.bottom - activeWndRect.top) * 0.5f) - (m_titleHeight * 1.5f) - titlebarHeight);
-	
-	// スタートボタンの幅、高さ、位置設定
-	m_startBtnWidth = 640.0f;
-	m_startBtnHeight = 100.0f;
-	m_startBtnPos = SimpleMath::Vector2(((activeWndRect.right - activeWndRect.left) * 0.5f) - (m_startBtnWidth * 0.5f),
-										(((activeWndRect.bottom - activeWndRect.top) - (m_startBtnHeight * 2.0f))));
+
+	// スタートボタンの生成
+	mp_startBtn = std::make_unique<Obj2D>();
+	mp_startBtn->Create(L"Resources\\Images\\Title\\title_gamestart.png", L"Resources\\Images\\Title\\title_gamestart_hover.png");
+	mp_startBtn->Initialize(SimpleMath::Vector2(0.0f,0.0f), 640.0f, 100.0f, 1.0f, 1.0f);
+	mp_startBtn->SetPos(SimpleMath::Vector2(((activeWndRect.right - activeWndRect.left) * 0.5f) - (mp_startBtn->GetWidth() * 0.5f),
+										   (((activeWndRect.bottom - activeWndRect.top) - (mp_startBtn->GetHeight() * 2.0f)))));
 
 	// フェード画像の幅、高さ、位置設定
 	m_fadeImageWidth = float(activeWndRect.right - activeWndRect.left);
@@ -195,16 +193,19 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	InputManager::SingletonGetInstance().Update();
 
 	// スタートボタンとマウスカーソルの衝突判定
-	SimpleMath::Vector2 mousePos = SimpleMath::Vector2((float)InputManager::SingletonGetInstance().GetMousePosX(), 
+	SimpleMath::Vector2 mousePos = SimpleMath::Vector2((float)InputManager::SingletonGetInstance().GetMousePosX(),
 													   (float)InputManager::SingletonGetInstance().GetMousePosY());
-	if (m_startBtnPos.x < mousePos.x && mousePos.x < (m_startBtnPos.x + m_startBtnWidth) &&
-		m_startBtnPos.y < mousePos.y && mousePos.y < (m_startBtnPos.y + m_startBtnHeight))
+	SimpleMath::Vector2 btnPos = mp_startBtn->GetPos();
+	float btnWidth = mp_startBtn->GetWidth();
+	float btnHeight = mp_startBtn->GetHeight();
+	if (btnPos.x < mousePos.x && mousePos.x < (btnPos.x + btnWidth) &&
+		btnPos.y < mousePos.y && mousePos.y < (btnPos.y + btnHeight))
 	{
-		m_isHoverBtn = true;
+		mp_startBtn->SetHover(true);
 	}
 	else
 	{
-		m_isHoverBtn = false;
+		mp_startBtn->SetHover(false);
 	}
 
 	// シーン遷移せず、α値が0でなかったら
@@ -215,7 +216,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	}
 
 	// スタートボタン左クリックでシーン遷移開始
-	if (m_isHoverBtn && InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	if (mp_startBtn->GetHover() && InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		m_toStageSelectMoveOnChecker = true;
 		adx2le->Play(1);
@@ -224,6 +225,11 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	{
 		m_colorAlpha -= 0.01f;
 		if (m_colorAlpha < 0.0f) m_colorAlpha = 0.0f;
+
+		// クリックされたらホバー状態に固定
+		mp_startBtn->SetHover(true);
+		// α値設定
+		mp_startBtn->SetAlphaScale(m_colorAlpha, 1.0f);
 
 		// フェードアウト
 		if(m_fadeAlpha != 1.0f)m_fadeAlpha += 0.01f;
@@ -286,12 +292,8 @@ void SceneTitle::Render()
 	}
 
 	// スタートボタンの表示
-	RECT rectStartBtn = { 0, 0, (LONG)m_startBtnWidth, (LONG)m_startBtnHeight };
-	if(m_isHoverBtn)
-		mp_sprite->Draw(mp_textureStartBtnHvr.Get(), m_startBtnPos, &rectStartBtn, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-	else
-		mp_sprite->Draw(mp_textureStartBtn.Get(), m_startBtnPos, &rectStartBtn, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-	
+	mp_startBtn->RenderAlpha();
+
 	// フェード画像の表示
 	RECT rectFade = { 0, 0, (LONG)m_fadeImageWidth, (LONG)m_fadeImageHeight };
 	mp_sprite->Draw(mp_textureFade.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectFade, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_fadeAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);

@@ -11,6 +11,7 @@
 #include "SceneBase.h"
 #include <SpriteBatch.h>
 
+#include "../2DObject/Obj2D.h"
 #include "../3DObject/GameCamera.h"
 
 #include "../../ExclusiveGameObject/EffectManager.h"
@@ -30,18 +31,13 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureFade;			  // テクスチャハンドル(背景)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureTitle;		      // テクスチャハンドル(タイトル)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureStartBtn;		  // テクスチャハンドル(スタートボタン)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureStartBtnHvr;	  // テクスチャハンドル(スタートボタン(ホバー))
 	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;				  // スプライトバッチ
 
 	float											   m_titleWidth;			  // タイトルの幅
 	float											   m_titleHeight;			  // タイトルの高さ
 	DirectX::SimpleMath::Vector2					   m_TitlePos;				  // タイトルの表示位置
 
-	float											   m_startBtnWidth;			  // スタートボタンの幅
-	float											   m_startBtnHeight;		  // スタートボタンの高さ
-	DirectX::SimpleMath::Vector2					   m_startBtnPos;			  // スタートボタンの表示位置
-	bool											   m_isHoverBtn;			  // スタートボタンにカーソルが乗っているか
+	std::unique_ptr<Obj2D>							   mp_startBtn;				  // スタートボタンオブジェクト
 
 	float											   m_fadeImageWidth;		  // フェード画像の幅
 	float											   m_fadeImageHeight;		  // フェード画像の高さ
