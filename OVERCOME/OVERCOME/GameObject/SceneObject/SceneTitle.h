@@ -26,22 +26,11 @@ private:
 	bool                                               m_toStageSelectMoveOnChecker;
 																				  // ステージセレクトシーンに進めるかどうかのチェック
 
-	float											   m_fadeAlpha;				  // フェード用のα値
 	float											   m_colorAlpha;			  // α値を変更
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureFade;			  // テクスチャハンドル(背景)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureTitle;		      // テクスチャハンドル(タイトル)
-	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;				  // スプライトバッチ
-
-	float											   m_titleWidth;			  // タイトルの幅
-	float											   m_titleHeight;			  // タイトルの高さ
-	DirectX::SimpleMath::Vector2					   m_TitlePos;				  // タイトルの表示位置
-
+	std::unique_ptr<Obj2D>							   mp_title;				  // タイトルオブジェクト
 	std::unique_ptr<Obj2D>							   mp_startBtn;				  // スタートボタンオブジェクト
-
-	float											   m_fadeImageWidth;		  // フェード画像の幅
-	float											   m_fadeImageHeight;		  // フェード画像の高さ
-	DirectX::SimpleMath::Vector2					   m_fadeImagePos;			  // フェード画像の表示位置
+	std::unique_ptr<Obj2D>							   mp_fade;					  // フェード画像オブジェクト
 
 	std::unique_ptr<GameCamera>						   mp_camera;			      // ゲームカメラオブジェクト
 

@@ -20,9 +20,11 @@ using namespace DirectX;
 /// </summary>
 Obj2D::Obj2D()
 	: m_pos(0.0f,0.0f),
-	  m_width(0.0f), m_height(0.0f),
+	  m_width(0.0f), m_height(0.0f), m_rect{0,0,0,0},
 	  m_alpha(0.0f), m_scale(0.0f),
-	  m_isHover(false)
+	  m_isHover(false),
+	  mp_sprite(nullptr),
+	  mp_texture(nullptr),mp_textureHvr(nullptr)
 {
 }
 /// <summary>
@@ -86,11 +88,10 @@ void Obj2D::Render()
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 
 	// スプライトの表示
-	RECT rect = { 0, 0, int(m_width), int(m_height) };
 	if (mp_textureHvr != nullptr && m_isHover)
-		mp_sprite->Draw(mp_textureHvr.Get(), m_pos, &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+		mp_sprite->Draw(mp_textureHvr.Get(), m_pos, &m_rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	else
-		mp_sprite->Draw(mp_texture.Get(), m_pos, &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+		mp_sprite->Draw(mp_texture.Get(), m_pos, &m_rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	
 	mp_sprite->End();
 }
@@ -103,11 +104,10 @@ void Obj2D::RenderAlpha()
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 
 	// スプライトの表示
-	RECT rect = { 0, 0, int(m_width), int(m_height) };
 	if (mp_textureHvr != nullptr && m_isHover)
-		mp_sprite->Draw(mp_textureHvr.Get(), m_pos, &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_alpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+		mp_sprite->Draw(mp_textureHvr.Get(), m_pos, &m_rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_alpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	else
-		mp_sprite->Draw(mp_texture.Get(), m_pos, &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_alpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+		mp_sprite->Draw(mp_texture.Get(), m_pos, &m_rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_alpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 
 	mp_sprite->End();
 }
@@ -120,12 +120,58 @@ void Obj2D::RenderAlphaScale()
 	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
 
 	// スプライトの表示
-	RECT rect = { 0, 0, int(m_width), int(m_height) };
 	if (mp_textureHvr != nullptr && m_isHover)
-		mp_sprite->Draw(mp_textureHvr.Get(), m_pos, &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_alpha), 0.0f, XMFLOAT2(1.0f, 1.0f), m_scale, SpriteEffects_None, 0);
+		mp_sprite->Draw(mp_textureHvr.Get(), m_pos, &m_rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_alpha), 0.0f, XMFLOAT2(1.0f, 1.0f), m_scale, SpriteEffects_None, 0);
 	else
-		mp_sprite->Draw(mp_texture.Get(), m_pos, &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_alpha), 0.0f, XMFLOAT2(1.0f, 1.0f), m_scale, SpriteEffects_None, 0);
+		mp_sprite->Draw(mp_texture.Get(), m_pos, &m_rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_alpha), 0.0f, XMFLOAT2(1.0f, 1.0f), m_scale, SpriteEffects_None, 0);
 
 	mp_sprite->End();
 }
 
+/// <summary>
+/// フェード処理
+/// </summary>
+/// <param name="fadeValue">フェードする大きさ</param>
+/// <param name="fadeDir">FADE_IN=フェードイン、FADE_OUT=フェードアウト</param>
+/// <returns>true=フェード完了、false=フェード中</returns>
+bool Obj2D::Fade(float fadeValue, FADE fadeDir)
+{
+	switch (fadeDir)
+	{
+	case Obj2D::NONE:
+		break;
+	case Obj2D::FADE_IN:
+		if (m_alpha != 0.0f) m_alpha -= fadeValue;
+		if (m_alpha <= 0.0f) m_alpha = 0.0f;
+		break;
+	case Obj2D::FADE_OUT:
+		if (m_alpha != 1.0f) m_alpha += fadeValue;
+		if (m_alpha >= 1.0f) m_alpha = 1.0f;
+		break;
+	default:
+		break;
+	}
+
+	if (m_alpha != 0.0f && m_alpha != 1.0f)return false;
+	else return true;
+}
+
+/// <summary>
+/// マウスとの衝突判定
+/// </summary>
+/// <param name="objPos">マウスの位置</param>
+/// <param name="obj2DPos">2Dオブジェクトの位置</param>
+/// <param name="obj2DWidth">2Dオブジェクトの幅</param>
+/// <param name="obj2DHeight">2Dオブジェクトの高さ</param>
+/// <returns></returns>
+bool Obj2D::IsCollideMouse(const DirectX::SimpleMath::Vector2& mousePos, 
+						   const DirectX::SimpleMath::Vector2& obj2DPos, const float obj2DWidth, const float obj2DHeight)
+{
+	if (obj2DPos.x < mousePos.x && mousePos.x < (obj2DPos.x + obj2DWidth) &&
+		obj2DPos.y < mousePos.y && mousePos.y < (obj2DPos.y + obj2DHeight))
+	{
+		return true;
+	}
+
+	return false;
+}

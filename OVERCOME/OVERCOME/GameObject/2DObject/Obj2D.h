@@ -15,11 +15,18 @@
 class Obj2D
 {
 // メンバー変数
-//public:
+public:
+	enum FADE
+	{
+		NONE,
+		FADE_IN,
+		FADE_OUT
+	};
 
 private:
 	DirectX::SimpleMath::Vector2						m_pos;						// 位置
 	float												m_width, m_height;			// 幅、高さ
+	RECT												m_rect;						// 切り取り
 
 	float												m_alpha;					// スプライトのα値
 	float												m_scale;					// スプライトのスケール値
@@ -54,6 +61,13 @@ public:
 	virtual void RenderAlpha();
 	virtual void RenderAlphaScale();
 
+	// フェード
+	bool Fade(float fadeValue, FADE fadeDir);
+
+	// 衝突判定
+	bool IsCollideMouse(const DirectX::SimpleMath::Vector2& mousePos,
+						const DirectX::SimpleMath::Vector2& obj2DPos, const float obj2DWidth, const float obj2DHeight);
+
 	//------------------------------------------Getter------------------------------------------//
 
 	// 位置を取得
@@ -76,10 +90,17 @@ public:
 	void SetPos(const DirectX::SimpleMath::Vector2 position)		{ m_pos = position; }
 	// 幅、高さを設定
 	void SetWidthHeight(const float width, const float height)		{ m_width = width, m_height = height; }
-	// α値、スケール値を設定
-	void SetAlphaScale(const float alpha, const float scale)		{ m_alpha = alpha, m_scale = scale; }
+	// α値を設定
+	void SetAlpha(const float alpha)								{ m_alpha = alpha; }
+	// スケール値を設定
+	void SetScale(const float scale)								{ m_scale = scale; }
 	// ホバー状態を設定
 	void SetHover(bool flag)										{ m_isHover = flag; }
+	// 切り取りを設定
+	void SetRect(const float top, const float bottom, const float right, const float left)
+																	{ m_rect = { int(top), int(bottom), int(right), int(left) };}
 	//------------------------------------------------------------------------------------------//
+
+//private:
 
 };
