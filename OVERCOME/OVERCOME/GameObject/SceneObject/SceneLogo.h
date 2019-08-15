@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneLogo.h
 // Summary. SceneLogoClass
-// Date.    2019/06/06
+// Date.    2019/08/15
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -11,6 +11,8 @@
 #include "SceneBase.h"
 #include <SpriteBatch.h>
 
+#include "../2DObject/Obj2D.h"
+
 class MatrixManager;
 class SceneLogo : public SceneBase
 {
@@ -18,17 +20,15 @@ class SceneLogo : public SceneBase
 //public:
 
 private:
-	bool                                               m_toTitleMoveOnChecker;        // タイトルシーンに進めるかどうかのチェック
+	bool                                               m_toTitleMoveOnChecker;		// タイトルシーンに進めるかどうかのチェック
 
-	static const int                                   FADEOUT_NEED_SECOND;           // フェードアウトし始める秒数
-	static const int                                   SCENE_CHANGE_NEED_SECOND;      // シーン遷移に必要な秒数
+	static const int                                   FADEOUT_NEED_SECOND;			// フェードアウトし始める秒数
 
-	float											   m_colorAlpha;				  // α値を変更
+	std::unique_ptr<Obj2D>							   mp_background;				// 背景オブジェクト
+	std::unique_ptr<Obj2D>							   mp_logo;						// ロゴオブジェクト
+	std::unique_ptr<Obj2D>							   mp_fade;						// フェード画像オブジェクト
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureLogo;                // テクスチャハンドル(ロゴ)
-	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;					  // スプライトバッチ
-
-	MatrixManager*                                     mp_matrixManager;              // 行列管理変数
+	MatrixManager*                                     mp_matrixManager;			// 行列管理変数
 
 // メンバー関数(関数、Getter、Setter)
 public:
