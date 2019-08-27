@@ -15,7 +15,6 @@
 #include "../../Utility/InputManager.h"
 #include "../../Utility/MatrixManager.h"
 
-
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
 // usingディレクトリ
@@ -32,14 +31,12 @@ ScenePlay::ScenePlay(SceneManager* sceneManager, bool isFullScreen)
 	: SceneBase(sceneManager, isFullScreen),
 	  m_toResultMoveOnChecker(false),
 	  m_returnToTitleChecker(false),
-	  m_colorAlpha(0.0f),
-	  mp_fade(nullptr),
-	  mp_sprite(nullptr),
 	  mp_camera(nullptr),
 	  mp_player(nullptr),
 	  mp_gameEnemy(nullptr), mp_gameEnemyManager(nullptr),
 	  mp_gameRoad(nullptr), mp_gameMap(nullptr),
 	  mp_gameScore(nullptr),
+	  mp_fade(nullptr),
    	  mp_matrixManager(nullptr)
 {
 }
@@ -57,11 +54,24 @@ void ScenePlay::Initialize()
 {
 	m_toResultMoveOnChecker = false;
 
+	// アクティブなウィンドウのサイズ
+	RECT activeWndRect;
+	// アクティブなウィンドウのハンドルを取得
+	HWND activeWnd = GetActiveWindow();
+	// アクティブなウィンドウのハンドルからその画面の大きさを取得
+	GetWindowRect(activeWnd, &activeWndRect);
+
+	// ウィンドウのサイズを取得
+	float windowWidth = float(activeWndRect.right) - float(activeWndRect.left);
+	float windowHeight = float(activeWndRect.bottom) - float(activeWndRect.top);
+
+	// タイトルバーの高さを取得
+	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
+
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 
 	// カメラオブジェクトの作成
-	//mp_camera = std::make_unique<GameCamera>();
 	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
 
 	// プレイヤーの生成
@@ -99,11 +109,12 @@ void ScenePlay::Initialize()
 	mp_gameScore = std::make_unique<GameScore>();
 	mp_gameScore->Create(L"Resources\\Images\\GameScore\\score_len.png", L"Resources\\Images\\GameScore\\score_background.png");
 
-	m_colorAlpha = 1.0f;
-	// テクスチャのロード
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\black.png", nullptr, mp_fade.GetAddressOf());
-	// スプライトバッチの初期化
-	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+	// フェード画像の生成
+	mp_fade = std::make_unique<Obj2D>();
+	mp_fade->Create(L"Resources\\Images\\black.png", nullptr);
+	mp_fade->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 1.0f, 1.0f);
+	mp_fade->SetRect(0.0f, 0.0f, mp_fade->GetWidth(), mp_fade->GetHeight());
+	mp_fade->SetAlpha(1.0f);
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
@@ -127,13 +138,6 @@ void ScenePlay::Initialize()
 	// 行列を設定
 	mp_matrixManager->SetViewProjection(view, projection);
 
-	// エフェクトマネージャーの初期化
-	//mp_effectManager = nullptr;
-	//mp_effectManager = new EffectManager();
-	//mp_effectManager->Create();
-	//mp_effectManager->Initialize(5, SimpleMath::Vector3(0, 0, 0), SimpleMath::Vector3(0, 0, 0));
-	//mp_effectManager->SetRenderState(view, projection);
-
 	// サウンド再生
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->LoadAcb(L"ScenePlay.acb", L"ScenePlay.awb");
@@ -151,12 +155,6 @@ void ScenePlay::Finalize()
 		delete mp_matrixManager;
 		mp_matrixManager = nullptr;
 	}
-
-	/*if (mp_effectManager != nullptr) {
-		mp_effectManager->Finalize();
-		delete mp_effectManager;
-		mp_effectManager = nullptr;
-	}*/
 }
 
 /// <summary>
@@ -165,11 +163,12 @@ void ScenePlay::Finalize()
 /// <param name="timer">時間情報</param>
 void ScenePlay::Update(DX::StepTimer const& timer)
 {
-	// シーン遷移直後のフェードイン(最前面)
-	m_colorAlpha -= 0.01f;
-	if (m_colorAlpha < 0.0f)m_colorAlpha = 0.0f;
-
-	//mp_effectManager->Update(timer);
+	// シーン遷移せず、α値が0でなかったら
+	if (!m_toResultMoveOnChecker && mp_fade->GetAlpha() != 0.0f)
+	{
+		// フェードイン
+		mp_fade->Fade(0.01f, Obj2D::FADE::FADE_IN);
+	}
 
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
@@ -209,10 +208,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			// ゴールに到達したら
 			if (rad > dist)
 			{
+				// シーン遷移開始
 				m_toResultMoveOnChecker = true;
+				// クリア
 				SceneManager::SetResultSceneState(true);
-				// マウスカーソルの表示
-				ShowCursor(TRUE);
 			}
 		}
 	}
@@ -354,9 +353,20 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		SceneManager::SetResultSceneState(false);
 	}
 
-	// シーン操作
+	// シーン遷移操作
 	if (m_toResultMoveOnChecker)
 	{
+		// フェードアウト
+		mp_fade->Fade(0.02f, Obj2D::FADE::FADE_OUT);
+
+		// マウスカーソルの表示
+		ShowCursor(TRUE);
+	}
+
+	// フェードアウトが終わり、シーン遷移が発生していたら
+	if (mp_fade->GetAlpha() >= 1.0f && m_toResultMoveOnChecker)
+	{
+		// リザルトシーンへ
 		m_sceneManager->RequestToChangeScene(SCENE_RESULT);
 	}
 }
@@ -387,7 +397,6 @@ void ScenePlay::Render()
 	// 行列を設定
 	mp_matrixManager->SetViewProjection(view, projection);
 
-
 	// 道オブジェクトの描画
 	mp_gameRoad->Render(mp_matrixManager);
 	// マップの描画
@@ -403,16 +412,9 @@ void ScenePlay::Render()
 	playerGlance.y = mp_player->GetHeight();
 	mp_gameEnemyManager->Render(mp_matrixManager, playerGlance);
 	
-	//mp_effectManager->Render();
-
 	// スコアの描画
 	mp_gameScore->Render();
 
-	// フェードインの描画(最前面)
-	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
-
-	RECT rect = { 0, 0, 800, 600 };
-	mp_sprite->Draw(mp_fade.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, DirectX::XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-
-	mp_sprite->End();
+	// フェード画像の表示
+	mp_fade->RenderAlpha();
 }

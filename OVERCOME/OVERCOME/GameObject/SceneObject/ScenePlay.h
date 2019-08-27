@@ -25,24 +25,17 @@
 
 #include "../2DObject/GameScore.h"
 
-//#include "../../ExclusiveGameObject/EffectManager.h"
+#include "../2DObject/Obj2D.h"
 
 class MatrixManager;
 class ScenePlay : public SceneBase
 {
-// メンバー変数(構造体、enum、列挙子 etc...)
+// メンバー変数
 //public:
 
 private:
 	bool								m_toResultMoveOnChecker;   // リザルトシーンに進めるかどうかのチェック
 	bool								m_returnToTitleChecker;    // タイトルシーンに戻れるかどうかのチェック
-
-	float								m_colorAlpha;			   // α値を変更
-
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-										mp_fade;				   // テクスチャハンドル(フェード)
-	std::unique_ptr<DirectX::SpriteBatch>
-										mp_sprite;				   // スプライトバッチ
 
 	std::unique_ptr<GameCamera>			mp_camera;				   // ゲームカメラオブジェクト
 
@@ -56,15 +49,11 @@ private:
 
 	std::unique_ptr<GameScore>			mp_gameScore;			   // スコアオブジェクト
 
+	std::unique_ptr<Obj2D>				mp_fade;				   // フェード画像オブジェクト
+
 	MatrixManager*						mp_matrixManager;		   // 行列管理変数
 
-	DirectX::SimpleMath::Vector2 m_debug;
-	DirectX::SimpleMath::Vector2 m_debug2;
-
-
-	//EffectManager*					mp_effectManager;		   // エフェクト管理変数
-
-// メンバー関数(関数、Getter、Setter)
+// メンバー関数
 public:
 	// コンストラクタ
 	ScenePlay(SceneManager* sceneManager, bool isFullScreen);
