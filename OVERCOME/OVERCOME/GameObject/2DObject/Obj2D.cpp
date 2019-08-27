@@ -21,7 +21,7 @@ using namespace DirectX;
 Obj2D::Obj2D()
 	: m_pos(0.0f,0.0f),
 	  m_width(0.0f), m_height(0.0f), m_rect{0,0,0,0},
-	  m_alpha(0.0f), m_scale(0.0f),
+	  m_color{0.0f}, m_alpha(0.0f), m_scale(0.0f),
 	  m_isHover(false),
 	  mp_sprite(nullptr),
 	  mp_texture(nullptr),mp_textureHvr(nullptr)
@@ -93,6 +93,22 @@ void Obj2D::Render()
 	else
 		mp_sprite->Draw(mp_texture.Get(), m_pos, &m_rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
 	
+	mp_sprite->End();
+}
+/// <summary>
+/// 描画(色情報変更有)
+/// </summary>
+void Obj2D::RenderColor()
+{
+	// スプライトの描画
+	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+
+	// スプライトの表示
+	if (mp_textureHvr != nullptr && m_isHover)
+		mp_sprite->Draw(mp_textureHvr.Get(), m_pos, &m_rect, SimpleMath::Vector4(m_color.red, m_color.green, m_color.blue, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	else
+		mp_sprite->Draw(mp_texture.Get(), m_pos, &m_rect, SimpleMath::Vector4(m_color.red, m_color.green, m_color.blue, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+
 	mp_sprite->End();
 }
 /// <summary>

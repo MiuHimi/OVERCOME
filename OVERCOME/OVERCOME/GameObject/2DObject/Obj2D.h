@@ -16,6 +16,13 @@ class Obj2D
 {
 // メンバー変数
 public:
+	struct Color
+	{
+		float red;
+		float green;
+		float blue;
+	};
+
 	enum FADE
 	{
 		NONE,
@@ -28,6 +35,7 @@ private:
 	float												m_width, m_height;			// 幅、高さ
 	RECT												m_rect;						// 切り取り
 
+	Color												m_color;					// 色情報
 	float												m_alpha;					// スプライトのα値
 	float												m_scale;					// スプライトのスケール値
 
@@ -58,6 +66,7 @@ public:
 	virtual bool Update(float elapsedTime);
 	// 描画
 	virtual void Render();
+	virtual void RenderColor();
 	virtual void RenderAlpha();
 	virtual void RenderAlphaScale();
 
@@ -76,6 +85,8 @@ public:
 	float GetWidth()							{ return m_width; }
 	// 高さを取得
 	float GetHeight()							{ return m_height; }
+	// 色情報を取得
+	Color GetColor()							{ return m_color; }
 	// α値を取得
 	float GetAlpha()							{ return m_alpha; }
 	// スケール値を取得
@@ -90,6 +101,13 @@ public:
 	void SetPos(const DirectX::SimpleMath::Vector2 position)		{ m_pos = position; }
 	// 幅、高さを設定
 	void SetWidthHeight(const float width, const float height)		{ m_width = width, m_height = height; }
+	// 色情報を設定
+	void SetColor(const float red, const float green, const float blue)
+	{
+		m_color.red = red;
+		m_color.green = green;
+		m_color.blue = blue;
+	}
 	// α値を設定
 	void SetAlpha(const float alpha)								{ m_alpha = alpha; }
 	// スケール値を設定

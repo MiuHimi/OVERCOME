@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneStageSelect.cpp
 // Summary. SceneStageSelectClass
-// Date.    2019/06/06
+// Date.    2019/08/16
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -32,9 +32,9 @@ SceneStageSelect::SceneStageSelect(SceneManager * sceneManager, bool isFullScree
 	: SceneBase(sceneManager, isFullScreen),
 	  m_toPlayMoveOnChecker(false),
 	  m_selectedStage(0),
-	  m_colorAlpha(0.0f),
-	  mp_textureBackground(nullptr),
-	  mp_sprite(nullptr),
+	  mp_background(nullptr), mp_stageSelectImage(nullptr),
+	  mp_stageNum{nullptr}, mp_stageFlame{nullptr},
+	  mp_fade(nullptr),
 	  mp_matrixManager(nullptr)
 {
 }
@@ -52,29 +52,63 @@ void SceneStageSelect::Initialize()
 {
 	m_toPlayMoveOnChecker = false;
 
-	// アイコン衝突判定の初期化
-	for (int i = 0; i < stage::NUM; i++)
+	// アクティブなウィンドウのサイズ
+	RECT activeWndRect;
+	// アクティブなウィンドウのハンドルを取得
+	HWND activeWnd = GetActiveWindow();
+	// アクティブなウィンドウのハンドルからその画面の大きさを取得
+	GetWindowRect(activeWnd, &activeWndRect);
+
+	// ウィンドウのサイズを取得
+	float windowWidth = float(activeWndRect.right) - float(activeWndRect.left);
+	float windowHeight = float(activeWndRect.bottom) - float(activeWndRect.top);
+
+	// タイトルバーの高さを取得
+	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
+
+	// 背景の生成
+	mp_background = std::make_unique<Obj2D>();
+	mp_background->Create(L"Resources\\Images\\gray.png", nullptr);
+	mp_background->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 1.0f, 1.0f);
+	mp_background->SetRect(0.0f, 0.0f, mp_background->GetWidth(), mp_background->GetHeight());
+
+	// StageSelectの生成
+	mp_stageSelectImage = std::make_unique<Obj2D>();
+	mp_stageSelectImage->Create(L"Resources\\Images\\StageSelect\\stageselect_image.png", nullptr); // ホバースプライトなし
+	mp_stageSelectImage->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 525.0f, 50.0f, 1.0f, 1.0f);
+	mp_stageSelectImage->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (mp_stageSelectImage->GetWidth() * 0.5f),
+													(mp_stageSelectImage->GetHeight() * 2.0f)));
+	mp_stageSelectImage->SetRect(0.0f, 0.0f, mp_stageSelectImage->GetWidth(), mp_stageSelectImage->GetHeight());
+
+	// ステージ番号の生成
+	for (int i = 0; i < STAGE::NUM; i++)
 	{
-		m_collideStageIcon[i].pos = SimpleMath::Vector2(float((i * 30) + 315 + i * STAGE_ICON_SIZE), 360.0f);
-		m_collideStageIcon[i].width = float(STAGE_ICON_SIZE);
-		m_collideStageIcon[i].height = float(STAGE_ICON_SIZE);
-	}
+		mp_stageNum[i] = std::make_unique<Obj2D>();
+		mp_stageNum[i]->Create(L"Resources\\Images\\StageSelect\\stageselect_num_len.png", L"Resources\\Images\\StageSelect\\stageselect_num_len_hover.png");
 
-	// テクスチャのロード
-	for (int i = 0; i < stage::NUM; i++)
+		mp_stageNum[i]->Initialize(SimpleMath::Vector2(0.0f, 0.0f), float(STAGE_ICON_SIZE), float(STAGE_ICON_SIZE), 1.0f, 1.0f);
+		mp_stageNum[i]->SetPos(SimpleMath::Vector2(float(((windowWidth*0.5f) - STAGE_ICON_SIZE*1.5f) + (i*(STAGE_ICON_SIZE*1.5f))), 
+												   (windowHeight * 0.5f) - (mp_stageNum[i]->GetHeight() * 0.5f)));
+		mp_stageNum[i]->SetRect(float((i+1)*STAGE_ICON_SIZE), 0.0f, float((i + 1)*STAGE_ICON_SIZE + STAGE_ICON_SIZE), float(STAGE_ICON_SIZE));
+	}
+	// ステージ番号フレームの生成
+	for (int i = 0; i < STAGE::NUM; i++)
 	{
-		CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\StageSelect\\stage_len.png", nullptr, mp_textureStageIcon[i].GetAddressOf());
+		mp_stageFlame[i] = std::make_unique<Obj2D>();
+		mp_stageFlame[i]->Create(L"Resources\\Images\\StageSelect\\stageselect_flame.png", L"Resources\\Images\\StageSelect\\stageselect_flame_hover.png");
+
+		mp_stageFlame[i]->Initialize(SimpleMath::Vector2(0.0f, 0.0f), float(STAGE_ICON_SIZE), float(STAGE_ICON_SIZE), 1.0f, 1.0f);
+		mp_stageFlame[i]->SetPos(SimpleMath::Vector2(float(((windowWidth*0.5f) - STAGE_ICON_SIZE*1.5f) + (i*(STAGE_ICON_SIZE*1.5f))), 
+													 (windowHeight * 0.5f) - (mp_stageFlame[i]->GetHeight() * 0.5f)));
+		mp_stageFlame[i]->SetRect(0.0f, 0.0f, float(STAGE_ICON_SIZE), float(STAGE_ICON_SIZE));
 	}
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\StageSelect\\stageselect_background_image.png", nullptr, mp_textureBackground.GetAddressOf());
-
-	// スプライトバッチの初期化
-	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
-
-	// ウインドウサイズからアスペクト比を算出する
-	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
-
-	// α値の設定(初期化)
-	m_colorAlpha = 1.0f;
+	
+	// フェード画像の生成
+	mp_fade = std::make_unique<Obj2D>();
+	mp_fade->Create(L"Resources\\Images\\black.png", nullptr);
+	mp_fade->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 1.0f, 1.0f);
+	mp_fade->SetRect(0.0f, 0.0f, mp_fade->GetWidth(), mp_fade->GetHeight());
+	mp_fade->SetAlpha(0.0f);
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
@@ -82,6 +116,8 @@ void SceneStageSelect::Initialize()
 	// ビュー行列の作成
 	SimpleMath::Matrix view = SimpleMath::Matrix::Identity;
 
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 	float aspectRatio = float(size.right) / float(size.bottom);
 	// 画角を設定
 	float angle = 45.0f;
@@ -135,18 +171,42 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Update();
 
+	// ステージ番号とマウスカーソルの衝突判定
+	SimpleMath::Vector2 mousePos = SimpleMath::Vector2((float)InputManager::SingletonGetInstance().GetMousePosX(),
+		(float)InputManager::SingletonGetInstance().GetMousePosY());
+	for (int i = 0; i < STAGE::NUM; i++)
+	{
+		SimpleMath::Vector2 btnPos = mp_stageNum[i]->GetPos();
+		float btnWidth = mp_stageNum[i]->GetWidth();
+		float btnHeight = mp_stageNum[i]->GetHeight();
+		// マウスがボタンに接触していたら
+		if (mp_stageNum[i]->IsCollideMouse(mousePos, btnPos, btnWidth, btnHeight))
+		{
+			//	ホバー状態にする
+			mp_stageNum[i]->SetHover(true);
+			//	同じ場所のオブジェクトのため同様にホバー状態にする
+			mp_stageFlame[i]->SetHover(true);
+		}
+		// 接触していなかったら
+		else
+		{
+			//	ホバー状態にしない
+			mp_stageNum[i]->SetHover(false);
+			//	同じ場所のオブジェクトのため同様にホバー状態にしない
+			mp_stageFlame[i]->SetHover(false);
+		}
+	}
+	
 	// ステージの選択
 	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
-		SimpleMath::Vector2 mousePos = SimpleMath::Vector2(float(InputManager::SingletonGetInstance().GetMousePosX()), float(InputManager::SingletonGetInstance().GetMousePosY()));
-		for (int i = 0; i < stage::NUM; i++)
+		for (int i = 0; i < STAGE::NUM; i++)
 		{
-			// マウスとアイコンの衝突判定
-			if (mousePos.x > m_collideStageIcon[i].pos.x && mousePos.x < m_collideStageIcon[i].pos.x + float(STAGE_ICON_SIZE) &&
-				mousePos.y > m_collideStageIcon[i].pos.y && mousePos.y < m_collideStageIcon[i].pos.y + float(STAGE_ICON_SIZE))
+			// マウスとアイコンが衝突していたら
+			if (mp_stageNum[i]->GetHover())
 			{
 				// 選択されたステージ番号を記憶
-				m_selectedStage = i+1;
+				m_selectedStage = i + 1;
 				// プレイステージを決定
 				//SceneManager::SetStageNum(m_selectedStage);
 				// シーン遷移発生
@@ -161,12 +221,28 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 	// シーン遷移開始
 	if (m_toPlayMoveOnChecker)
 	{
-		m_colorAlpha -= 0.01f;
-		if (m_colorAlpha < 0.0f) m_colorAlpha = 0.0f;
+		for (int i = 0; i < STAGE::NUM; i++)
+		{
+			if (i == m_selectedStage - 1)
+			{
+				// 選択されたステージをホバー状態にする
+				mp_stageNum[i]->SetHover(true);
+				mp_stageFlame[i]->SetHover(true);
+			}
+			else
+			{
+				// 選択されていなかったらホバー状態にしない
+				mp_stageNum[i]->SetHover(false);
+				mp_stageFlame[i]->SetHover(false);
+			}
+		}
+		
+		// フェードアウト
+		mp_fade->Fade(0.01f, Obj2D::FADE::FADE_OUT);
 	}
 
 	// シーン遷移
-	if (m_toPlayMoveOnChecker && m_colorAlpha <= 0.0f)
+	if (m_toPlayMoveOnChecker && mp_fade->GetAlpha() >= 1.0f)
 	{
 		m_sceneManager->RequestToChangeScene(SCENE_PLAY);
 	}
@@ -177,20 +253,19 @@ void SceneStageSelect::Update(DX::StepTimer const& timer)
 /// </summary>
 void SceneStageSelect::Render()
 {
-	// ステージセレクト画面の描画
-	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+	// 背景の表示
+	mp_background->Render();
+	// StageSelect文の表示
+	mp_stageSelectImage->Render();
 
-	// 背景
-	RECT rectBG = { 0, 0, 800, 600};
-	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectBG, SimpleMath::Vector4( 1.0f, 1.0f, 1.0f , m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-
-	// アイコン
-	for (int i = 0; i < stage::NUM; i++)
+	// ステージ番号の表示
+	for (int i = 0; i < STAGE::NUM; i++)
 	{
-		RECT rect = { i*STAGE_ICON_SIZE, 0, i*STAGE_ICON_SIZE+STAGE_ICON_SIZE, STAGE_ICON_SIZE };
-		mp_sprite->Draw(mp_textureStageIcon[i].Get(), m_collideStageIcon[i].pos, &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_colorAlpha), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+		mp_stageNum[i]->Render();
+		mp_stageFlame[i]->Render();
 	}
 
-	mp_sprite->End();
+	// フェード画像の表示
+	mp_fade->RenderAlpha();
 }
 

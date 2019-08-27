@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneStageSelect.h
 // Summary. SceneStageSelectClass
-// Date.    2019/06/06
+// Date.    2019/08/16
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -11,12 +11,12 @@
 #include "SceneBase.h"
 #include <SpriteBatch.h>
 
-#include "../../ExclusiveGameObject/Collision2D.h"
+#include "../2DObject/Obj2D.h"
 
 class MatrixManager;
 class SceneStageSelect : public SceneBase
 {
-// メンバー変数(構造体、enum、列挙子 etc...)
+// メンバー変数
 //public:
 
 private:
@@ -25,7 +25,7 @@ private:
 	int												   m_selectedStage;			  // 選択されたステージ
 
 	// ステージ数
-	enum stage
+	enum STAGE
 	{
 		ONE,
 		TWO,
@@ -33,18 +33,17 @@ private:
 		NUM
 	};
 
-	float											   m_colorAlpha;			  // α値を変更
-
 	static const int                                   STAGE_ICON_SIZE;			  // ステージアイコンサイズ
-	DirectX::SimpleMath::Vector2                       m_posStageIcon[NUM];       // ステージアイコン位置
-	Collision2D                                        m_collideStageIcon[NUM];	  // ステージアイコン衝突判定
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureStageIcon[NUM];  // テクスチャハンドル(数字)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureBackground;      // テクスチャハンドル(数字)
-	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;				  // スプライトバッチ
+
+	std::unique_ptr<Obj2D>							   mp_background;			  // 背景オブジェクト
+	std::unique_ptr<Obj2D>							   mp_stageSelectImage;		  // StageSelectオブジェクト
+	std::unique_ptr<Obj2D>							   mp_stageNum[NUM];		  // ステージ番号オブジェクト
+	std::unique_ptr<Obj2D>							   mp_stageFlame[NUM];		  // ステージ番号フレームオブジェクト
+	std::unique_ptr<Obj2D>							   mp_fade;					  // フェード画像オブジェクト
 
 	MatrixManager*                                     mp_matrixManager;		  // 行列管理変数
 
-// メンバー関数(関数、Getter、Setter)
+// メンバー関数
 public:
 	// コンストラクタ
 	SceneStageSelect(SceneManager* sceneManager, bool isFullScreen);
