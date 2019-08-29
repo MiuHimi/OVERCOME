@@ -22,6 +22,7 @@ using namespace DirectX;
 // constディレクトリ
 const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
 const float GameCamera::ROTATE_MAG = 300.0f;
+const int	GameCamera::OUT_SIZE_OF_SCREEN = 50;
 
 SceneId SceneManager::m_activeScene;
 
@@ -31,8 +32,9 @@ SceneId SceneManager::m_activeScene;
 GameCamera::GameCamera() :m_aroundAngleY(0.0f)
 {
 }
-GameCamera::GameCamera(int windowWidth, int windowHeight)
-	: m_aroundAngleX(0.0f), m_aroundAngleY(0.0f),
+GameCamera::GameCamera(int windowWidth, int windowHeight, bool isFullScreen)
+	: m_isFullScreen(isFullScreen),
+	m_aroundAngleX(0.0f), m_aroundAngleY(0.0f),
 	m_angle(0.0f, 0.0f),
 	m_angleTmp(0.0f, 0.0f),
 	m_cameraDir(0.0f, 0.0f, 0.0f),
@@ -59,9 +61,12 @@ GameCamera::~GameCamera()
 /// 更新(主にカメラの切り替えを行う)
 /// </summary>
 /// <param name="timer">経過時間</param>
-/// <param name="player">プレイヤー情報</param>
+/// <param name="playerPos">プレイヤー座標</param>
+/// <param name="playerHeight">"プレイヤー高さ"</param>
+/// <param name="playerDir">"プレイヤーの向き"</param>
+/// <param name="isPlayFlag">"プレイシーン最初におけるプレイヤー移動可否フラグ(プレイシーン以外は常にtrue)"</param>
 /// <returns>終了状態</returns>
-bool GameCamera::Update(DX::StepTimer const & timer, DirectX::SimpleMath::Vector3& playerPos, float playerHeight, DirectX::SimpleMath::Vector3& playerDir)
+bool GameCamera::Update(DX::StepTimer const & timer, DirectX::SimpleMath::Vector3& playerPos, float playerHeight, DirectX::SimpleMath::Vector3& playerDir, const bool isPlayFlag)
 {
 	SimpleMath::Vector3 target(0.0f, 0.0f, 0.0f);
 	SimpleMath::Vector3 debugPos(0.0f, 0.0f, 0.0f);
@@ -84,7 +89,7 @@ bool GameCamera::Update(DX::StepTimer const & timer, DirectX::SimpleMath::Vector
 		// マウス操作のカメラ
 		target = SimpleMath::Vector3(playerPos.x, playerPos.y + playerHeight, playerPos.z);
 		// 注視点はプレイヤーの目線の位置
-		MouseOperateCamera(target, playerDir);
+		MouseOperateCamera(target, playerDir, isPlayFlag);
 		break;
 	case SCENE_RESULT:
 		debugPos = SimpleMath::Vector3(0.0f, 5.0f, 5.0f);
@@ -264,9 +269,9 @@ void GameCamera::FadeCamera(DirectX::SimpleMath::Vector3 basePoint, float width,
 /// <summary>
 /// マウスで視点移動するカメラ
 /// </summary>
-void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 playerDirction)
+void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 playerDirction, const bool isPlayFlag)
 {
-	RECT desktopWndRect;                         // デスクトップのサイズ
+	/*RECT desktopWndRect;                         // デスクトップのサイズ
 	HWND desktopWnd = GetDesktopWindow();        // この関数でデスクトップのハンドルを取得
 	GetWindowRect(desktopWnd, &desktopWndRect);  // デスクトップのハンドルから画面の大きさを取得
 
@@ -294,9 +299,9 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 		InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
 	{
 		m_checkMousePos = true;
-	}
+	}*/
 
-	if(m_checkMousePos == true)
+	if(isPlayFlag == true)
 	{
 		// ベクトルの長さを求める
 		double lengthA = pow((m_cameraDir.x * m_cameraDir.x) + (m_cameraDir.z * m_cameraDir.z), 0.5);
@@ -329,8 +334,21 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 			m_reformRota = SimpleMath::Quaternion::Identity;
 		}*/
 
-		// 中心座標(相対値)設定
-		SimpleMath::Vector2 centerPos(400.0f, 300.0f);
+		// アクティブなウィンドウのハンドルからその画面の大きさを取得
+		RECT activeWndRect;
+		HWND activeWnd = GetActiveWindow();
+		GetWindowRect(activeWnd, &activeWndRect);
+
+		// ウィンドウのサイズを取得
+		float windowWidth = float(activeWndRect.right) - float(activeWndRect.left);
+		float windowHeight = float(activeWndRect.bottom) - float(activeWndRect.top);
+		// タイトルバーの高さを取得
+		int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);   
+
+		// 中心座標設定
+		SimpleMath::Vector2 centerPos;
+		if(m_isFullScreen)  centerPos = SimpleMath::Vector2((windowWidth * 0.5f),(windowHeight * 0.5f));
+		else				centerPos = SimpleMath::Vector2((windowWidth * 0.5f), ((windowHeight + titlebarHeight) * 0.5f));
 
 		// 中心点からの差分を求める
 		float x = InputManager::SingletonGetInstance().GetMouseState().x - centerPos.x;
@@ -373,15 +391,18 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 		}*/
 		
 		// 画面外に出たらカーソルを画面の中心に戻す
-		if (InputManager::SingletonGetInstance().GetMouseState().x < 50 || InputManager::SingletonGetInstance().GetMouseState().x > 750 ||
-			InputManager::SingletonGetInstance().GetMouseState().y < 50 || InputManager::SingletonGetInstance().GetMouseState().y > 550)
+		if (InputManager::SingletonGetInstance().GetMouseState().x < int((activeWndRect.left - activeWndRect.left) + OUT_SIZE_OF_SCREEN) || 
+			InputManager::SingletonGetInstance().GetMouseState().x > int((activeWndRect.right - activeWndRect.left) - OUT_SIZE_OF_SCREEN) ||
+			InputManager::SingletonGetInstance().GetMouseState().y < int((activeWndRect.top - activeWndRect.top) + OUT_SIZE_OF_SCREEN) || 
+			InputManager::SingletonGetInstance().GetMouseState().y > int((activeWndRect.bottom - activeWndRect.top) - OUT_SIZE_OF_SCREEN))
 		{
 			// 現在の回転を保存
 			m_toScreenOutRotaX = m_rotationX;
 			m_toScreenOutRotaY = m_rotationY;
 
-			// デスクトップの値のため、ウィンドウ分のサイズ+画面の半分を足す(Yはタイトルバー分も足す)
-			SetCursorPos(int(activeWndRect.left + centerPos.x), int(activeWndRect.top + centerPos.y + titlebarHeight));
+			// スクリーンに応じて画面の中心に戻す
+			if (m_isFullScreen) SetCursorPos(int(activeWndRect.left + centerPos.x), int(activeWndRect.top + centerPos.y));
+			else				SetCursorPos(int(activeWndRect.left + centerPos.x), int(activeWndRect.top + centerPos.y + titlebarHeight));
 		}
 		
 		// 視点、上方向設定

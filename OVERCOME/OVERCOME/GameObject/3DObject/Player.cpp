@@ -33,12 +33,11 @@ Player::Player()
 	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f), m_dir(0.0f, 0.0f, 0.0f),
 	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_posTmp(0.0f, 0.0f, 0.0f),
 	  m_playStartFlag(false), m_playStartTime(0),
-	  m_restartFlag(false), m_restartTime(0),
 	  m_spawnFlag(false), m_spawnElapsedTime(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_passingRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
-	  m_posRestartUI(0.0f, 0.0f), m_textureRestart(nullptr),
+	  m_posRestartUI(0.0f, 0.0f), m_textureClickToStart(nullptr),
 	  m_posCountUI(0.0f, 0.0f), m_textureCount(nullptr),
 	  m_texturePointer(nullptr), m_textureDengerous(nullptr)
 {
@@ -65,7 +64,7 @@ void Player::Initialize()
 	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
 
 	// 他オブジェクトの初期化
-	mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
+	//mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
 	mp_bulletManager = new GameBulletManager();
 	mp_bulletManager->Initialize();
 	mp_gameRoad = std::make_unique<GameRoad>();
@@ -92,7 +91,7 @@ void Player::Create()
 
 	// リスタートUIの設定
 	m_posRestartUI = SimpleMath::Vector2(175.0f, 450.0f);
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\clicktocenter.png", nullptr, m_textureRestart.GetAddressOf());
+	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\clicktocenter.png", nullptr, m_textureClickToStart.GetAddressOf());
 
 	// カウント数字の設定
 	m_posCountUI = SimpleMath::Vector2(360.0f, 260.0f);
@@ -110,16 +109,16 @@ void Player::Create()
 /// </summary>
 /// <param name="timer">起動経過時間</param>
 /// <returns>終了状態</returns>
-bool Player::Update(DX::StepTimer const & timer)
+bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir)
 {
 	// カメラの更新
-	mp_gameCamera->Update(timer, m_pos, m_height, m_dir);
+	//mp_gameCamera->Update(timer, m_pos, m_height, m_dir);
 
 	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 
 	// スタートするまでは初期位置で固定
-	if(!mp_gameCamera->GetStartPosMouse())
+	if(!isPlayFlag)
 	{
 		// スタート位置で固定
 		if (mp_gameRoad->GetPosType(mp_gameRoad->START).x != m_pos.x ||
@@ -205,7 +204,7 @@ bool Player::Update(DX::StepTimer const & timer)
 	if (m_playStartFlag)
 	{
 		// 弾の更新
-		mp_bulletManager->Update(timer, m_pos, mp_gameCamera->GetCameraAngle());
+		mp_bulletManager->Update(timer, m_pos, cameraDir);
 
 		// プレイヤー移動(ベクトル)
 		const int OFFSETNUM = 8;
@@ -382,38 +381,28 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 	mp_bulletManager->Render(matrixManager);
 
 	// スタートカウントの描画
-	if (!m_playStartFlag)
+	if (m_playStartTime > 0 && !m_playStartFlag)
 	{
-		if (mp_gameCamera->GetStartPosMouse())
-		{
-			// 切り取る場所を設定
-			RECT rect;
-			rect.top = LONG(0.0f);
-			rect.left = LONG((2 * COUNTUISIZE) - (m_playStartTime/60 * COUNTUISIZE));
-			rect.right = LONG(2 * COUNTUISIZE) - (m_playStartTime / 60 * COUNTUISIZE) + COUNTUISIZE;
-			rect.bottom = LONG(COUNTUISIZE);
-
-			DrawManager::SingletonGetInstance().DrawRect(m_textureCount.Get(), m_posCountUI, &rect);
-		}
-	}
-	// リスタートカウントの描画
-	if (m_restartFlag)
-	{
-		// 取る場所を設定
+		/*if (isPlayFlag)
+		{}*/
+		// 切り取る場所を設定
 		RECT rect;
 		rect.top = LONG(0.0f);
-		rect.left = LONG((2 * COUNTUISIZE) - (m_restartTime / 60 * COUNTUISIZE));
-		rect.right = LONG(2 * COUNTUISIZE) - (m_restartTime / 60 * COUNTUISIZE) + COUNTUISIZE;
+		rect.left = LONG((2 * COUNTUISIZE) - (m_playStartTime / 60 * COUNTUISIZE));
+		rect.right = LONG(2 * COUNTUISIZE) - (m_playStartTime / 60 * COUNTUISIZE) + COUNTUISIZE;
 		rect.bottom = LONG(COUNTUISIZE);
 
 		DrawManager::SingletonGetInstance().DrawRect(m_textureCount.Get(), m_posCountUI, &rect);
 	}
 
+	// スタート案内の表示
 	if (!m_playStartFlag)
-		DrawManager::SingletonGetInstance().Draw(m_textureRestart.Get(), m_posRestartUI);
-
+	{
+		DrawManager::SingletonGetInstance().Draw(m_textureClickToStart.Get(), m_posRestartUI);
+	}
+		
 	// ポインターの描画
-	if (mp_gameCamera->GetStartPosMouse() && m_playStartFlag)
+	if (m_playStartFlag)
 	{
 		DrawManager::SingletonGetInstance().Draw(m_texturePointer.Get(), SimpleMath::Vector2(350.0f, 330.0f));
 	}

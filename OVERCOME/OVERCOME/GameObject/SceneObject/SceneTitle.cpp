@@ -95,7 +95,7 @@ void SceneTitle::Initialize()
 	// ウインドウサイズからアスペクト比を算出する
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 	// カメラオブジェクトの作成
-	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
+	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom, m_isFullScreen);
 
 	// エフェクトファクトリー
 	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
@@ -176,7 +176,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	mp_effectManager->Update(timer);
 
 	// カメラの更新(タイトルシーンのカメラは定点カメラ)
-	mp_camera->Update(timer, SimpleMath::Vector3(0.0f,0.0f,0.0f), 0.0f, SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
+	mp_camera->Update(timer, SimpleMath::Vector3(0.0f,0.0f,0.0f), 0.0f, SimpleMath::Vector3(0.0f, 0.0f, 0.0f), true);
 	
 	// マウスの更新
 	//	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());

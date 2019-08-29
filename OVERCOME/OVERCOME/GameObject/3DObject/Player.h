@@ -24,8 +24,8 @@ class GameRoad;
 class MatrixManager;
 class Player : public CollisionBox
 {
-// メンバー変数(構造体、enum、列挙子 etc...)
-public:
+// メンバー変数
+//public:
 
 private:
 	DirectX::SimpleMath::Vector3             m_pos;                       // 位置
@@ -38,8 +38,6 @@ private:
 
 	bool                                     m_playStartFlag;             // ゲームが開始したらフラグが立つ
 	int                                      m_playStartTime;             // ゲームが開始されるまでの時間
-	bool                                     m_restartFlag;               // リスタートする条件が揃ったらフラグが立つ
-	int                                      m_restartTime;               // リスタートするまでの時間
 
 	bool                                     m_spawnFlag;                 // 敵が出てくるフラグ
 	float                                    m_spawnElapsedTime;          // 敵が出現してからの経過時間
@@ -59,7 +57,7 @@ private:
 	
 	DirectX::SimpleMath::Vector2             m_posRestartUI;              // リスタートUI位置
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     
-		                                     m_textureRestart;            // テクスチャハンドル(リスタート)
+		                                     m_textureClickToStart;       // テクスチャハンドル(スタート)
 
 	const int                                COUNTUISIZE = 80;            // 数字のサイズ
 	DirectX::SimpleMath::Vector2             m_posCountUI;                // カウント位置
@@ -70,8 +68,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 											 m_textureDengerous;          // テクスチャハンドル(危険サイン)
 
-
-// メンバー関数(関数、Getter、Setter)
+// メンバー関数
 public:
 	// コンストラクタ
 	Player();
@@ -83,7 +80,7 @@ public:
 	// 生成
 	void Create();
 	// 更新
-	bool Update(DX::StepTimer const& timer);
+	bool Update(DX::StepTimer const& timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir);
 	// 描画
 	void Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECTION dangerDir);
 	// 廃棄
@@ -115,7 +112,6 @@ public:
 	void SetHeightPos(float pos)                    { m_pos.y = pos; }
 	//----------------------------------------------------------------------------//
 
-private:
-
+//private:
 
 };

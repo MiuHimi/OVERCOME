@@ -31,6 +31,7 @@ ScenePlay::ScenePlay(SceneManager* sceneManager, bool isFullScreen)
 	: SceneBase(sceneManager, isFullScreen),
 	  m_toResultMoveOnChecker(false),
 	  m_returnToTitleChecker(false),
+	  isStartPlay(false),
 	  mp_camera(nullptr),
 	  mp_player(nullptr),
 	  mp_gameEnemy(nullptr), mp_gameEnemyManager(nullptr),
@@ -72,7 +73,7 @@ void ScenePlay::Initialize()
 	RECT size = DX::DeviceResources::SingletonGetInstance().GetOutputSize();
 
 	// カメラオブジェクトの作成
-	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom);
+	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom, m_isFullScreen);
 
 	// プレイヤーの生成
 	mp_player = std::make_unique<Player>();
@@ -173,8 +174,39 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
 
+	// 相対モードなら何もしない
+	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
+	
+	// アクティブなウィンドウのサイズ
+	RECT activeWndRect;
+	// アクティブなウィンドウのハンドルを取得
+	HWND activeWnd = GetActiveWindow();
+	// アクティブなウィンドウのハンドルからその画面の大きさを取得
+	GetWindowRect(activeWnd, &activeWndRect);
+
+	// ウィンドウのサイズを取得
+	float windowWidth = float(activeWndRect.right) - float(activeWndRect.left);
+	float windowHeight = float(activeWndRect.bottom) - float(activeWndRect.top);
+
+	// マウスポインターと円の衝突判定
+	float distX = (windowWidth * 0.5f) - float(InputManager::SingletonGetInstance().GetMouseState().x);
+	float distY;
+	if(m_isFullScreen) distY = (windowHeight * 0.5f) - float(InputManager::SingletonGetInstance().GetMouseState().y);
+	else distY = (windowHeight * 0.5f) - float(InputManager::SingletonGetInstance().GetMouseState().y + GetSystemMetrics(SM_CYCAPTION));
+	float distX2 = distX * distX;
+	float distY2 = distY * distY;
+	float r = 100.0f;
+	float r2 = r * r;
+
+	// マウスポインターが画面中央に来たらゲームを開始する
+	if (distX2 + distY2 <= r2 &&
+		InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	{
+		isStartPlay = true;
+	}
+
 	// カメラの更新
-	mp_camera->Update(timer, mp_player->GetPos(), mp_player->GetHeight(), mp_player->GetDir());
+	mp_camera->Update(timer, mp_player->GetPos(), mp_player->GetHeight(), mp_player->GetDir(), isStartPlay);
 
 	// 道路とプレイヤーの衝突判定
 	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
@@ -336,7 +368,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	//mp_gameTarget->Update(timer);
 
 	// プレイヤーの更新
-	mp_player->Update(timer);
+	mp_player->Update(timer, isStartPlay, mp_camera->GetCameraAngle());
 
 	// 敵の更新
 	SimpleMath::Vector3 playerPassPos = mp_player->GetPassingRoad();

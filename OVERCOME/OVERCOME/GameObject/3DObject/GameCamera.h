@@ -17,11 +17,14 @@ class SceneManager;
 class GameCamera : public Camera
 {
 // メンバー変数
-public:
+//public:
 
 private:
 	static const float                DEFAULT_CAMERA_DISTANCE;   // カメラの距離
 	static const float                ROTATE_MAG;                // 回転倍率(100～500がベスト)
+	static const int				  OUT_SIZE_OF_SCREEN;		 // 画面外の判定になるスクリーンの縁のサイズ
+
+	bool							  m_isFullScreen;			 // フルスクリーンだったらtrue
 
 	float                             m_aroundAngleX;            // 回転角(度、X軸)
 	float                             m_aroundAngleY;            // 回転角(度、Y軸)
@@ -52,12 +55,20 @@ private:
 public:
 	// コンストラクタ
 	GameCamera();
-	GameCamera(int windowWidth, int windowHeight);
+	GameCamera(int windowWidth, int windowHeight, bool isFullScreen);
 	// デストラクタ
 	~GameCamera();
 
-	// 更新(主にカメラの切り替えを行う)
-	bool Update(DX::StepTimer const & timer, DirectX::SimpleMath::Vector3& playerPos, float playerHeight, DirectX::SimpleMath::Vector3& playerDir);
+	/// <summary>
+	/// 更新(主にカメラの切り替えを行う)
+	/// </summary>
+	/// <param name="timer">経過時間</param>
+	/// <param name="playerPos">プレイヤー座標</param>
+	/// <param name="playerHeight">"プレイヤー高さ"</param>
+	/// <param name="playerDir">"プレイヤーの向き"</param>
+	/// <param name="isPlayFlag">"プレイシーン最初におけるプレイヤー移動可否フラグ(プレイシーン以外は常にtrue)"</param>
+	/// <returns>終了状態</returns>
+	bool Update(DX::StepTimer const & timer, DirectX::SimpleMath::Vector3& playerPos, float playerHeight, DirectX::SimpleMath::Vector3& playerDir, const bool isPlayFlag);
 
 	//-----------------------------------Getter-----------------------------------//
 
@@ -130,5 +141,5 @@ private:
 	/// マウスで視点移動するカメラ
 	/// </summary>
 	/// <param name="target">注視点</param>
-	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 playerDirction);
+	void MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 playerDirction, const bool isPlayFlag);
 };

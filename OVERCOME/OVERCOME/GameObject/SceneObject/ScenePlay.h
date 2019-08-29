@@ -37,6 +37,8 @@ private:
 	bool								m_toResultMoveOnChecker;   // リザルトシーンに進めるかどうかのチェック
 	bool								m_returnToTitleChecker;    // タイトルシーンに戻れるかどうかのチェック
 
+	bool								isStartPlay;			   // ゲームをスタートする条件が整ったらフラグが立つ
+
 	std::unique_ptr<GameCamera>			mp_camera;				   // ゲームカメラオブジェクト
 
 	std::unique_ptr<Player>				mp_player;				   // プレイヤーオブジェクト
