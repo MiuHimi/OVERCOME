@@ -115,8 +115,8 @@ public:
 	// ƒzƒo[ó‘Ô‚ğİ’è
 	void SetHover(bool flag)										{ m_isHover = flag; }
 	// Ø‚èæ‚è‚ğİ’è
-	void SetRect(const float top, const float bottom, const float right, const float left)
-																	{ m_rect = { int(top), int(bottom), int(right), int(left) };}
+	void SetRect(const float left, const float top, const float right, const float bottom)
+																	{ m_rect = { int(left), int(top), int(right), int(bottom) };}
 	//------------------------------------------------------------------------------------------//
 
 //private:

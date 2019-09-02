@@ -16,9 +16,9 @@
 #include "GameRoad.h"
 #include "GameBulletManager.h"
 #include "GameEnemyManager.h"
-#include "GameCamera.h"
 
-class GameCamera;
+#include "../2DObject/Obj2D.h"
+
 class GameEnemyManager;
 class GameRoad;
 class MatrixManager;
@@ -52,12 +52,9 @@ private:
 
 	//std::unique_ptr<DirectX::Model>          m_modelPlayer;               // プレイヤーモデルオブジェクト
 	GameBulletManager*                       mp_bulletManager;            // 弾管理ポインター
-	std::unique_ptr<GameCamera>              mp_gameCamera;               // カメラポインター
 	std::unique_ptr<GameRoad>                mp_gameRoad;                 // 道路ポインタ
 	
-	DirectX::SimpleMath::Vector2             m_posRestartUI;              // リスタートUI位置
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     
-		                                     m_textureClickToStart;       // テクスチャハンドル(スタート)
+	std::unique_ptr<Obj2D>					 mp_startGuide;				  // スタート案内オブジェクト
 
 	const int                                COUNTUISIZE = 80;            // 数字のサイズ
 	DirectX::SimpleMath::Vector2             m_posCountUI;                // カウント位置
@@ -78,7 +75,7 @@ public:
 	// 初期化
 	void Initialize();
 	// 生成
-	void Create();
+	void Create(const bool isFulleScreen);
 	// 更新
 	bool Update(DX::StepTimer const& timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir);
 	// 描画

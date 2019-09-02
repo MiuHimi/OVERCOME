@@ -79,7 +79,7 @@ void ScenePlay::Initialize()
 	mp_player = std::make_unique<Player>();
 	mp_player->Initialize();
 	// プレイヤーのモデルの読み込み
-	mp_player->Create();
+	mp_player->Create(GetFullScreen());
 
 	// ゲーム敵管理の生成
 	mp_gameEnemyManager = std::make_unique<GameEnemyManager>();

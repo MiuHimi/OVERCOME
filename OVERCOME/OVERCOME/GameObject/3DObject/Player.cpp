@@ -36,8 +36,8 @@ Player::Player()
 	  m_spawnFlag(false), m_spawnElapsedTime(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_passingRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
-	  mp_bulletManager(nullptr), mp_gameCamera(nullptr), mp_gameRoad(nullptr),
-	  m_posRestartUI(0.0f, 0.0f), m_textureClickToStart(nullptr),
+	  mp_bulletManager(nullptr), mp_gameRoad(nullptr),
+	  mp_startGuide(nullptr),
 	  m_posCountUI(0.0f, 0.0f), m_textureCount(nullptr),
 	  m_texturePointer(nullptr), m_textureDengerous(nullptr)
 {
@@ -75,7 +75,7 @@ void Player::Initialize()
 /// <summary>
 /// 生成処理
 /// </summary>
-void Player::Create()
+void Player::Create(const bool isFulleScreen)
 {
 	// エフェクトファクトリー
 	//EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
@@ -89,9 +89,35 @@ void Player::Create()
 
 	mp_bulletManager->Create();
 
-	// リスタートUIの設定
-	m_posRestartUI = SimpleMath::Vector2(175.0f, 450.0f);
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\clicktocenter.png", nullptr, m_textureClickToStart.GetAddressOf());
+	// アクティブなウィンドウのサイズ
+	RECT activeWndRect;
+	// アクティブなウィンドウのハンドルを取得
+	HWND activeWnd = GetActiveWindow();
+	// アクティブなウィンドウのハンドルからその画面の大きさを取得
+	GetWindowRect(activeWnd, &activeWndRect);
+
+	// ウィンドウのサイズを取得
+	float windowWidth = float(activeWndRect.right) - float(activeWndRect.left);
+	float windowHeight = float(activeWndRect.bottom) - float(activeWndRect.top);
+	// タイトルバーの高さを取得
+	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
+
+	// スタート案内オブジェクトの生成
+	mp_startGuide = std::make_unique<Obj2D>();
+	mp_startGuide->Create(L"Resources\\Images\\Play\\clicktocenter.png", nullptr);
+	mp_startGuide->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 450.0f, 50.0f, 1.0f, 1.0f);
+	if (isFulleScreen)
+	{
+		mp_startGuide->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startGuide->GetWidth()*0.5f),
+							 (activeWndRect.bottom - activeWndRect.top) - (mp_startGuide->GetHeight()*2.0f)));
+	}
+	else
+	{
+		mp_startGuide->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startGuide->GetWidth()*0.5f),
+							 (activeWndRect.bottom - (activeWndRect.top + titlebarHeight)) - (mp_startGuide->GetHeight()*5.0f)));
+	}
+	
+	mp_startGuide->SetRect(0.0f, 0.0f, mp_startGuide->GetWidth(), mp_startGuide->GetHeight());
 
 	// カウント数字の設定
 	m_posCountUI = SimpleMath::Vector2(360.0f, 260.0f);
@@ -383,8 +409,6 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 	// スタートカウントの描画
 	if (m_playStartTime > 0 && !m_playStartFlag)
 	{
-		/*if (isPlayFlag)
-		{}*/
 		// 切り取る場所を設定
 		RECT rect;
 		rect.top = LONG(0.0f);
@@ -398,7 +422,7 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 	// スタート案内の表示
 	if (!m_playStartFlag)
 	{
-		DrawManager::SingletonGetInstance().Draw(m_textureClickToStart.Get(), m_posRestartUI);
+		mp_startGuide->Render();
 	}
 		
 	// ポインターの描画
