@@ -23,6 +23,7 @@ using namespace DirectX;
 
 // constディレクトリ
 const int Player::SPAWNTIME = 600;
+const int Player::COUNT_UI_SIZE = 80;
 
 
 /// <summary>
@@ -32,13 +33,12 @@ const int Player::SPAWNTIME = 600;
 Player::Player()
 	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f), m_dir(0.0f, 0.0f, 0.0f),
 	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_posTmp(0.0f, 0.0f, 0.0f),
-	  m_playStartFlag(false), m_playStartTime(0),
+	  m_playStartFlag(false), m_moveStartCountDown(0),
 	  m_spawnFlag(false), m_spawnElapsedTime(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_passingRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameRoad(nullptr),
-	  mp_startGuide(nullptr),
-	  m_posCountUI(0.0f, 0.0f), m_textureCount(nullptr),
+	  mp_startGuide(nullptr), mp_startCount(nullptr),
 	  m_texturePointer(nullptr), m_textureDengerous(nullptr)
 {
 }
@@ -57,11 +57,13 @@ Player::~Player()
 void Player::Initialize()
 {
 	// 各変数初期化
-	m_height       = 1.75f;                                       // プレイヤー自身の高さ
-	m_jumpForce    = 0.0f;                                        // ジャンプ力
-	m_gravity      = 0.1f;                                        // 重力
+	m_height       = 1.75f;										// プレイヤー自身の高さ
+	m_jumpForce    = 0.0f;										// ジャンプ力
+	m_gravity      = 0.1f;										// 重力
 
-	m_world = SimpleMath::Matrix::Identity;                       // ワールド行列
+	m_moveStartCountDown = 180;									// 動き出せるまでのカウントダウン用
+
+	m_world = SimpleMath::Matrix::Identity;						// ワールド行列
 
 	// 他オブジェクトの初期化
 	//mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
@@ -116,12 +118,23 @@ void Player::Create(const bool isFulleScreen)
 		mp_startGuide->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startGuide->GetWidth()*0.5f),
 							 (activeWndRect.bottom - (activeWndRect.top + titlebarHeight)) - (mp_startGuide->GetHeight()*5.0f)));
 	}
-	
 	mp_startGuide->SetRect(0.0f, 0.0f, mp_startGuide->GetWidth(), mp_startGuide->GetHeight());
 
-	// カウント数字の設定
-	m_posCountUI = SimpleMath::Vector2(360.0f, 260.0f);
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\count\\count_len.png", nullptr, m_textureCount.GetAddressOf());
+	// スタートカウントダウンオブジェクトの生成
+	mp_startCount = std::make_unique<Obj2D>();
+	mp_startCount->Create(L"Resources\\Images\\count\\count_length.png", nullptr);
+	mp_startCount->Initialize(SimpleMath::Vector2(0.0f, 0.0f), float(COUNT_UI_SIZE), float(COUNT_UI_SIZE), 1.0f, 1.0f);
+	if (isFulleScreen)
+	{
+		mp_startCount->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startCount->GetWidth()*0.5f),
+												  (windowHeight*0.5f) - (mp_startCount->GetHeight()*0.5f)));
+	}
+	else
+	{
+		mp_startCount->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startCount->GetWidth()*0.5f),
+												  ((activeWndRect.bottom - (activeWndRect.top + titlebarHeight))*0.5f) - (mp_startCount->GetHeight()*0.5f)));
+	}
+	mp_startCount->SetRect(0.0f, 0.0f, mp_startCount->GetWidth(), mp_startCount->GetHeight());
 	
 	// ポインターの設定
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\pointer.png", nullptr, m_texturePointer.GetAddressOf());
@@ -209,13 +222,13 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 		// マウスで中心をクリックしてからカウントダウン
 		if (!m_playStartFlag)
 		{
-			m_playStartTime++;
+			m_moveStartCountDown--;
 
 			// 3秒経過でゲーム開始
-			if (m_playStartTime > 180)
+			if (m_moveStartCountDown <= 0)
 			{
 				// カウントダウン用タイムリセット
-				m_playStartTime = 0;
+				m_moveStartCountDown = 180;
 				// ゲーム開始フラグを立てる
 				m_playStartFlag = true;
 				// 移動開始
@@ -407,18 +420,15 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 	mp_bulletManager->Render(matrixManager);
 
 	// スタートカウントの描画
-	if (m_playStartTime > 0 && !m_playStartFlag)
+	if (m_moveStartCountDown < 180 && !m_playStartFlag)
 	{
-		// 切り取る場所を設定
-		RECT rect;
-		rect.top = LONG(0.0f);
-		rect.left = LONG((2 * COUNTUISIZE) - (m_playStartTime / 60 * COUNTUISIZE));
-		rect.right = LONG(2 * COUNTUISIZE) - (m_playStartTime / 60 * COUNTUISIZE) + COUNTUISIZE;
-		rect.bottom = LONG(COUNTUISIZE);
-
-		DrawManager::SingletonGetInstance().DrawRect(m_textureCount.Get(), m_posCountUI, &rect);
+		mp_startCount->SetRect(float(((m_moveStartCountDown / 60)+1) * COUNT_UI_SIZE),
+							   float(0.0f),
+							   float(((m_moveStartCountDown / 60)+1) * COUNT_UI_SIZE) + COUNT_UI_SIZE,
+							   float(COUNT_UI_SIZE));
+		mp_startCount->Render();
 	}
-
+	
 	// スタート案内の表示
 	if (!m_playStartFlag)
 	{

@@ -37,7 +37,7 @@ private:
 	DirectX::SimpleMath::Vector3             m_posTmp;                    // 前フレームの位置
 
 	bool                                     m_playStartFlag;             // ゲームが開始したらフラグが立つ
-	int                                      m_playStartTime;             // ゲームが開始されるまでの時間
+	int                                      m_moveStartCountDown;        // 動き始めるまでのカウントダウン
 
 	bool                                     m_spawnFlag;                 // 敵が出てくるフラグ
 	float                                    m_spawnElapsedTime;          // 敵が出現してからの経過時間
@@ -55,11 +55,9 @@ private:
 	std::unique_ptr<GameRoad>                mp_gameRoad;                 // 道路ポインタ
 	
 	std::unique_ptr<Obj2D>					 mp_startGuide;				  // スタート案内オブジェクト
+	static const int                         COUNT_UI_SIZE;               // カウントダウン数字のサイズ
+	std::unique_ptr<Obj2D>					 mp_startCount;				  // スタートカウントダウンオブジェクト
 
-	const int                                COUNTUISIZE = 80;            // 数字のサイズ
-	DirectX::SimpleMath::Vector2             m_posCountUI;                // カウント位置
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-		                                     m_textureCount;              // テクスチャハンドル(カウント)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     
 		                                     m_texturePointer;            // テクスチャハンドル(ポインター)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
