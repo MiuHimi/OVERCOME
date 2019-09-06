@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    Player.h
 // Summary. PlayerClass
-// Date.    2018/07/27
+// Date.    2019/09/06
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -54,14 +54,13 @@ private:
 	GameBulletManager*                       mp_bulletManager;            // 弾管理ポインター
 	std::unique_ptr<GameRoad>                mp_gameRoad;                 // 道路ポインタ
 	
+	bool									 m_isFullScreen;			  // フルスクリーンかどうか
+
 	std::unique_ptr<Obj2D>					 mp_startGuide;				  // スタート案内オブジェクト
 	static const int                         COUNT_UI_SIZE;               // カウントダウン数字のサイズ
 	std::unique_ptr<Obj2D>					 mp_startCount;				  // スタートカウントダウンオブジェクト
-
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     
-		                                     m_texturePointer;            // テクスチャハンドル(ポインター)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-											 m_textureDengerous;          // テクスチャハンドル(危険サイン)
+	std::unique_ptr<Obj2D>					 mp_shootPointer;			  // 発射ポインターオブジェクト
+	std::unique_ptr<Obj2D>					 mp_dengerousSign;			  // 危険サインオブジェクト
 
 // メンバー関数
 public:

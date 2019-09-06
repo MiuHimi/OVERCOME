@@ -14,7 +14,6 @@
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
-#include "../../Utility/DrawManager.h"
 
 #include "../../GameObject/3DObject/GameEnemyManager.h"
 
@@ -38,8 +37,8 @@ Player::Player()
 	  m_passedRoadPos(0.0f, 0.0f), m_passingRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameRoad(nullptr),
-	  mp_startGuide(nullptr), mp_startCount(nullptr),
-	  m_texturePointer(nullptr), m_textureDengerous(nullptr)
+	  m_isFullScreen(false),
+	  mp_startGuide(nullptr), mp_startCount(nullptr), mp_shootPointer(nullptr), mp_dengerousSign(nullptr)
 {
 }
 /// <summary>
@@ -91,6 +90,9 @@ void Player::Create(const bool isFulleScreen)
 
 	mp_bulletManager->Create();
 
+	// スクリーンモード取得
+	m_isFullScreen = isFulleScreen;
+
 	// アクティブなウィンドウのサイズ
 	RECT activeWndRect;
 	// アクティブなウィンドウのハンドルを取得
@@ -135,12 +137,28 @@ void Player::Create(const bool isFulleScreen)
 												  ((activeWndRect.bottom - (activeWndRect.top + titlebarHeight))*0.5f) - (mp_startCount->GetHeight()*0.5f)));
 	}
 	mp_startCount->SetRect(0.0f, 0.0f, mp_startCount->GetWidth(), mp_startCount->GetHeight());
-	
-	// ポインターの設定
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\pointer.png", nullptr, m_texturePointer.GetAddressOf());
 
-	// 危険サインのテクスチャ読み込み
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\dangerous_signV.png", nullptr, m_textureDengerous.GetAddressOf());
+	// 発射ポインターオブジェクトの生成
+	mp_shootPointer = std::make_unique<Obj2D>();
+	mp_shootPointer->Create(L"Resources\\Images\\Play\\pointer.png", nullptr);
+	mp_shootPointer->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 100.0f, 100.0f, 1.0f, 1.0f);
+	if (isFulleScreen)
+	{
+		mp_shootPointer->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_shootPointer->GetWidth()*0.5f),
+													(windowHeight*0.5f) + (windowHeight / 20.0f)));
+	}
+	else
+	{
+		mp_shootPointer->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_shootPointer->GetWidth()*0.5f),
+													(windowHeight*0.5f) + titlebarHeight + (windowHeight / 20.0f)));
+	}
+	mp_shootPointer->SetRect(0.0f, 0.0f, mp_shootPointer->GetWidth(), mp_shootPointer->GetHeight());
+
+	// 危険サインオブジェクトの生成
+	mp_dengerousSign = std::make_unique<Obj2D>();
+	mp_dengerousSign->Create(L"Resources\\Images\\Play\\dangerous_signV.png", nullptr);
+	mp_dengerousSign->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 50.0f, 500.0f, 1.0f, 1.0f);
+	mp_dengerousSign->SetRect(0.0f, 0.0f, mp_dengerousSign->GetWidth(), mp_dengerousSign->GetHeight());
 }
 
 /// <summary>
@@ -419,6 +437,19 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 	// 弾の描画
 	mp_bulletManager->Render(matrixManager);
 
+	// アクティブなウィンドウのサイズ
+	RECT activeWndRect;
+	// アクティブなウィンドウのハンドルを取得
+	HWND activeWnd = GetActiveWindow();
+	// アクティブなウィンドウのハンドルからその画面の大きさを取得
+	GetWindowRect(activeWnd, &activeWndRect);
+
+	// ウィンドウのサイズを取得
+	float windowWidth = float(activeWndRect.right) - float(activeWndRect.left);
+	float windowHeight = float(activeWndRect.bottom) - float(activeWndRect.top);
+	// タイトルバーの高さを取得
+	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
+
 	// スタートカウントの描画
 	if (m_moveStartCountDown < 180 && !m_playStartFlag)
 	{
@@ -435,20 +466,40 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 		mp_startGuide->Render();
 	}
 		
-	// ポインターの描画
+	// 発射ポインターの描画
 	if (m_playStartFlag)
 	{
-		DrawManager::SingletonGetInstance().Draw(m_texturePointer.Get(), SimpleMath::Vector2(350.0f, 330.0f));
+		mp_shootPointer->Render();
 	}
 
-	// 敵がいたら危険サイン表示
-	if (dangerDir == GameEnemyManager::DANGERDIRECTION::DIR_RIGHT)
+	// 至近距離の敵が画面内にいなかったら危険サイン表示
+	if (dangerDir == GameEnemyManager::DANGERDIRECTION::DIR_LEFT)
 	{
-		DrawManager::SingletonGetInstance().Draw(m_textureDengerous.Get(), SimpleMath::Vector2(700.0f, 50.0f));
+		if (m_isFullScreen)
+		{
+			mp_dengerousSign->SetPos(SimpleMath::Vector2(float(activeWndRect.left) + mp_dengerousSign->GetWidth(),
+														 (windowHeight*0.5f) - (mp_dengerousSign->GetHeight() * 0.5f)));
+		}
+		else
+		{
+			mp_dengerousSign->SetPos(SimpleMath::Vector2(mp_dengerousSign->GetWidth(),
+														 ((windowHeight - titlebarHeight) * 0.5f) - (mp_dengerousSign->GetHeight() * 0.5f)));
+		}
+		mp_dengerousSign->Render();
 	}
-	else if (dangerDir == GameEnemyManager::DANGERDIRECTION::DIR_LEFT)
+	else if (dangerDir == GameEnemyManager::DANGERDIRECTION::DIR_RIGHT)
 	{
-		DrawManager::SingletonGetInstance().Draw(m_textureDengerous.Get(), SimpleMath::Vector2(50.0f, 50.0f));
+		if (m_isFullScreen)
+		{
+			mp_dengerousSign->SetPos(SimpleMath::Vector2(float(activeWndRect.right) - (mp_dengerousSign->GetWidth()*2.0f),
+														 (windowHeight*0.5f) - (mp_dengerousSign->GetHeight() * 0.5f)));
+		}
+		else
+		{
+			mp_dengerousSign->SetPos(SimpleMath::Vector2(float(activeWndRect.right - activeWndRect.left) - (mp_dengerousSign->GetWidth()*2.0f),
+														 ((windowHeight - titlebarHeight) * 0.5f) - (mp_dengerousSign->GetHeight() * 0.5f)));
+		}
+		mp_dengerousSign->Render();
 	}
 }
 
