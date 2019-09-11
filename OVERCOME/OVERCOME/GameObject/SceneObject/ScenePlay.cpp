@@ -108,7 +108,7 @@ void ScenePlay::Initialize()
 
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
-	mp_gameScore->Create(L"Resources\\Images\\GameScore\\score_len.png", L"Resources\\Images\\GameScore\\score_background.png");
+	mp_gameScore->Create(m_isFullScreen, L"Resources\\Images\\GameScore\\score_len.png", L"Resources\\Images\\GameScore\\score_background.png");
 
 	// フェード画像の生成
 	mp_fade = std::make_unique<Obj2D>();

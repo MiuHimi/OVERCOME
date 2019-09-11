@@ -1,15 +1,13 @@
 //////////////////////////////////////////////////////////////
 // File.    GameScore.cpp
 // Summary. GameScoreClass
-// Date.    2018/10/01
+// Date.    2019/9/11
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
 #include "../../pch.h"
 #include "../2DObject/GameScore.h"
-
-#include "../../Utility/CommonStateManager.h"
 
 // usingディレクトリ
 using namespace DirectX;
@@ -19,13 +17,9 @@ using namespace DirectX;
 /// コンストラクタ
 /// </summary>
 GameScore::GameScore()
-	: m_scorePos(0.0f, 0.0f),
-	  m_scoreBGPos(0.0f, 0.0f),
-	  m_scoreWidth(0.0f), m_scoreHeight(0.0f),
-	  m_scoreBGWidth(0.0f), m_scoreBGHeight(0.0f),
-	  mp_texture(nullptr),
-	  mp_textureBackground(nullptr),
-	  mp_sprite(nullptr)
+	: m_isFullScreen(false),
+	  m_basePosX(0.0f),
+	  mp_scoreStr(nullptr), mp_scoreBG(nullptr)
 {	  
 }
 /// <summary>
@@ -38,26 +32,64 @@ GameScore::~GameScore()
 /// <summary>
 /// 生成
 /// </summary>
-void GameScore::Create(const wchar_t* scoreFileName, const wchar_t* backgroundFileName)
+void GameScore::Create(const bool isFullScreen, const wchar_t* scoreFileName, const wchar_t* backgroundFileName)
 {
 	// 各変数の初期化
 	m_score = 0;
 
-	m_scorePos = SimpleMath::Vector2(620.0f, 560.0f);
-	m_scoreBGPos = SimpleMath::Vector2(700.0f, 560.0f);
+	// フルスクリーンかどうか取得
+	m_isFullScreen = isFullScreen;
 
-	m_scoreWidth = 40.0f; 
-	m_scoreHeight = 60.0f;
-	m_scoreBGWidth = 200.0f;
-	m_scoreBGHeight = 80.0f;
+	// アクティブなウィンドウのサイズ
+	RECT activeWndRect;
+	// アクティブなウィンドウのハンドルを取得
+	HWND activeWnd = GetActiveWindow();
+	// アクティブなウィンドウのハンドルからその画面の大きさを取得
+	GetWindowRect(activeWnd, &activeWndRect);
 
-	// テクスチャのロード
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), scoreFileName, nullptr, mp_texture.GetAddressOf());
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), backgroundFileName, nullptr, mp_textureBackground.GetAddressOf());
-	
-	// スプライトバッチの初期化
-	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+	// ウィンドウのサイズを取得
+	float windowWidth = float(activeWndRect.right) - float(activeWndRect.left);
+	float windowHeight = float(activeWndRect.bottom) - float(activeWndRect.top);
+	// タイトルバーの高さを取得
+	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
 
+	// ウィンドウの余分な部分
+	float excessSpace = 16.0f;
+
+	// スコア背景オブジェクトの生成
+	mp_scoreBG = std::make_unique<Obj2D>();
+	mp_scoreBG->Create(backgroundFileName, nullptr);
+	mp_scoreBG->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 200.0f, 80.0f, 1.0f, 1.0f);
+	if (m_isFullScreen)
+	{
+		mp_scoreBG->SetPos(SimpleMath::Vector2((activeWndRect.right - activeWndRect.left) - mp_scoreBG->GetWidth(),
+											   (activeWndRect.bottom - activeWndRect.top) - mp_scoreBG->GetHeight()));
+	}
+	else
+	{
+		mp_scoreBG->SetPos(SimpleMath::Vector2(float(activeWndRect.right - activeWndRect.left - 20.0f) - mp_scoreBG->GetWidth(),
+											   float(activeWndRect.bottom - (activeWndRect.top + titlebarHeight + 20.0f)) - mp_scoreBG->GetHeight()));
+	}
+	mp_scoreBG->SetRect(0.0f, 0.0f, mp_scoreBG->GetWidth(), mp_scoreBG->GetHeight());
+
+	// スコアオブジェクトの生成
+	mp_scoreStr = std::make_unique<Obj2D>();
+	mp_scoreStr->Create(scoreFileName, nullptr);
+	mp_scoreStr->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 40.0f, 60.0f, 1.0f, 1.0f);
+	if (m_isFullScreen)
+	{
+		mp_scoreStr->SetPos(SimpleMath::Vector2(mp_scoreBG->GetPos().x + 10.0f,
+												(activeWndRect.bottom - activeWndRect.top) - (10.0f + mp_scoreStr->GetHeight())));
+	}
+	else
+	{
+		mp_scoreStr->SetPos(SimpleMath::Vector2(mp_scoreBG->GetPos().x + 10.0f,
+												float(activeWndRect.bottom - (activeWndRect.top + titlebarHeight+20.0f)) - float(10.0f + mp_scoreStr->GetHeight())));
+	}
+	mp_scoreStr->SetRect(0.0f, 0.0f, mp_scoreStr->GetWidth(), mp_scoreStr->GetHeight());
+
+	// スコア表示基準位置設定
+	m_basePosX = mp_scoreStr->GetPos().x;
 }
 
 /// <summary>
@@ -86,52 +118,47 @@ void GameScore::Render()
 	int tenDigit = ((m_score % 100) / 10);		 // 10の位
 	int oneDigit = m_score % 10;				 // 1の位
 
+	// スコア背景の描画
+	mp_scoreBG->Render();
+
 	// スコアの描画
-	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
-
-	// 背景
-	RECT rectBG = { 0, 0, 200, 80 };
-	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(m_scoreBGPos.x - m_scoreBGWidth / 2.0f, m_scoreBGPos.y - m_scoreBGHeight / 2.0f), &rectBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
-
-	// スコア
 	for (int i = 0; i < Digit::NUM; i++)
 	{
+		// 表示場所設定
+		float charSpace = 10.0f;
+		mp_scoreStr->SetPos(SimpleMath::Vector2(m_basePosX + (i*charSpace)+(i*mp_scoreStr->GetWidth()),
+												mp_scoreStr->GetPos().y));
+
 		RECT rect;
+		float scoreWidth = mp_scoreStr->GetWidth();
+		float scoreHeight = mp_scoreStr->GetHeight();
 		// 桁に応じて切り取る位置を変える
 		switch (i)
 		{
-		// 1000の位
+			// 1000の位
 		case THOUSAND:
-			rect = { int(m_scoreWidth) * thousandDigit, 0, int(m_scoreWidth) * thousandDigit + int(m_scoreWidth), int(m_scoreHeight) };
+			rect = { LONG(scoreWidth * thousandDigit), LONG(0), LONG((scoreWidth * thousandDigit) + scoreWidth), LONG(scoreHeight) };
+			mp_scoreStr->SetRect(float(rect.left), float(rect.top), float(rect.right), float(rect.bottom));
 			break;
-		// 100の位
+			// 100の位
 		case HUNDRED:
-			rect = { int(m_scoreWidth) * hundredDigit, 0, int(m_scoreWidth) * hundredDigit + int(m_scoreWidth), int(m_scoreHeight) };
+			rect = { LONG(scoreWidth * hundredDigit), LONG(0), LONG((scoreWidth * hundredDigit) + scoreWidth), LONG(scoreHeight) };
+			mp_scoreStr->SetRect(float(rect.left), float(rect.top), float(rect.right), float(rect.bottom));
 			break;
-		// 10の位
+			// 10の位
 		case TEN:
-			rect = { int(m_scoreWidth) * tenDigit, 0, int(m_scoreWidth) * tenDigit + int(m_scoreWidth), int(m_scoreHeight) };
+			rect = { LONG(scoreWidth * tenDigit), 0, LONG((scoreWidth * tenDigit) + scoreWidth), LONG(scoreHeight) };
+			mp_scoreStr->SetRect(float(rect.left), float(rect.top), float(rect.right), float(rect.bottom));
 			break;
-		// 1の位
+			// 1の位
 		case ONE:
-			rect = { int(m_scoreWidth) * oneDigit, 0, int(m_scoreWidth) * oneDigit + int(m_scoreWidth), int(m_scoreHeight) };
+			rect = { LONG(scoreWidth * oneDigit), LONG(0), LONG((scoreWidth * oneDigit) + scoreWidth), LONG(scoreHeight) };
+			mp_scoreStr->SetRect(float(rect.left), float(rect.top), float(rect.right), float(rect.bottom));
 			break;
-		// それ以外の位
+			// それ以外
 		default:
 			break;
 		}
-
-		float indent = 0;
-		if (i == 0)
-		{
-			indent = 0;
-		}
-		else
-		{
-			indent = 10;
-		}
-		mp_sprite->Draw(mp_texture.Get(), SimpleMath::Vector2(m_scorePos.x + float(i * m_scoreWidth) + indent, m_scorePos.y - (float)m_scoreHeight / 2.0f), &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+		mp_scoreStr->Render();
 	}
-
-	mp_sprite->End();
 }

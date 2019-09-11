@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    GameScore.h
 // Summary. GameScoreClass
-// Date.    2018/10/02
+// Date.    2019/9/11
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -11,19 +11,19 @@
 #include <WICTextureLoader.h>
 #include <CommonStates.h>
 
-#include "../../pch.h"
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
 
 #include "../../Game.h"
+#include "Obj2D.h"
 
 class GameScore
 {
 // メンバー変数
-public:
+//public:
 
 private:
-	static int                                         m_score;                // プレイヤーが得る得点
+	static int								m_score;			// プレイヤーが得る得点
 
     // スコアの桁
 	enum Digit
@@ -36,17 +36,12 @@ private:
 		NUM
 	};
 
-	DirectX::SimpleMath::Vector2					   m_scorePos;			   // スコアの表示位置
-	DirectX::SimpleMath::Vector2					   m_scoreBGPos;		   // スコア背景の表示位置
+	bool									m_isFullScreen;		// フルスクリーンかどうか
 
-	float											   m_scoreWidth;		   // スコアの幅
-	float											   m_scoreHeight;		   // スコアの高さ
-	float											   m_scoreBGWidth;		   // スコア背景の幅
-	float											   m_scoreBGHeight;		   // スコア背景の高さ
+	float									m_basePosX;			// スコア表示基準位置
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_textureBackground;   // テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   mp_texture;             // テクスチャハンドル
-	std::unique_ptr<DirectX::SpriteBatch>              mp_sprite;			   // スプライトバッチ
+	std::unique_ptr<Obj2D>					mp_scoreStr;		// スコアオブジェクト
+	std::unique_ptr<Obj2D>					mp_scoreBG;			// スコア背景オブジェクト
 
 // メンバー関数
 public:
@@ -56,7 +51,7 @@ public:
 	~GameScore();
 
 	// 生成
-	void Create(const wchar_t* scoreFileName, const wchar_t* backgroundFileName);
+	void Create(const bool isFullScreen, const wchar_t* scoreFileName, const wchar_t* backgroundFileName);
 	// 更新
 	bool Update(DX::StepTimer const& timer);
 	// 描画
@@ -75,6 +70,6 @@ public:
 	// 得点の増減
 	void FluctuationScore(int addscore)				{ m_score += addscore; }
 
-private:
+//private:
 
 };
