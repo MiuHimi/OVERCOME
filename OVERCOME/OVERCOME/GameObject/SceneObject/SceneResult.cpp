@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneResult.cpp
 // Summary. SceneResultClass
-// Date.    2019/06/12
+// Date.    2019/09/17
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -34,11 +34,9 @@ SceneResult::SceneResult(SceneManager * sceneManager, bool isFullScreen)
 	  m_toTitleMoveOnChecker(false),
 	  m_returnToPlayChecker(false),
 	  m_resultState(false),
-	  m_scorePos(0.0f,0.0f),
+	  m_scoreBasePos(0.0f,0.0f),
 	  mp_gameScore(nullptr),
-	  mp_textureScore(nullptr),
-	  mp_textureBackground(nullptr),
-	  mp_sprite(nullptr),
+	  mp_fade(nullptr), mp_score(nullptr), mp_bg(nullptr), mp_resultStr(nullptr),
 	  mp_matrixManager(nullptr)
 {
 }
@@ -59,18 +57,67 @@ void SceneResult::Initialize()
 	m_returnToPlayChecker = false;
 	m_resultState = false;
 
-	// スコアの表示位置の初期化
-	m_scorePos = SimpleMath::Vector2(280.0f, 400.0f);
-
 	// スコアのポインタの初期化
 	mp_gameScore = std::make_unique<GameScore>();
 
-	// テクスチャのロード
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\count\\count_length.png", nullptr, mp_textureScore.GetAddressOf());
-	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Result\\result_background_image.png", nullptr, mp_textureBackground.GetAddressOf());
+	// アクティブなウィンドウのサイズ
+	RECT activeWndRect;
+	// アクティブなウィンドウのハンドルを取得
+	HWND activeWnd = GetActiveWindow();
+	// アクティブなウィンドウのハンドルからその画面の大きさを取得
+	GetWindowRect(activeWnd, &activeWndRect);
 
-	// スプライトバッチの初期化
-	mp_sprite = std::make_unique<SpriteBatch>(DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext());
+	// ウィンドウのサイズを取得
+	float windowWidth = float(activeWndRect.right) - float(activeWndRect.left);
+	float windowHeight = float(activeWndRect.bottom) - float(activeWndRect.top);
+	// タイトルバーの高さを取得
+	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
+
+	// フェード画像の生成
+	mp_fade = std::make_unique<Obj2D>();
+	mp_fade->Create(L"Resources\\Images\\black.png", nullptr);
+	mp_fade->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 0.0f, 1.0f);
+	mp_fade->SetRect(0.0f, 0.0f, mp_fade->GetWidth(), mp_fade->GetHeight());
+
+	// スコアの表示位置の初期化
+	m_scoreBasePos = SimpleMath::Vector2(float((windowWidth * 0.5f)) - float((SCORE_SIZE)*(Digit::NUM * 0.5f)), float(windowHeight * 0.5f) - float(SCORE_SIZE * 0.5f));
+
+	// スコアオブジェクトの生成
+	mp_score = std::make_unique<Obj2D>();
+	mp_score->Create(L"Resources\\Images\\count\\count_length.png", nullptr);
+	mp_score->Initialize(SimpleMath::Vector2(0.0f, 0.0f), float(SCORE_SIZE), float(SCORE_SIZE), 1.0f, 1.0f);
+	if (m_isFullScreen)
+	{
+		mp_score->SetPos(SimpleMath::Vector2(m_scoreBasePos.x,
+											 (activeWndRect.bottom - activeWndRect.top) - (10.0f + mp_score->GetHeight())));
+	}
+	else
+	{
+		mp_score->SetPos(SimpleMath::Vector2(m_scoreBasePos.x,
+											 float(activeWndRect.bottom - (activeWndRect.top + titlebarHeight + 20.0f)) - float(10.0f + mp_score->GetHeight())));
+	}
+	mp_score->SetRect(0.0f, 0.0f, mp_score->GetWidth(), mp_score->GetHeight());
+
+	// 背景の生成
+	mp_bg = std::make_unique<Obj2D>();
+	mp_bg->Create(L"Resources\\Images\\Result\\result_background_base_image.png", nullptr);
+	mp_bg->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 0.0f, 1.0f);
+	mp_bg->SetRect(0.0f, 0.0f, mp_bg->GetWidth(), mp_bg->GetHeight());
+
+	// RESULT文字列の生成
+	mp_resultStr = std::make_unique<Obj2D>();
+	mp_resultStr->Create(L"Resources\\Images\\Result\\result_image.png", nullptr);
+	mp_resultStr->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 275.0f, 50.0f, 1.0f, 1.0f);
+	mp_resultStr->SetRect(0.0f, 0.0f, mp_resultStr->GetWidth(), mp_resultStr->GetHeight());
+	if (m_isFullScreen)
+	{
+		mp_resultStr->SetScale(2.0f);
+		mp_resultStr->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - ((mp_resultStr->GetWidth() * 2.0f) * 0.5f), mp_resultStr->GetHeight() * 2.0f));
+	}
+	else
+	{
+		mp_resultStr->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (mp_resultStr->GetWidth() * 0.5f), mp_resultStr->GetHeight()));
+	}
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
@@ -127,19 +174,26 @@ void SceneResult::Update(DX::StepTimer const& timer)
 	// リザルトシーンの状態を取得
 	m_resultState = SceneManager::GetResultSceneState();
 
-	// 画面クリックでシーン遷移発生
-	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
-	{
-		m_toTitleMoveOnChecker = true;
-	}
-	// キー入力でもシーン遷移発生
-	if (InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(Keyboard::Space))
+	// 画面クリックまたはキー入力でシーン遷移発生
+	if (InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED ||
+		InputManager::SingletonGetInstance().GetKeyTracker().IsKeyPressed(Keyboard::Space))
 	{
 		m_toTitleMoveOnChecker = true;
 	}
 
-	// シーン遷移が発生したら
+	bool isFinishedEffect = false;
 	if (m_toTitleMoveOnChecker)
+	{
+		// α値が1でなかったら
+		if (mp_fade->GetAlpha() != 1.0f)
+		{
+			// フェードアウト
+			isFinishedEffect = mp_fade->Fade(0.01f, Obj2D::FADE::FADE_OUT);
+		}
+	}
+
+	// シーン遷移が終了したら
+	if (isFinishedEffect)
 	{
 		// タイトルに戻る
 		m_sceneManager->RequestToChangeScene(SCENE_TITLE);
@@ -160,16 +214,18 @@ void SceneResult::Render()
 	int tenDigit = ((score % 100) / 10);	   // 10の位
 	int oneDigit = score % 10;				   // 1の位
 
-	// リザルト画面の描画
-	mp_sprite->Begin(SpriteSortMode_Deferred, CommonStateManager::SingletonGetInstance().GetStates()->NonPremultiplied());
+	// 背景の表示
+	mp_bg->Render();
 
-	// 背景
-	RECT rectBG = { 0, 0, 800, 600 };
-	mp_sprite->Draw(mp_textureBackground.Get(), SimpleMath::Vector2(0.0f, 0.0f), &rectBG, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+	// RESULT文字列の表示
+	mp_resultStr->RenderAlphaScale();
 
 	// スコア
 	for (int i = 0; i < Digit::NUM; i++)
 	{
+		// 表示位置設定
+		mp_score->SetPos(SimpleMath::Vector2(m_scoreBasePos.x + float(i * SCORE_SIZE), m_scoreBasePos.y));
+
 		RECT rect;
 		// 桁に応じて切り取る位置を変える
 		switch (i)
@@ -177,26 +233,31 @@ void SceneResult::Render()
 		// 1000の位
 		case THOUSAND:
 			rect = { int(SCORE_SIZE) * thousandDigit, 0, int(SCORE_SIZE) * thousandDigit + int(SCORE_SIZE), int(SCORE_SIZE) };
+			mp_score->SetRect(float(rect.left), float(rect.top), float(rect.right), float(rect.bottom));
 			break;
 		// 100の位
 		case HUNDRED: 
-			rect = { SCORE_SIZE * hundredDigit, 0, SCORE_SIZE * hundredDigit + SCORE_SIZE, SCORE_SIZE }; 
+			rect = { SCORE_SIZE * hundredDigit, 0, SCORE_SIZE * hundredDigit + SCORE_SIZE, SCORE_SIZE };
+			mp_score->SetRect(float(rect.left), float(rect.top), float(rect.right), float(rect.bottom));
 			break;
 		// 10の位
 		case TEN:
 			rect = { SCORE_SIZE * tenDigit, 0, SCORE_SIZE * tenDigit + SCORE_SIZE, SCORE_SIZE };
+			mp_score->SetRect(float(rect.left), float(rect.top), float(rect.right), float(rect.bottom));
 			break;
 		// 1の位
 		case ONE:
 			rect = { SCORE_SIZE * oneDigit, 0, SCORE_SIZE * oneDigit + SCORE_SIZE, SCORE_SIZE };
+			mp_score->SetRect(float(rect.left), float(rect.top), float(rect.right), float(rect.bottom));
 			break;
 		// それ以外の位
 		default:
 			break;
 		}
 
-		mp_sprite->Draw(mp_textureScore.Get(), SimpleMath::Vector2(m_scorePos.x + float(i * SCORE_SIZE), m_scorePos.y - (float)SCORE_SIZE / 2.0f), &rect, SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, XMFLOAT2(1.0f, 1.0f), 1.0f, SpriteEffects_None, 0);
+		mp_score->Render();
 	}
 
-	mp_sprite->End();
+	// フェード画像の表示
+	mp_fade->RenderAlpha();
 }

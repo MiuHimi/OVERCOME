@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////
 // File.    SceneResult.h
 // Summary. SceneResultClass
-// Date.    2018/08/15
+// Date.    2019/09/17
 // Auther.  Miu Himi
 //////////////////////////////////////////////////////////////
 
@@ -10,19 +10,21 @@
 // インクルードディレクトリ
 #include "SceneBase.h"
 
+#include "../2DObject/Obj2D.h"
+
 class GameScore;
 class MatrixManager;
 class SceneResult : public SceneBase
 {
-// メンバー変数(構造体、enum、列挙子 etc...)
+// メンバー変数
 //public:
 
 private:
-	bool												 m_toTitleMoveOnChecker;  // タイトルシーンに進めるかどうかのチェック
-	bool												 m_returnToPlayChecker;   // プレイシーンに戻れるかどうかのチェック
-	bool												 m_resultState;			  // リザルトシーンの状態
+	bool								m_toTitleMoveOnChecker;		// タイトルシーンに進めるかどうかのチェック
+	bool								m_returnToPlayChecker;		// プレイシーンに戻れるかどうかのチェック
+	bool								m_resultState;				// リザルトシーンの状態
 
-	static const int									 SCORE_SIZE;			  // スコアの数字のサイズ
+	static const int					SCORE_SIZE;					// スコアの数字のサイズ
 
 	// スコアの桁
 	enum Digit
@@ -35,17 +37,18 @@ private:
 		NUM
 	};
 
-	DirectX::SimpleMath::Vector2						 m_scorePos;			  // スコアの表示位置
+	DirectX::SimpleMath::Vector2		m_scoreBasePos;				// スコアの表示基準位置
 
-	std::unique_ptr<GameScore>							 mp_gameScore;			  // スコアのポインタ
+	std::unique_ptr<GameScore>			mp_gameScore;				// スコアのポインタ
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     mp_textureScore;         // テクスチャハンドル(スコア)
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>     mp_textureBackground;    // テクスチャハンドル(背景)
-	std::unique_ptr<DirectX::SpriteBatch>                mp_sprite;				  // スプライトバッチ
+	std::unique_ptr<Obj2D>				mp_fade;					// フェード画像オブジェクト
+	std::unique_ptr<Obj2D>				mp_score;					// スコアオブジェクト
+	std::unique_ptr<Obj2D>				mp_bg;						// 背景オブジェクト
+	std::unique_ptr<Obj2D>				mp_resultStr;				// RESULT文字列オブジェクト
 
-	MatrixManager*                                       mp_matrixManager;        // 行列管理変数
+	MatrixManager*						mp_matrixManager;			// 行列管理変数
 
-// メンバー関数(関数、Getter、Setter)
+// メンバー関数
 public:
 	// コンストラクタ
 	SceneResult(SceneManager* sceneManager, bool isFullScreen);
