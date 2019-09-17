@@ -93,22 +93,10 @@ void Game::Update(DX::StepTimer const& timer)
 	// Escキーでゲーム終了する
 	if (InputManager::SingletonGetInstance().GetKeyState().Escape)
 	{
-		bool closedGame = false;
+		bool closedGame = true;
 		// マウスカーソルの表示
 		ShowCursor(TRUE);
 
-		// ゲームを終了
-		if (MessageBox(NULL, L"ゲームを終了しますか？", L"ゲームを閉じる", MB_YESNO) == IDYES)
-		{
-			closedGame = true;
-		}
-		else
-		{
-			// マウスカーソルの表示
-			ShowCursor(FALSE);
-			closedGame = false;
-		}
-		
 		if (closedGame)
 		{
 			// シーンを削除
