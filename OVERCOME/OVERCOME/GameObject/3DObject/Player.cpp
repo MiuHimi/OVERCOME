@@ -124,7 +124,7 @@ void Player::Create(const bool isFulleScreen)
 
 	// スタートカウントダウンオブジェクトの生成
 	mp_startCount = std::make_unique<Obj2D>();
-	mp_startCount->Create(L"Resources\\Images\\count\\count_length.png", nullptr);
+	mp_startCount->Create(L"Resources\\Images\\ScoreCount\\count_length.png", nullptr);
 	mp_startCount->Initialize(SimpleMath::Vector2(0.0f, 0.0f), float(COUNT_UI_SIZE), float(COUNT_UI_SIZE), 1.0f, 1.0f);
 	if (isFulleScreen)
 	{

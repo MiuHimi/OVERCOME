@@ -84,7 +84,7 @@ void SceneResult::Initialize()
 
 	// スコアオブジェクトの生成
 	mp_score = std::make_unique<Obj2D>();
-	mp_score->Create(L"Resources\\Images\\count\\count_length.png", nullptr);
+	mp_score->Create(L"Resources\\Images\\ScoreCount\\count_length.png", nullptr);
 	mp_score->Initialize(SimpleMath::Vector2(0.0f, 0.0f), float(SCORE_SIZE), float(SCORE_SIZE), 1.0f, 1.0f);
 	if (m_isFullScreen)
 	{
@@ -100,7 +100,7 @@ void SceneResult::Initialize()
 
 	// 背景の生成
 	mp_bg = std::make_unique<Obj2D>();
-	mp_bg->Create(L"Resources\\Images\\Result\\result_background_base_image.png", nullptr);
+	mp_bg->Create(L"Resources\\Images\\gray.png", nullptr);
 	mp_bg->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 0.0f, 1.0f);
 	mp_bg->SetRect(0.0f, 0.0f, mp_bg->GetWidth(), mp_bg->GetHeight());
 
