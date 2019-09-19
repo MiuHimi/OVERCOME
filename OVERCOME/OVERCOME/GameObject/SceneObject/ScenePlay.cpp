@@ -436,14 +436,14 @@ void ScenePlay::Render()
 	// ƒQ[ƒ€“I‚Ì•`‰æ
 	//mp_gameTarget->Render(mp_matrixManager);
 
-	// ƒvƒŒƒCƒ„[‚Ì•`‰æ
-	mp_player->Render(mp_matrixManager, mp_gameEnemyManager->GetDangerDir());
-
 	// “G‚Ì•`‰æ
 	SimpleMath::Vector3 playerGlance = mp_player->GetPos();
 	playerGlance.y = mp_player->GetHeight();
 	mp_gameEnemyManager->Render(mp_matrixManager, playerGlance);
-	
+
+	// ƒvƒŒƒCƒ„[‚Ì•`‰æ
+	mp_player->Render(mp_matrixManager, mp_gameEnemyManager->GetDangerDir());
+
 	// ƒXƒRƒA‚Ì•`‰æ
 	mp_gameScore->Render();
 
