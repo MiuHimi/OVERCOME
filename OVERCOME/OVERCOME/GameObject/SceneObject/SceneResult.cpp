@@ -168,6 +168,15 @@ void SceneResult::Update(DX::StepTimer const& timer)
 	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 
+	// マウス情報の取得
+	CURSORINFO ci = { sizeof(CURSORINFO) };
+	GetCursorInfo(&ci);
+	if (ci.flags != CURSOR_SHOWING)
+	{
+		// マウスカーソルの表示
+		ShowCursor(TRUE);
+	}
+
 	// スコアの更新
 	mp_gameScore->Update(timer);
 

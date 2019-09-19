@@ -94,8 +94,6 @@ void Game::Update(DX::StepTimer const& timer)
 	if (InputManager::SingletonGetInstance().GetKeyState().Escape)
 	{
 		bool closedGame = true;
-		// マウスカーソルの表示
-		ShowCursor(TRUE);
 
 		if (closedGame)
 		{

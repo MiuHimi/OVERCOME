@@ -251,8 +251,6 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 				m_playStartFlag = true;
 				// 移動開始
 				m_velFlag = true;
-				// マウスカーソルの非表示
-				ShowCursor(FALSE);
 			}
 		}
 	}
@@ -260,6 +258,15 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 	// ゲームが開始されてからの処理
 	if (m_playStartFlag)
 	{
+		// マウス情報の取得
+		CURSORINFO ci = { sizeof(CURSORINFO) };
+		GetCursorInfo(&ci);
+		if (ci.flags != 0)
+		{
+			// マウスカーソルの表示
+			ShowCursor(FALSE);
+		}
+
 		// 弾の更新
 		mp_bulletManager->Update(timer, m_pos, cameraDir);
 

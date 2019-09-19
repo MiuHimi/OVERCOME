@@ -223,8 +223,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			//	{
 			//		m_toResultMoveOnChecker = true;
 			//		SceneManager::SetResultSceneState(true);
-			//		// マウスカーソルの表示
-			//		ShowCursor(TRUE);
 			//	}
 			//}
 
@@ -390,9 +388,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	{
 		// フェードアウト
 		mp_fade->Fade(0.02f, Obj2D::FADE::FADE_OUT);
-
-		// マウスカーソルの表示
-		ShowCursor(TRUE);
 	}
 
 	// フェードアウトが終わり、シーン遷移が発生していたら
