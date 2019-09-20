@@ -37,6 +37,7 @@ SceneResult::SceneResult(SceneManager * sceneManager, bool isFullScreen)
 	  m_scoreBasePos(0.0f,0.0f),
 	  mp_gameScore(nullptr),
 	  mp_fade(nullptr), mp_score(nullptr), mp_bg(nullptr), mp_resultStr(nullptr),
+	  mp_gameover(nullptr), mp_gameoverBG(nullptr),
 	  mp_matrixManager(nullptr)
 {
 }
@@ -118,6 +119,27 @@ void SceneResult::Initialize()
 	{
 		mp_resultStr->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (mp_resultStr->GetWidth() * 0.5f), mp_resultStr->GetHeight()));
 	}
+
+	// ゲームオーバー画像の生成
+	mp_gameover = std::make_unique<Obj2D>();
+	mp_gameover->Create(L"Resources\\Images\\Result\\gameover_str.png", nullptr);
+	mp_gameover->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 700.0f, 110.0f, 1.0f, 1.0f);
+	mp_gameover->SetRect(0.0f, 0.0f, mp_gameover->GetWidth(), mp_gameover->GetHeight());
+	if (m_isFullScreen)
+	{
+		mp_gameover->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (mp_gameover->GetWidth() * 0.5f), (windowHeight * 0.5f) - (mp_gameover->GetHeight() * 0.5f)));
+	}
+	else
+	{
+		mp_gameover->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (mp_gameover->GetWidth() * 0.5f), (titlebarHeight+ (windowHeight * 0.5f)) - (mp_gameover->GetHeight() * 0.5f)));
+	}
+	
+
+	// ゲームオーバー背景の生成
+	mp_gameoverBG = std::make_unique<Obj2D>();
+	mp_gameoverBG->Create(L"Resources\\Images\\black.png", nullptr);
+	mp_gameoverBG->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 1.0f, 1.0f);
+	mp_gameoverBG->SetRect(0.0f, 0.0f, mp_gameoverBG->GetWidth(), mp_gameoverBG->GetHeight());
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
@@ -265,6 +287,13 @@ void SceneResult::Render()
 		}
 
 		mp_score->Render();
+	}
+
+	// ゲームオーバー時
+	if (!SceneManager::GetResultSceneState())
+	{
+		mp_gameoverBG->Render();
+		mp_gameover->RenderAlphaScale();
 	}
 
 	// フェード画像の表示

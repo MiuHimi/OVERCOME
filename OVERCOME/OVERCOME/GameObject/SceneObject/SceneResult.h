@@ -46,6 +46,9 @@ private:
 	std::unique_ptr<Obj2D>				mp_bg;						// 背景オブジェクト
 	std::unique_ptr<Obj2D>				mp_resultStr;				// RESULT文字列オブジェクト
 
+	std::unique_ptr<Obj2D>				mp_gameover;				// ゲームオーバー画像オブジェクト
+	std::unique_ptr<Obj2D>				mp_gameoverBG;				// ゲームオーバー背景オブジェクト
+
 	MatrixManager*						mp_matrixManager;			// 行列管理変数
 
 // メンバー関数
