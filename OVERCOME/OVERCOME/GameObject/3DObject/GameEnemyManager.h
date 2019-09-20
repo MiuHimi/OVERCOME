@@ -58,6 +58,14 @@ public:
 		HP_POWER_CRITICAL,
 		HP_NUM,
 	};
+	enum ENEMYPOWER
+	{
+		NONE_DAMAGE,
+		SPEED_ENEMY_DAMAGE,
+		NORMAL_ENEMY_DAMAGE,
+		POWER_ENEMY_DAMAGE,
+		MAX_DAMAGE,
+	};
 
 private:
 	static const int			  MAX_ENEMY = 100;			  // ç≈ëÂìGêî

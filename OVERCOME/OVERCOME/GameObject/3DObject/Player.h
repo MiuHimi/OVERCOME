@@ -35,6 +35,10 @@ private:
 	float                                    m_jumpForce;                 // ジャンプ力
 	float                                    m_gravity;                   // 重力
 	DirectX::SimpleMath::Vector3             m_posTmp;                    // 前フレームの位置
+	int										 m_hp;						  // 体力
+	DirectX::SimpleMath::Vector2			 m_hpBasePos;				  // 体力バー基準位置
+	int										 m_damageCount;				  // ダメージを受けた時の計測カウント
+	bool									 m_isDamaged;				  // 敵に接触したか
 
 	bool                                     m_playStartFlag;             // ゲームが開始したらフラグが立つ
 	int                                      m_moveStartCountDown;        // 動き始めるまでのカウントダウン
@@ -61,6 +65,8 @@ private:
 	std::unique_ptr<Obj2D>					 mp_startCount;				  // スタートカウントダウンオブジェクト
 	std::unique_ptr<Obj2D>					 mp_shootPointer;			  // 発射ポインターオブジェクト
 	std::unique_ptr<Obj2D>					 mp_dengerousSign;			  // 危険サインオブジェクト
+	std::unique_ptr<Obj2D>					 mp_hp;						  // HPオブジェクト
+	std::unique_ptr<Obj2D>					 mp_damageEffect;			  // ダメージ効果オブジェクト
 
 // メンバー関数
 public:
@@ -88,6 +94,8 @@ public:
 	DirectX::SimpleMath::Vector3 GetDir()           { return m_dir; }
 	// プレイヤーの高さを取得
 	float GetHeight()                               { return m_height; }
+	// HPを取得
+	int GetHP()										{ return m_hp; }
 	// プレイヤーが動き出したかどうか
 	bool GetPlaying()								{ return m_playStartFlag; }
 	// 敵が出てくる時間かどうか
@@ -104,8 +112,12 @@ public:
 
 	// プレイヤーの高さのみの位置を設定
 	void SetHeightPos(float pos)                    { m_pos.y = pos; }
+	// 敵に接触したかどうかを設定
+	void SetDamaged(bool flag)						{ m_isDamaged = flag; }
 	//----------------------------------------------------------------------------//
 
+	// 体力設定
+	void Damage(int damage) { m_hp -= damage; }
 //private:
 
 };

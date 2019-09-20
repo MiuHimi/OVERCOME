@@ -283,7 +283,24 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		{
 			if (Collision::HitCheck_Sphere2Box(mp_gameEnemyManager->GetEnemyCollide(i), mp_player->GetCollision()))
 			{
+				// 敵を非表示に
 				mp_gameEnemyManager->SetEnemyState(i, false);
+				// 敵に応じて負うダメージを分ける
+				switch (mp_gameEnemyManager->GetEnemyType(i))
+				{
+				case GameEnemy::EnemyType::SPEED:
+					mp_player->Damage(mp_gameEnemyManager->SPEED_ENEMY_DAMAGE);
+					break;
+				case GameEnemy::EnemyType::NORMAL:
+					mp_player->Damage(mp_gameEnemyManager->NORMAL_ENEMY_DAMAGE);
+					break;
+				case GameEnemy::EnemyType::POWER:
+					mp_player->Damage(mp_gameEnemyManager->POWER_ENEMY_DAMAGE);
+					break;
+				}
+				// 負傷フラグを立てる
+				mp_player->SetDamaged(true);
+				break;
 			}
 		}
 	}
@@ -382,12 +399,29 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		// スコアが0だったらゲームオーバー
 		SceneManager::SetResultSceneState(false);
 	}
+	// 体力がなくなったら
+	if (mp_player->GetHP() == 0)
+	{
+		// ゲームオーバー
+		SceneManager::SetResultSceneState(false);
+		// シーン遷移開始
+		m_toResultMoveOnChecker = true;
+	}
 
 	// シーン遷移操作
 	if (m_toResultMoveOnChecker)
 	{
+		float fadeSpeed = 0.0f;
+		if (SceneManager::GetResultSceneState())
+		{
+			fadeSpeed = 0.02f;
+		}
+		else
+		{
+			fadeSpeed = 0.01f;
+		}
 		// フェードアウト
-		mp_fade->Fade(0.02f, Obj2D::FADE::FADE_OUT);
+		mp_fade->Fade(fadeSpeed, Obj2D::FADE::FADE_OUT);
 	}
 
 	// フェードアウトが終わり、シーン遷移が発生していたら

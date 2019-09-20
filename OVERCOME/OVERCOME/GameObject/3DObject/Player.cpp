@@ -32,13 +32,15 @@ const int Player::COUNT_UI_SIZE = 80;
 Player::Player()
 	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f), m_dir(0.0f, 0.0f, 0.0f),
 	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_posTmp(0.0f, 0.0f, 0.0f),
+	  m_hp(10), m_hpBasePos{0.0f}, m_damageCount(0), m_isDamaged(false),
 	  m_playStartFlag(false), m_moveStartCountDown(0),
 	  m_spawnFlag(false), m_spawnElapsedTime(0),
 	  m_passedRoadPos(0.0f, 0.0f), m_passingRoadPos(0.0f, 0.0f), m_nextPos(0.0f, 0.0f), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameRoad(nullptr),
 	  m_isFullScreen(false),
-	  mp_startGuide(nullptr), mp_startCount(nullptr), mp_shootPointer(nullptr), mp_dengerousSign(nullptr)
+	  mp_startGuide(nullptr), mp_startCount(nullptr), mp_shootPointer(nullptr), mp_dengerousSign(nullptr),
+	  mp_hp(nullptr), mp_damageEffect(nullptr)
 {
 }
 /// <summary>
@@ -159,6 +161,22 @@ void Player::Create(const bool isFulleScreen)
 	mp_dengerousSign->Create(L"Resources\\Images\\Play\\dangerous_signV.png", nullptr);
 	mp_dengerousSign->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 50.0f, 500.0f, 1.0f, 1.0f);
 	mp_dengerousSign->SetRect(0.0f, 0.0f, mp_dengerousSign->GetWidth(), mp_dengerousSign->GetHeight());
+
+	// ダメージ効果オブジェクトの生成
+	mp_damageEffect = std::make_unique<Obj2D>();
+	mp_damageEffect->Create(L"Resources\\Images\\gray.png", nullptr);
+	mp_damageEffect->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 0.0f, 1.0f);
+	mp_damageEffect->SetRect(0.0f, 0.0f, mp_damageEffect->GetWidth(), mp_damageEffect->GetHeight());
+
+	// 体力オブジェクトの生成
+	mp_hp = std::make_unique<Obj2D>();
+	mp_hp->Create(L"Resources\\Images\\Play\\player_hp.png", nullptr);
+	mp_hp->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 100.0f, 25.0f, 1.0f, 1.0f);
+	mp_hp->SetRect(0.0f, 0.0f, mp_hp->GetWidth(), mp_hp->GetHeight());
+	mp_hp->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_hp->GetWidth()*5.0f), windowHeight - (mp_hp->GetHeight()*2.0f)));
+
+	// 基準位置設定
+	m_hpBasePos = mp_hp->GetPos();
 }
 
 /// <summary>
@@ -419,6 +437,57 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 		}
 	}
 
+	// 敵と衝突したら
+	if (m_isDamaged)
+	{
+		// カウントを進める
+		m_damageCount++;
+		// 5フレームごとに表示切替
+		if (m_damageCount % 4 == 0)
+		{
+			if (mp_damageEffect->GetAlpha() == 0.0f)
+			{
+				mp_damageEffect->SetAlpha(1.0f);
+			}
+			else if(mp_damageEffect->GetAlpha() == 1.0f)
+			{
+				mp_damageEffect->SetAlpha(0.0f);
+			}
+		}
+		// 20フレームで演出終了
+		if (m_damageCount > 20)
+		{
+			mp_damageEffect->SetAlpha(0.0f);
+			m_damageCount = 0;
+			m_isDamaged = false;
+		}
+	}
+	else
+	{
+		m_damageCount = 0;
+	}
+
+	// HPバー
+	if (0 < m_hp && m_hp <= 3)
+	{
+		mp_hp->SetRect(mp_hp->GetWidth()*2.0f, 0.0f, (mp_hp->GetWidth()*2.0f)+ mp_hp->GetWidth(), mp_hp->GetHeight());
+	}
+	else if (3 < m_hp && m_hp <= 7)
+	{
+		mp_hp->SetRect(mp_hp->GetWidth(), 0.0f, mp_hp->GetWidth()*2.0f, mp_hp->GetHeight());
+	}
+	else if(7 < m_hp && m_hp <= 10)
+	{
+		mp_hp->SetRect(0.0f, 0.0f, mp_hp->GetWidth(), mp_hp->GetHeight());
+	}
+	// HPが0以下になったら
+	if (m_hp <= 0)
+	{
+		// 移動を止める
+		m_hp = 0;
+		m_vel = SimpleMath::Vector3::Zero;
+	}
+
 	// 移動前の座標を記憶
 	m_posTmp = m_pos;
 	// プレイヤー移動(座標)
@@ -508,6 +577,19 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 		}
 		mp_dengerousSign->Render();
 	}
+
+	// HP表示
+	if (m_playStartFlag)
+	{
+		for (int i = 0; i < m_hp; i++)
+		{
+			mp_hp->SetPos(SimpleMath::Vector2(m_hpBasePos.x + float(mp_hp->GetWidth() * i), m_hpBasePos.y));
+			mp_hp->Render();
+		}
+	}
+	
+	// ダメージ演出表示
+	mp_damageEffect->RenderAlpha();
 }
 
 /// <summary>
