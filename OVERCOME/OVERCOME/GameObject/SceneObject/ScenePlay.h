@@ -51,6 +51,7 @@ private:
 
 	std::unique_ptr<GameScore>			mp_gameScore;			   // スコアオブジェクト
 
+	std::unique_ptr<Obj2D>				mp_outline;				   // あらすじオブジェクト
 	std::unique_ptr<Obj2D>				mp_fade;				   // フェード画像オブジェクト
 
 	MatrixManager*						mp_matrixManager;		   // 行列管理変数
