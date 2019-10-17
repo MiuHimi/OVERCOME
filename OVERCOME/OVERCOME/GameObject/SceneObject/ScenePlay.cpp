@@ -120,7 +120,7 @@ void ScenePlay::Initialize()
 
 	// あらすじオブジェクトの生成
 	mp_outline = std::make_unique<Obj2D>();
-	mp_outline->Create(L"Resources\\Images\\Play\\outline_image.png", nullptr);
+	mp_outline->Create(L"Resources\\Images\\Play\\outline_image1.png", nullptr);
 	mp_outline->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 700.0f, 500.0f, 1.0f, 1.0f);
 	mp_outline->SetRect(0.0f, 0.0f, mp_outline->GetWidth(), mp_outline->GetHeight());
 	mp_outline->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (mp_outline->GetWidth() * 0.5f), (windowHeight * 0.5f) - (mp_outline->GetHeight() * 0.5f)));
