@@ -10,6 +10,8 @@
 #include "Player.h"
 //#include "GameRoad.h"
 
+#include <math.h>
+
 #include "../../Utility/InputManager.h"
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/CommonStateManager.h"
@@ -39,7 +41,7 @@ Player::Player()
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameRoad(nullptr),
 	  m_isFullScreen(false),
-	  mp_startGuide(nullptr), mp_startCount(nullptr), mp_shootPointer(nullptr), mp_dengerousSign(nullptr),
+	  m_startGudeWave(0.0f), mp_startGuide(nullptr), mp_startCount(nullptr), mp_shootPointer(nullptr), mp_dengerousSign(nullptr),
 	  mp_hp(nullptr), mp_damageEffect(nullptr)
 {
 }
@@ -109,6 +111,8 @@ void Player::Create(const bool isFulleScreen)
 	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
 
 	// スタート案内オブジェクトの生成
+	m_startGudeWave = 0.1f;
+
 	mp_startGuide = std::make_unique<Obj2D>();
 	mp_startGuide->Create(L"Resources\\Images\\Play\\clicktocenter.png", nullptr);
 	mp_startGuide->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 450.0f, 50.0f, 1.0f, 1.0f);
@@ -502,6 +506,14 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 	box.r = SimpleMath::Vector3(1.0f, m_height / 2.0f, 1.0f);                        // 各半径
 	SetCollision(box);
 
+	//--------------------2D Object Update--------------------//
+	float sinWave = m_startGudeWave;
+	m_startGudeWave += 0.1f;
+	float s = (sin(sinWave) * 2) * 0.5f;
+	mp_startGuide->SetAlpha(s);
+
+	//--------------------------------------------------------//
+
 	return true;
 }
 
@@ -539,7 +551,7 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 	// スタート案内の表示
 	if (!m_playStartFlag)
 	{
-		mp_startGuide->Render();
+		mp_startGuide->RenderAlpha();
 	}
 		
 	// 発射ポインターの描画

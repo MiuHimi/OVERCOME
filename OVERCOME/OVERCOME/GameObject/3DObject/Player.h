@@ -60,6 +60,7 @@ private:
 	
 	bool									 m_isFullScreen;			  // フルスクリーンかどうか
 
+	float									 m_startGudeWave;			  // スタート案内オブジェクトのフェード量
 	std::unique_ptr<Obj2D>					 mp_startGuide;				  // スタート案内オブジェクト
 	static const int                         COUNT_UI_SIZE;               // カウントダウン数字のサイズ
 	std::unique_ptr<Obj2D>					 mp_startCount;				  // スタートカウントダウンオブジェクト
