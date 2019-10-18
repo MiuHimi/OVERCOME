@@ -507,10 +507,11 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 	SetCollision(box);
 
 	//--------------------2D Object Update--------------------//
+
+	// スタート案内オブジェクトのフェード
 	float sinWave = m_startGudeWave;
 	m_startGudeWave += 0.1f;
-	float s = (sin(sinWave) * 2) * 0.5f;
-	mp_startGuide->SetAlpha(s);
+	mp_startGuide->SetAlpha((sin(sinWave) * 2) * 0.5f);
 
 	//--------------------------------------------------------//
 
