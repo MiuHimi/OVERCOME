@@ -46,54 +46,15 @@ GameBulletManager::~GameBulletManager()
 /// </summary>
 void GameBulletManager::Initialize()
 {
-	// メモリーリーク
-	/*for (int i = 0; i < m_maxBulletNum; i++)
-	{
-		GameBullet* bullet = new GameBullet(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
-		// 弾の情報を格納
-		mp_bullet.push_back(bullet);
-	}*/
-
-	//mp_bullet.resize(m_maxBulletNum);
-	// ここまで
 }
 /// <summary>
 /// 生成
 /// </summary>
 void GameBulletManager::Create()
 {
-	/*for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
-	{
-		GameBullet* bullet = new GameBullet(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
-		// 弾の情報を格納
-		mp_bullet.push_back(bullet);
-	}*/
-
 	for (int i = 0; i < m_maxBulletNum; i++)
 	{
 		mp_bullet[i] = new GameBullet(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), false, nullptr);
-	}
-
-	//for (auto it = std::begin(mp_bullet); it != std::end(mp_bullet); ++it)
-	//{
-	//	/*std::unique_ptr<Model> model;
-	//	model = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\bullet.cmo", fx);
-	//	(*it)->SetModel(model.get());
-	//	SetModel(model.get());*/
-
-	//	/*// モデルを作成
-	//	std::unique_ptr<Model> model;
-	//	model = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\bullet.cmo", fx);
-	//	// モデルをそれぞれ(要素)にセット
-	//	(*it)->SetModel(std::move(model));
-	//	// 衝突判定用モデル設定
-	//	SetModel(model.get());*/
-
-	//	(*it)->Create();
-	//}
-
-	for (int i = 0; i < m_maxBulletNum; i++)
-	{
 		mp_bullet[i]->Create();
 	}
 }

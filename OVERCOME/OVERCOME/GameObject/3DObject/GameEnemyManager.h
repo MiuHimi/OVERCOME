@@ -27,6 +27,14 @@ class GameEnemyManager
 // メンバー変数(構造体、enum、列挙子 etc...)
 public:
 	// 危険方向
+	enum ENEMYTYPE
+	{
+		SPEED_TYPE,
+		NORMAL_TYPE,
+		POWER_TYPE,
+
+		MAX_TYPE
+	};
 	enum DANGERDIRECTION
 	{
 		DIR_NONE,
@@ -92,6 +100,8 @@ private:
 	static const float			  SMOKE_SPEED;				  // 煙の昇る速さ
 	static const int			  MAX_SMOKE_COUNT;			  // 煙の昇る速さ
 	int							  m_shockCount[MAX_ENEMY];	  // エフェクトが出てからのカウント
+	DirectX::SimpleMath::Vector3  m_pointPos[MAX_ENEMY];	  // 得点が出る位置
+	DirectX::SimpleMath::Vector2  m_pointSize[MAX_ENEMY];	  // 得点の大きさ
 
 	DANGERDIRECTION				  m_dengerousDirLR;			  // 危険方向
 
@@ -101,6 +111,8 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 								  m_textureHP[HP_NUM];		  // テクスチャハンドル(HPバー)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+								  m_texturePoint[MAX_TYPE];	  // テクスチャハンドル(得点)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 								  m_textureSmoke;			  // テクスチャハンドル(やられ演出用煙)
 
@@ -185,6 +197,11 @@ private:
 	void UpdateSmoke();
 
 	/// <summary>
+	/// 得点演出更新
+	/// </summary>
+	void UpdatePoint();
+
+	/// <summary>
 	/// 襲撃可能かどうかを返す
 	/// </summary>
 	/// <param name="roadType">チェックする道の種類</param>
@@ -214,7 +231,15 @@ private:
 	/// </summary>
 	/// <param name="matrixManager">行列管理オブジェクト</param>
 	/// <param name="world">ワールド行列</param>
+	/// <param name="enemyID">敵のID(タイプ)</param>
 	void DrawHP(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world, int enemyID);
+	/// <summary>
+	/// 得点表示
+	/// </summary>
+	/// <param name="matrixManager">行列管理オブジェクト</param>
+	/// <param name="world">ワールド行列</param>
+	/// <param name="enemyID">敵のID(タイプ)</param>
+	void DrawPoint(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world, int enemyID, DirectX::SimpleMath::Vector2 &size);
 	/// <summary>
 	/// やられ演出表示
 	/// </summary>
