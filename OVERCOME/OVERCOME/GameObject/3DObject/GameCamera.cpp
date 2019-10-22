@@ -21,7 +21,7 @@ using namespace DirectX;
 
 // constディレクトリ
 const float GameCamera::DEFAULT_CAMERA_DISTANCE = 5.0f;
-const float GameCamera::ROTATE_MAG = 300.0f;
+const float GameCamera::ROTATE_MAG = 500.0f;
 const int	GameCamera::OUT_SIZE_OF_SCREEN = 50;
 
 SceneId SceneManager::m_activeScene;
