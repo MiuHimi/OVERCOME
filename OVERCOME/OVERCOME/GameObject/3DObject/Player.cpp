@@ -168,7 +168,7 @@ void Player::Create(const bool isFulleScreen)
 
 	// ダメージ効果オブジェクトの生成
 	mp_damageEffect = std::make_unique<Obj2D>();
-	mp_damageEffect->Create(L"Resources\\Images\\gray.png", nullptr);
+	mp_damageEffect->Create(L"Resources\\Images\\Play\\damaged.png", nullptr);
 	mp_damageEffect->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 0.0f, 1.0f);
 	mp_damageEffect->SetRect(0.0f, 0.0f, mp_damageEffect->GetWidth(), mp_damageEffect->GetHeight());
 

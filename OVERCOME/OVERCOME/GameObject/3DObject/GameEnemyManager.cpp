@@ -569,6 +569,10 @@ void GameEnemyManager::DrawHP(MatrixManager * matrixManager, DirectX::SimpleMath
 	// •s“§–¾‚Ì‚Ý•`‰æ‚·‚éÝ’è
 	m_batchEffect->SetAlphaFunction(D3D11_COMPARISON_EQUAL);
 	m_batchEffect->SetReferenceAlpha(255);
+	m_batchEffect->SetFogEnabled(true);
+	m_batchEffect->SetFogStart(4.0f);
+	m_batchEffect->SetFogEnd(10.0f);
+	m_batchEffect->SetFogColor(Colors::Black);
 	m_batchEffect->SetWorld(world);
 	m_batchEffect->SetView(matrixManager->GetView());
 	m_batchEffect->SetProjection(matrixManager->GetProjection());
