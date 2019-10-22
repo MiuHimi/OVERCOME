@@ -28,7 +28,9 @@ private:
 
 	float											   m_colorAlpha;			  // α値を変更
 
-	std::unique_ptr<Obj2D>							   mp_title;				  // タイトルオブジェクト
+	static const int								   MAX_TITLE_STR = 8;		  // タイトル文字列
+	std::unique_ptr<Obj2D>							   mp_title[MAX_TITLE_STR];	  // タイトルオブジェクト
+	static const int								   TITLE_STR_WIDTH;			  // タイトル文字の幅
 	std::unique_ptr<Obj2D>							   mp_startBtn;				  // スタートボタンオブジェクト
 	std::unique_ptr<Obj2D>							   mp_fade;					  // フェード画像オブジェクト
 

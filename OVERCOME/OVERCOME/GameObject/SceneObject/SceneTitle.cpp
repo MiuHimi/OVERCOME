@@ -19,6 +19,9 @@
 // usingディレクトリ
 using namespace DirectX;
 
+// constディレクトリ
+const int SceneTitle::TITLE_STR_WIDTH = 60;
+
 
 /// <summary>
 /// コンストラクタ
@@ -29,7 +32,7 @@ SceneTitle::SceneTitle(SceneManager * sceneManager, bool isFullScreen)
 	: SceneBase(sceneManager, isFullScreen),
 	  m_toStageSelectMoveOnChecker(false),
 	  m_colorAlpha(0.0f),
-	  mp_title(nullptr), mp_startBtn(nullptr), mp_fade(nullptr),
+	mp_title{ nullptr }, mp_startBtn(nullptr), mp_fade(nullptr),
 	  mp_camera(nullptr),
 	  mp_modelHouse(nullptr),
 	  mp_matrixManager(nullptr),
@@ -68,16 +71,23 @@ void SceneTitle::Initialize()
 	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
 
 	// タイトルの生成
-	mp_title = std::make_unique<Obj2D>();
-	mp_title->Create(L"Resources\\Images\\Title\\title_image.png", nullptr); // ホバースプライトなし
-	if (GetFullScreen())
-		mp_title->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 500.0f * 2.0f, 120.0f * 2.0f, 1.0f, 1.0f);
-	else
-		mp_title->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 500.0f, 120.0f, 1.0f, 1.0f);
-	mp_title->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (mp_title->GetWidth() * 0.5f),
-										 (windowHeight * 0.5f) - (mp_title->GetHeight() * 1.5f) - titlebarHeight));
-	mp_title->SetRect(0.0f, 0.0f, mp_title->GetWidth(), mp_title->GetHeight());
-
+	for (int i = 0; i < MAX_TITLE_STR; i++)
+	{
+		mp_title[i] = std::make_unique<Obj2D>();
+		mp_title[i]->Create(L"Resources\\Images\\Title\\title_stitch_image.png", nullptr); // ホバースプライトなし
+		if (GetFullScreen())
+		{
+			mp_title[i]->Initialize(SimpleMath::Vector2(0.0f, 0.0f), (float)TITLE_STR_WIDTH * 2.0f, 200 * 2.0f, 1.0f, 1.0f);
+			mp_title[i]->SetScale(2.0f);
+		}
+		else
+		{
+			mp_title[i]->Initialize(SimpleMath::Vector2(0.0f, 0.0f), (float)TITLE_STR_WIDTH, 200.0f, 1.0f, 1.0f);
+		}
+		mp_title[i]->SetPos(SimpleMath::Vector2(((windowWidth * 0.5f) - ((float)TITLE_STR_WIDTH * (float)MAX_TITLE_STR/* * 0.5f*/))+ i*mp_title[i]->GetWidth(),0.0f));
+		mp_title[i]->SetRect((float)i * (float)TITLE_STR_WIDTH, 0.0f, ((float)i * (float)TITLE_STR_WIDTH) + (float)TITLE_STR_WIDTH, mp_title[i]->GetHeight() * 0.5f);
+	}
+	
 	// スタートボタンの生成
 	mp_startBtn = std::make_unique<Obj2D>();
 	mp_startBtn->Create(L"Resources\\Images\\Title\\title_gamestart.png", L"Resources\\Images\\Title\\title_gamestart_hover.png");
@@ -179,7 +189,6 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	mp_camera->Update(timer, SimpleMath::Vector3(0.0f,0.0f,0.0f), 0.0f, SimpleMath::Vector3(0.0f, 0.0f, 0.0f), true);
 	
 	// マウスの更新
-	//	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
 	InputManager::SingletonGetInstance().Update();
 
 	// スタートボタンとマウスカーソルの衝突判定
@@ -194,6 +203,17 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	// 接触していなかったら
 	else
 		mp_startBtn->SetHover(false);	// ホバー状態にしない
+
+	// サイン波が変動するための値
+	static float wave;
+	wave += 0.01f;
+
+	// タイトルロゴのアニメーション
+	for (int i = 0; i < MAX_TITLE_STR; i++)
+	{
+		float sinWave = (sin(wave + (i*2.0f)) - 1.0f)* 30.0f;
+		mp_title[i]->SetPos(SimpleMath::Vector2(mp_title[i]->GetPos().x, sinWave));
+	}
 
 	// シーン遷移せず、α値が0でなかったら
 	if (!m_toStageSelectMoveOnChecker && mp_fade->GetAlpha() != 0.0f)
@@ -217,7 +237,10 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 		mp_startBtn->SetHover(true);
 		// α値設定
 		mp_startBtn->SetAlpha(m_colorAlpha);
-		mp_title->SetAlpha(m_colorAlpha);
+		for (int i = 0; i < MAX_TITLE_STR; i++)
+		{
+			mp_title[i]->SetAlpha(m_colorAlpha);
+		}
 
 		// フェードアウト
 		mp_fade->Fade(0.01f, Obj2D::FADE::FADE_OUT);
@@ -266,15 +289,17 @@ void SceneTitle::Render()
 	// タイトルの表示
 	if (GetFullScreen())
 	{
-		float width = mp_title->GetWidth() * 0.5f;
-		float height = mp_title->GetHeight() * 0.5f;
-		mp_title->SetRect(0, 0, width, height);
-		mp_title->SetScale(2.0f);
-		mp_title->RenderAlphaScale();
+		for (int i = 0; i < MAX_TITLE_STR; i++)
+		{
+			mp_title[i]->RenderAlphaScale();
+		}
 	}
 	else
 	{
-		mp_title->RenderAlphaScale();
+		for (int i = 0; i < MAX_TITLE_STR; i++)
+		{
+			mp_title[i]->RenderAlphaScale();
+		}
 	}
 
 	// スタートボタンの表示
