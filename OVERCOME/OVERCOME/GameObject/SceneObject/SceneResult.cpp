@@ -101,9 +101,14 @@ void SceneResult::Initialize()
 
 	// ”wŒi‚Ì¶¬
 	mp_bg = std::make_unique<Obj2D>();
-	mp_bg->Create(L"Resources\\Images\\gray.png", nullptr);
-	mp_bg->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 0.0f, 1.0f);
+	mp_bg->Create(L"Resources\\Images\\Result\\horrorCorridor_image.png", nullptr);
+	mp_bg->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 800.0f, 600.0f, 0.0f, 1.0f);
 	mp_bg->SetRect(0.0f, 0.0f, mp_bg->GetWidth(), mp_bg->GetHeight());
+	mp_bg->SetAlpha(1.0f);
+	float scale = windowWidth / mp_bg->GetWidth();
+	mp_bg->SetScale(scale);
+	float width = mp_bg->GetWidth() * scale;
+	mp_bg->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (width * 0.5f), 0.0f));
 
 	// RESULT•¶š—ñ‚Ì¶¬
 	mp_resultStr = std::make_unique<Obj2D>();
@@ -246,7 +251,7 @@ void SceneResult::Render()
 	int oneDigit = score % 10;				   // 1‚ÌˆÊ
 
 	// ”wŒi‚Ì•\¦
-	mp_bg->Render();
+	mp_bg->RenderAlphaScale();
 
 	// RESULT•¶š—ñ‚Ì•\¦
 	mp_resultStr->RenderAlphaScale();

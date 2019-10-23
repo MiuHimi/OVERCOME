@@ -36,7 +36,7 @@ ScenePlay::ScenePlay(SceneManager* sceneManager, bool isFullScreen)
 	  mp_player(nullptr),
 	  mp_gameEnemy(nullptr), mp_gameEnemyManager(nullptr),
 	  mp_gameRoad(nullptr), mp_gameMap(nullptr),
-	  mp_gameScore(nullptr),
+	  mp_gameScore(nullptr), mp_gameDecorateObject(nullptr),
 	  mp_outline(nullptr),
 	  mp_fade(nullptr),
    	  mp_matrixManager(nullptr)
@@ -106,6 +106,10 @@ void ScenePlay::Initialize()
 	// ゲーム道路のモデル読み込み
 	//mp_gameTarget->Create();
 
+
+	mp_gameDecorateObject = std::make_unique<GameDecorateObject>();
+	mp_gameDecorateObject->Create();
+	mp_gameDecorateObject->Initialize();
 
 	// スコアの生成
 	mp_gameScore = std::make_unique<GameScore>();
@@ -400,6 +404,11 @@ mp_gameEnemyManager->Update(timer, mp_player->GetPos(),
 	mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum,
 	mp_camera->GetCameraAngle());
 
+
+	int road = (mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType)*10 + 
+				mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum;
+	mp_gameDecorateObject->Update(road);
+
 // スコアの更新
 mp_gameScore->Update(timer);
 if (mp_gameScore->GetScore() == 0)
@@ -472,6 +481,9 @@ void ScenePlay::Render()
 	mp_gameMap->Render(mp_matrixManager);
 	// ゲーム的の描画
 	//mp_gameTarget->Render(mp_matrixManager);
+
+	// 装飾品の描画
+	mp_gameDecorateObject->Render(mp_matrixManager);
 
 	// 敵の描画
 	SimpleMath::Vector3 playerGlance = mp_player->GetPos();

@@ -20,6 +20,8 @@
 #include "../3DObject/GameEnemy.h"
 #include "../3DObject/GameEnemyManager.h"
 
+#include "../3DObject/GameDecorateObject.h"
+
 #include "../3DObject/GameRoad.h"
 #include "../3DObject/GameMap.h"
 
@@ -48,6 +50,8 @@ private:
 
 	std::unique_ptr<GameRoad>			mp_gameRoad;			   // 道オブジェクト
 	std::unique_ptr<GameMap>			mp_gameMap;				   // ステージオブジェクト
+
+	std::unique_ptr<GameDecorateObject>	mp_gameDecorateObject;	   // 装飾品オブジェクト
 
 	std::unique_ptr<GameScore>			mp_gameScore;			   // スコアオブジェクト
 

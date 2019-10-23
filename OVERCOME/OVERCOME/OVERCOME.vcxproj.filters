@@ -156,6 +156,9 @@
     <ClInclude Include="ExclusiveGameObject\EffectManager.h">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\3DObject\GameDecorateObject.h">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -263,6 +266,9 @@
     <ClCompile Include="ExclusiveGameObject\EffectManager.cpp">
       <Filter>Game\ExclusiveGameObject</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject\3DObject\GameDecorateObject.cpp">
+      <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -294,6 +300,9 @@
       <Filter>Models</Filter>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\house.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\wood_door.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
   </ItemGroup>

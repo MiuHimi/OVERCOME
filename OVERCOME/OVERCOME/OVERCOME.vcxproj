@@ -188,6 +188,7 @@
     <ClInclude Include="GameObject\3DObject\GameBullet.h" />
     <ClInclude Include="GameObject\3DObject\GameBulletManager.h" />
     <ClInclude Include="GameObject\3DObject\GameCamera.h" />
+    <ClInclude Include="GameObject\3DObject\GameDecorateObject.h" />
     <ClInclude Include="GameObject\3DObject\GameEnemy.h" />
     <ClInclude Include="GameObject\3DObject\GameEnemyManager.h" />
     <ClInclude Include="GameObject\3DObject\GameMap.h" />
@@ -227,6 +228,7 @@
     <ClCompile Include="GameObject\3DObject\GameBullet.cpp" />
     <ClCompile Include="GameObject\3DObject\GameBulletManager.cpp" />
     <ClCompile Include="GameObject\3DObject\GameCamera.cpp" />
+    <ClCompile Include="GameObject\3DObject\GameDecorateObject.cpp" />
     <ClCompile Include="GameObject\3DObject\GameEnemy.cpp" />
     <ClCompile Include="GameObject\3DObject\GameEnemyManager.cpp" />
     <ClCompile Include="GameObject\3DObject\GameMap.cpp" />
@@ -279,6 +281,9 @@
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\stage01.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\wood_door.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
   </ItemGroup>
