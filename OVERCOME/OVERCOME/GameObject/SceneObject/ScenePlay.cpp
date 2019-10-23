@@ -390,63 +390,62 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// 道オブジェクトの更新
 	mp_gameRoad->Update(timer);
 	// マップの更新
-mp_gameMap->Update(timer, mp_player->GetPlayer());
-// ゲーム的の更新
-//mp_gameTarget->Update(timer);
+	mp_gameMap->Update(timer, mp_player->GetPlayer());
+	// ゲーム的の更新
+	//mp_gameTarget->Update(timer);
 
-// プレイヤーの更新
-mp_player->Update(timer, isStartPlay, mp_camera->GetCameraAngle());
+	// プレイヤーの更新
+	mp_player->Update(timer, isStartPlay, mp_camera->GetCameraAngle());
 
-// 敵の更新
-SimpleMath::Vector3 playerPassPos = mp_player->GetPassingRoad();
-mp_gameEnemyManager->Update(timer, mp_player->GetPos(),
-	mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType,
-	mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum,
-	mp_camera->GetCameraAngle());
-
+	// 敵の更新
+	SimpleMath::Vector3 playerPassPos = mp_player->GetPassingRoad();
+	mp_gameEnemyManager->Update(timer, mp_player->GetPos(),
+		mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType,
+		mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum,
+		mp_camera->GetCameraAngle());
 
 	int road = (mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType)*10 + 
 				mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum;
 	mp_gameDecorateObject->Update(road);
 
-// スコアの更新
-mp_gameScore->Update(timer);
-if (mp_gameScore->GetScore() == 0)
-{
-	// スコアが0だったらゲームオーバー
-	SceneManager::SetResultSceneState(false);
-}
-// 体力がなくなったら
-if (mp_player->GetHP() == 0)
-{
-	// ゲームオーバー
-	SceneManager::SetResultSceneState(false);
-	// シーン遷移開始
-	m_toResultMoveOnChecker = true;
-}
-
-// シーン遷移操作
-if (m_toResultMoveOnChecker)
-{
-	float fadeSpeed = 0.0f;
-	if (SceneManager::GetResultSceneState())
+	// スコアの更新
+	mp_gameScore->Update(timer);
+	if (mp_gameScore->GetScore() == 0)
 	{
-		fadeSpeed = 0.02f;
+		// スコアが0だったらゲームオーバー
+		SceneManager::SetResultSceneState(false);
 	}
-	else
+	// 体力がなくなったら
+	if (mp_player->GetHP() == 0)
 	{
-		fadeSpeed = 0.01f;
+		// ゲームオーバー
+		SceneManager::SetResultSceneState(false);
+		// シーン遷移開始
+		m_toResultMoveOnChecker = true;
 	}
-	// フェードアウト
-	mp_fade->Fade(fadeSpeed, Obj2D::FADE::FADE_OUT);
-}
 
-// フェードアウトが終わり、シーン遷移が発生していたら
-if (mp_fade->GetAlpha() >= 1.0f && m_toResultMoveOnChecker)
-{
-	// リザルトシーンへ
-	m_sceneManager->RequestToChangeScene(SCENE_RESULT);
-}
+	// シーン遷移操作
+	if (m_toResultMoveOnChecker)
+	{
+		float fadeSpeed = 0.0f;
+		if (SceneManager::GetResultSceneState())
+		{
+			fadeSpeed = 0.02f;
+		}
+		else
+		{
+			fadeSpeed = 0.01f;
+		}
+		// フェードアウト
+		mp_fade->Fade(fadeSpeed, Obj2D::FADE::FADE_OUT);
+	}
+
+	// フェードアウトが終わり、シーン遷移が発生していたら
+	if (mp_fade->GetAlpha() >= 1.0f && m_toResultMoveOnChecker)
+	{
+		// リザルトシーンへ
+		m_sceneManager->RequestToChangeScene(SCENE_RESULT);
+	}
 }
 
 /// <summary>

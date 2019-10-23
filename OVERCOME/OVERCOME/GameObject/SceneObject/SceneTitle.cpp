@@ -249,7 +249,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	// ƒV[ƒ“‘JˆÚ
 	if (m_toStageSelectMoveOnChecker && m_colorAlpha <= 0.0f && mp_fade->GetAlpha() >= 1.0f)
 	{
-		m_sceneManager->RequestToChangeScene(SCENE_SELECTSTAGE);
+		m_sceneManager->RequestToChangeScene(SCENE_PLAY);
 	}
 }
 

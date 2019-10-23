@@ -82,6 +82,10 @@ private:
 	static const int			  MAX_SPAWN_TIME;			  // 敵が出現できる最大時間(フレーム数)
 	int							  m_spawnElapsedTime;		  // 敵が出現してからの経過時間(フレーム数)
 	
+	bool						  m_createFlag;				  // 敵が生成されたらtrueに
+	int							  m_createCount;			  // 敵の生成数をカウント
+	DirectX::SimpleMath::Vector3  m_entryEnemyPosTmp;		  // 敵の出現仮位置
+
 	static const int			  RESPAWN_NEED_TIME;		  // リスポーンに必要な時間(フレーム数)
 	int                           m_respawnTime;              // リスポーン時間(フレーム数)
 

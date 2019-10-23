@@ -42,6 +42,7 @@ const int GameEnemyManager::MAX_SMOKE_COUNT = 20;
 /// </summary>
 GameEnemyManager::GameEnemyManager()
 	: m_spawnElapsedTime(0), m_respawnTime(0), 
+	  m_createCount(0), m_entryEnemyPosTmp(0.0f,0.0f,0.0f), m_createFlag(false),
 	  m_entryEnemyPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_entryEnemyDistribute{ SimpleMath::Vector3(0.0f,0.0f,0.0f) },mp_enemy{ nullptr },
 	  m_hpPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) },m_shockPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_shockCount{0},
 	  m_pointPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_pointSize{ SimpleMath::Vector2(0.0f,0.0f) },
@@ -458,23 +459,67 @@ bool GameEnemyManager::IsAssault(int roadType)
 void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos)
 {
 	// 生成時間になったら敵の設定をする
-	if (m_respawnTime % RESPAWN_NEED_TIME != 0)return;
+	if ((assultP == 1 || assultP == 2) && m_respawnTime % RESPAWN_NEED_TIME != 0)return;
+	if (assultP == 3 && m_respawnTime % 120 != 0)return;
+	if (assultP == 4 && m_respawnTime % 120 != 0 || m_createFlag)return;
 
 	// 敵の襲撃時間だったら更新する
+	int posXTmp = 0;
+	int posYTmp = 0;
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 		// 敵生成～プレイヤーへ向ける処理
 		if (!mp_enemy[i]->GetState())
 		{
+			// 生成数が目標に達したら
+			if ((assultP == 3 && m_createCount >= 4) || (assultP == 4 && m_createCount >= 16))
+			{
+				m_createCount = 0;
+				m_respawnTime = 0;
+				break;
+			}
+
 			// まだ出現出来たら出現準備
 			mp_enemy[i]->SetState(true);
 
 			// 場所設定
 			int point = assultP - 1;
-			mp_enemy[i]->SetPos(SimpleMath::Vector3(m_entryEnemyPos[point].x + (rand() % (int)m_entryEnemyDistribute[point].x - (m_entryEnemyDistribute[point].x / 2)),
-													m_entryEnemyPos[point].y + (rand() % (int)m_entryEnemyDistribute[point].y),
-													m_entryEnemyPos[point].z));
-
+			switch (point)
+			{
+			case 0:
+			case 1:
+				mp_enemy[i]->SetPos(SimpleMath::Vector3(m_entryEnemyPos[point].x + (rand() % (int)m_entryEnemyDistribute[point].x - (m_entryEnemyDistribute[point].x / 2)),
+														m_entryEnemyPos[point].y + (rand() % (int)m_entryEnemyDistribute[point].y),
+														m_entryEnemyPos[point].z));
+				break;
+			case 2:
+				mp_enemy[i]->SetPos(SimpleMath::Vector3(m_entryEnemyPos[point].x ,
+														m_entryEnemyPos[point].y + posYTmp * (mp_enemy[i]->GetSize()*2.0f),
+														m_entryEnemyPos[point].z));
+				// カウント
+				posYTmp++;
+				// 生成数をカウント
+				m_createCount++; 
+				break;
+			case 3:
+				mp_enemy[i]->SetPos(SimpleMath::Vector3(m_entryEnemyPos[point].x + posXTmp * (mp_enemy[i]->GetSize()*3.0f),
+														m_entryEnemyPos[point].y + posYTmp * (mp_enemy[i]->GetSize()*3.0f),
+														m_entryEnemyPos[point].z));
+				// 敵を並べるためのカウント
+				posXTmp++;
+				if (posXTmp == 4)
+				{
+					posXTmp = 0;
+					posYTmp++;
+				}
+				// 生成数をカウント
+				m_createCount++;
+				m_createFlag = true;
+				break;
+			default:
+				break;
+			}
+			
 			// 体力設定
 			switch (mp_enemy[i]->GetType())
 			{
@@ -501,6 +546,7 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 			// 算出した値で回転しプレイヤーに向ける
 			mp_enemy[i]->SetRotateY(sita);
 
+			if ((assultP == 1 || assultP == 2))
 			break;
 		}
 	}
