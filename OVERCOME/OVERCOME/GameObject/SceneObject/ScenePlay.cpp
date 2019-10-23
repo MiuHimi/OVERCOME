@@ -183,6 +183,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		mp_fade->Fade(0.01f, Obj2D::FADE::FADE_IN);
 	}
 
+	// サウンドの更新
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->Update();
+
 	// 入力情報を更新
 	InputManager::SingletonGetInstance().Update();
 
@@ -331,6 +335,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			{
 				// HPを削る
 				mp_gameEnemyManager->SetEnemyHP(i, mp_gameEnemyManager->GetEnemyHP(i) - 1);
+				ADX2Le* adx2le = ADX2Le::GetInstance();
+				adx2le->Play(4);
 				// HPが0になったら
 				if (mp_gameEnemyManager->GetEnemyHP(i) == 0)
 				{

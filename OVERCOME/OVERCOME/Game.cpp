@@ -61,7 +61,7 @@ void Game::Initialize(HWND window, int width, int height)
 
 	// サウンド再生
 	ADX2Le* adx2le = ADX2Le::GetInstance();
-	adx2le->Initialize(L"OVERCOME.acf");
+	adx2le->Initialize(L"OVERCOME_Master.acf");
 
 	// スタートシーンの設定
 	mp_sceneManager = std::make_unique<SceneManager>(SceneId::SCENE_LOGO, m_isFullScreen);

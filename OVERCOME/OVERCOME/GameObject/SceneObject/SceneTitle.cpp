@@ -242,6 +242,8 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 			mp_title[i]->SetAlpha(m_colorAlpha);
 		}
 
+		adx2le->SetVolume(m_colorAlpha);
+
 		// フェードアウト
 		mp_fade->Fade(0.01f, Obj2D::FADE::FADE_OUT);
 	}

@@ -16,6 +16,8 @@
 #include "../../Utility/MatrixManager.h"
 #include "../../Utility/InputManager.h"
 
+#include "../../ExclusiveGameObject/ADX2Le.h"
+
 // usingディレクトリ
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -46,6 +48,8 @@ GameBulletManager::~GameBulletManager()
 /// </summary>
 void GameBulletManager::Initialize()
 {
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->LoadAcb(L"ScenePlay.acb", L"ScenePlay.awb");
 }
 /// <summary>
 /// 生成
@@ -116,6 +120,11 @@ bool GameBulletManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::
 					vel /= 2.0f;
 					mp_bullet[i]->SetVel(vel);
 					m_shootingFlag = true;
+
+					// 弾発射SE
+					ADX2Le* adx2le = ADX2Le::GetInstance();
+					adx2le->Play(2);
+
 					break;
 				}
 			}

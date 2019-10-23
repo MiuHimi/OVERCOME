@@ -19,6 +19,8 @@
 #include "Player.h"
 #include "GameMap.h"
 
+#include "../../ExclusiveGameObject/ADX2Le.h"
+
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
@@ -71,6 +73,10 @@ void GameEnemyManager::Initialize()
 {
 	// —”‰Šú‰»
 	srand((unsigned int)time(NULL));
+
+	// ƒTƒEƒ“ƒhÄ¶
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+	adx2le->LoadAcb(L"ScenePlay.acb", L"ScenePlay.awb");
 }
 /// <summary>
 /// ¶¬
@@ -357,6 +363,10 @@ void GameEnemyManager::ShockEnemy(int i)
 		// Ž©’e‚ª“–‚½‚Á‚½Žž‚Ì“G‚ÌˆÊ’u‚ðÝ’è
 		m_shockPos[i] = mp_enemy[i]->GetPos();
 		m_pointPos[i] = mp_enemy[i]->GetPos();
+
+		// “GÁ–ÅSE
+		ADX2Le* adx2le = ADX2Le::GetInstance();
+		adx2le->Play(5);
 	}
 }
 
@@ -545,6 +555,10 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 			float sita = std::atan2(subVector.x, subVector.z);
 			// ŽZo‚µ‚½’l‚Å‰ñ“]‚µƒvƒŒƒCƒ„[‚ÉŒü‚¯‚é
 			mp_enemy[i]->SetRotateY(sita);
+
+			// “G¶¬SE
+			ADX2Le* adx2le = ADX2Le::GetInstance();
+			adx2le->Play(3);
 
 			if ((assultP == 1 || assultP == 2))
 			break;

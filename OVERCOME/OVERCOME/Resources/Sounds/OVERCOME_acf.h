@@ -1,11 +1,12 @@
 ﻿/*===========================================================================*
  *  Header file for Atom Config File
  *  Project            : OVERCOME
- *  Tool Ver.          : CRI Atom Craft LE Ver.2.30.07
- *  File Path          : C:/Users/s172179/Documents/CriAtomCraft/OVERCOME/Public/OVERCOME.acf
- *  File Name          : OVERCOME.acf
- *  File Size          : 4,352 bytes
- *  Date Time          : 2019/01/11 18:41
+ *  Tool Ver.          : Ver.3.40.17
+ *  ACF  Ver.          : Ver.1.20.03
+ *  File Path          : C:/Users/s172179/Documents/CriAtomCraftProjects/OVERCOME/Public
+ *  File Name          : OVERCOME_acf.h
+ *  File Size          : 4416 bytes
+ *  Date Time          : 2019/10/23 18:05:06
  *  Target             : Public
  *  Categories         : 1
  *  AISAC Controls     : 16
@@ -33,45 +34,35 @@
 #define CRI_OVERCOME_ACF_REACTNUM (0)
 
 /* Category List (Category ID) */
-#define CRI_OVERCOME_ACF_CATEGORY_CATEGORY_0  ( 0) /* CategoryGroup_0/Category_0  */
+#define CRI_OVERCOME_ACF_CATEGORY_CATEGORY_0           ( 0) /*  */
 
 /* AISAC Control List (AISAC Control ID) */
-#define CRI_OVERCOME_ACF_AISACCONTROL_ANY             ( 0) /* Any  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_DISTANCE        ( 1) /* Distance  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL02  ( 2) /* AisacControl02  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL03  ( 3) /* AisacControl03  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL04  ( 4) /* AisacControl04  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL05  ( 5) /* AisacControl05  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL06  ( 6) /* AisacControl06  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL07  ( 7) /* AisacControl07  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL08  ( 8) /* AisacControl08  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL09  ( 9) /* AisacControl09  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL10  (10) /* AisacControl10  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL11  (11) /* AisacControl11  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL12  (12) /* AisacControl12  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL13  (13) /* AisacControl13  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL14  (14) /* AisacControl14  */
-#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL15  (15) /* AisacControl15  */
-
-/* Global AISAC List (Global AISAC Name) */
-// No Global AISAC 
-
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_00      ( 0) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_01      ( 1) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_02      ( 2) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_03      ( 3) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_04      ( 4) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_05      ( 5) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_06      ( 6) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_07      ( 7) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_08      ( 8) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_09      ( 9) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_10      (10) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_11      (11) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_12      (12) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_13      (13) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_14      (14) /*  */
+#define CRI_OVERCOME_ACF_AISACCONTROL_AISACCONTROL_15      (15) /*  */
 
 /* Voice Limit Group (Voice Limit Group Index) */
-#define CRI_OVERCOME_ACF_VOICELIMITGROUP_VOICELIMITGROUP_0  ( 0) /* VoiceLimitGroup_0  */
+#define CRI_OVERCOME_ACF_VOICELIMITGROUP_VOICELIMITGROUP_0    ( 0) /*  */
 
 /* DspSetting List (DspSetting Name) */
-#define CRI_OVERCOME_ACF_DSPSETTING_DSPBUSSETTING_0  "DspBusSetting_0" /*   */
-
-/* DspSettingSnapshot List (DspSettingSnapshot Name) */
-// No DspSettingSnapshot Control
-
+#define CRI_OVERCOME_ACF_DSPSETTING_DSPBUSSETTING_0      "DspBusSetting_0" /*  */
 
 /* DspBusName List (DspBus Name) */
-#define CRI_OVERCOME_ACF_DSPBUSNAME_MASTEROUT  "MasterOut"
+#define CRI_OVERCOME_ACF_DSPBUSNAME_MASTEROUT            "MasterOut" /*  */
 
 /* Game Variable (Game Variable Index) */
-#define CRI_OVERCOME_ACF_GAMEVARIABLE_DEFAULT  "Default" /*   */
-
-/* end of file */
+#define CRI_OVERCOME_ACF_GAMEVARIABLE_DEFAULT              ( 0) /*  */
 

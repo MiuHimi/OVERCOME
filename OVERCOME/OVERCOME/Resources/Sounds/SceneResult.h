@@ -1,26 +1,24 @@
 ﻿/*===========================================================================*
  *  Header file for Atom CueSheet Binary
  *  Project          : OVERCOME
- *  Tool Ver.        : CRI Atom Craft LE Ver.2.30.07
- *  File Path        : C:/Users/s172179/Documents/CriAtomCraft/OVERCOME/Public/WorkUnit_0/SceneResult.acb
- *  File Name        : SceneResult.acb
- *  File Size        : 19,488 bytes
- *  Date Time        : 2019/01/11 18:41
+ *  Tool Ver.        : Ver.3.40.17
+ *  ACB  Ver.        : Ver.1.31.00
+ *  File Path        : C:/Users/s172179/Documents/CriAtomCraftProjects/OVERCOME/Public/WorkUnit_0
+ *  File Name        : SceneResult.h
+ *  File Size        : 6208 bytes
+ *  Date Time        : 2019/10/23 18:05:08
  *  Target           : Public
- *  Cues             : 2
+ *  Cues             : 1
  *  CueSheet Comment : 
- *  Stream Awb Path  : SceneResult.awb
+ *  Stream Awb Path  : C:/Users/s172179/Documents/CriAtomCraftProjects/OVERCOME/Public/WorkUnit_0/SceneResult.awb
  *===========================================================================*/
 
-#define CRI_SCENERESULT_CUENUM (2)
+#define CRI_SCENERESULT_CUENUM (1)
 
 /* AISAC Control List (AISAC Control ID) */
-// No AISAC Control
-
 
 /* Cue List (Cue ID) */
-#define CRI_SCENERESULT_BGM_MAOUDAMASHII_ACOUSTIC06__ONLINE_AUDIO_CONVERTER  ( 0) /*   */
-#define CRI_SCENERESULT_CNCL01__ONLINE_AUDIO_CONVERTER                       ( 1) /*   */
+#define CRI_SCENERESULT_SCENERESULT_BGM      ( 0) /*  */
 
 /* Block List (Block Index) */
 

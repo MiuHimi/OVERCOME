@@ -19,6 +19,8 @@
 
 #include "../../GameObject/3DObject/GameEnemyManager.h"
 
+
+
 // usingディレクトリ
 using namespace DirectX;
 
@@ -76,6 +78,7 @@ void Player::Initialize()
 	mp_gameRoad->Initialize();
 	mp_gameRoad->Create();
 	
+
 }
 /// <summary>
 /// 生成処理
