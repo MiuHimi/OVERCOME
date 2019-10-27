@@ -410,9 +410,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum,
 		mp_camera->GetCameraAngle());
 
-	int road = (mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType)*10 + 
+	// 道中オブジェクトの更新
+	int roadID = (mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType)*10 + 
 				mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum;
-	mp_gameDecorateObject->Update(road);
+	mp_gameDecorateObject->Update(roadID);
 
 	// スコアの更新
 	mp_gameScore->Update(timer);
