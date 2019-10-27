@@ -293,7 +293,8 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 		}
 
 		// 弾の更新
-		mp_bulletManager->Update(timer, m_pos, cameraDir);
+		SimpleMath::Vector3 eyePos = SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height * 0.5f), m_pos.z);
+		mp_bulletManager->Update(timer, eyePos, cameraDir);
 
 		// プレイヤー移動(ベクトル)
 		const int OFFSETNUM = 8;

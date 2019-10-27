@@ -46,10 +46,11 @@ GameEnemyManager::GameEnemyManager()
 	: m_spawnElapsedTime(0), m_respawnTime(0), 
 	  m_createCount(0), m_entryEnemyPosTmp(0.0f,0.0f,0.0f), m_createFlag(false),
 	  m_entryEnemyPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_entryEnemyDistribute{ SimpleMath::Vector3(0.0f,0.0f,0.0f) },mp_enemy{ nullptr },
-	  m_hpPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) },m_shockPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_shockCount{0},
-	  m_pointPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_pointSize{ SimpleMath::Vector2(0.0f,0.0f) },
+	  m_hpPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_shockPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, 
+	  m_hitEffectState{ ENEMYHITEFFECT::EFFECT_FIRST }, m_hitPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_hitAnimationCount{0}, m_shockCount{ 0 },
+	  m_pointPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_pointSize{ SimpleMath::Vector2(0.0f,0.0f) }, 
 	  m_dengerousDirLR(DANGERDIRECTION::DIR_NONE), m_compereLength{0.0f}, m_lengthTmp(0), 
-	  m_textureHP{ nullptr }, m_texturePoint{ nullptr }, m_textureSmoke(nullptr),
+	  m_textureHP{ nullptr }, m_texturePoint{ nullptr }, m_textureHitEffect{ nullptr }, m_textureSmoke(nullptr),
 	  m_batchEffect(nullptr), m_batch(nullptr), m_inputLayout(nullptr)
 {
 }
@@ -241,6 +242,22 @@ void GameEnemyManager::Create()
 			break;
 		}
 	}
+
+	for (int i = 0; i < GameEnemyManager::ENEMYHITEFFECT::MAX_EFFECT; i++)
+	{
+		// ヒットエフェクトスプライトの設定
+		switch (i)
+		{
+		case (int)GameEnemyManager::ENEMYHITEFFECT::EFFECT_FIRST:
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hiteffect_first.png", nullptr, m_textureHitEffect[GameEnemyManager::ENEMYHITEFFECT::EFFECT_FIRST].GetAddressOf());
+			break;
+		case (int)GameEnemyManager::ENEMYHITEFFECT::EFFECT_SECOND:
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hiteffect_second.png", nullptr, m_textureHitEffect[GameEnemyManager::ENEMYHITEFFECT::EFFECT_SECOND].GetAddressOf());
+			break;
+		default:
+			break;
+		}
+	}
 	
 	// やられ演出用煙の設定
 	CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\smoke.png", nullptr, m_textureSmoke.GetAddressOf());
@@ -282,6 +299,41 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::V
 	wave += 0.1f;
 
 	// やられ演出関連
+
+	for (int i = 0; i < MAX_ENEMY; i++)
+	{
+		// 自弾に当たったら
+		if (mp_enemy[i]->GetHit())
+		{
+			// アニメーションカウント
+			if (m_hitAnimationCount[i] >= 0 && m_hitAnimationCount[i] < 5)
+			{
+				m_hitEffectState[i] = EFFECT_FIRST;
+			}
+			else if (m_hitAnimationCount[i] >= 5 && m_hitAnimationCount[i] < 10)
+			{
+				m_hitEffectState[i] = EFFECT_SECOND;
+			}
+			/*else if (m_hitAnimationCount[i] >= 10)
+			{
+				m_hitEffectState[i] = EFFECT_THIRD;
+			}*/
+
+			// カウントを進める
+			m_hitAnimationCount[i]++;
+		}
+		// 既定フレームを超えたら
+		if (m_hitAnimationCount[i] > 10)
+		{
+			// カウントリセット
+			m_hitAnimationCount[i] = 0;
+			// 位置を元に戻す
+			m_hitPos[i] = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+			// やられ演出サインを伏せる
+			mp_enemy[i]->SetHit(false);
+		}
+	}
+
 	UpdateSmoke();
 	UpdatePoint();
 
@@ -315,6 +367,16 @@ void GameEnemyManager::Render(MatrixManager* matrixManager, SimpleMath::Vector3 
 		{
 			// 敵を描画
 			mp_enemy[i]->Render(matrixManager);
+			// 自弾の攻撃を受けている間表示
+			if (mp_enemy[i]->GetHit())
+			{
+				// 表示位置設定(ビルボードで表示)
+				SimpleMath::Matrix world =
+					SimpleMath::Matrix::CreateConstrainedBillboard(
+						m_hitPos[i], eyePos, SimpleMath::Vector3::Up);
+				// ヒットエフェクトを描画
+				DrawHitEffect(matrixManager, world, m_hitEffectState[i]);
+			}
 			// 表示位置設定(ビルボードで表示)
 			SimpleMath::Matrix world =
 				SimpleMath::Matrix::CreateConstrainedBillboard(
@@ -727,6 +789,79 @@ void GameEnemyManager::DrawHP(MatrixManager * matrixManager, DirectX::SimpleMath
 		break;
 	}
 	
+	m_batchEffect->Apply(context);
+	context->IASetInputLayout(m_inputLayout.Get());
+	// 不透明部分を描画
+	m_batch->Begin();
+	m_batch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
+	m_batch->End();
+	// 不透明以外の半透明部分を描画する設定
+	m_batchEffect->SetAlphaFunction(D3D11_COMPARISON_NOT_EQUAL);
+	m_batchEffect->Apply(context);
+	// 半透明で描画
+	context->OMSetBlendState(m_states->NonPremultiplied(), nullptr, 0xFFFFFFFF);
+	// 深度バッファに書き込まないが参照だけする
+	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
+	// 半透明部分を描画
+	m_batch->Begin();
+	m_batch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
+	m_batch->End();
+}
+
+/// <summary>
+/// ヒットエフェクト表示
+/// </summary>
+/// <param name="matrixManager">行列管理オブジェクト</param>
+/// <param name="world">ワールド行列</param>
+/// <param name="enemyEffectState">敵のヒットエフェクトの状態</param>
+void GameEnemyManager::DrawHitEffect(MatrixManager * matrixManager, DirectX::SimpleMath::Matrix & world, ENEMYHITEFFECT enemyEffectState)
+{
+	auto m_states = CommonStateManager::SingletonGetInstance().GetStates();
+	auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
+
+	// 頂点情報
+	VertexPositionTexture vertex[4] =
+	{
+		VertexPositionTexture(SimpleMath::Vector3(0.9f,  0.9f,  0.0f), SimpleMath::Vector2(0.0f, 0.0f)),
+		VertexPositionTexture(SimpleMath::Vector3(-0.9f, 0.9f,  0.0f), SimpleMath::Vector2(1.0f, 0.0f)),
+		VertexPositionTexture(SimpleMath::Vector3(-0.9f, -0.9f, 0.0f), SimpleMath::Vector2(1.0f, 1.0f)),
+		VertexPositionTexture(SimpleMath::Vector3(0.9f,  -0.9f, 0.0f), SimpleMath::Vector2(0.0f, 1.0f)),
+	};
+	// テクスチャサンプラーの設定（クランプテクスチャアドレッシングモード）
+	ID3D11SamplerState* samplers[1] = { m_states->LinearClamp() };
+	context->PSSetSamplers(0, 1, samplers);
+	// 不透明に設定
+	context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+	// 深度バッファに書き込み参照する
+	context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	// カリングは左周り
+	context->RSSetState(m_states->CullCounterClockwise());
+	// 不透明のみ描画する設定
+	m_batchEffect->SetAlphaFunction(D3D11_COMPARISON_EQUAL);
+	m_batchEffect->SetReferenceAlpha(255);
+	m_batchEffect->SetFogEnabled(true);
+	m_batchEffect->SetFogStart(4.0f);
+	m_batchEffect->SetFogEnd(10.0f);
+	m_batchEffect->SetFogColor(Colors::Black);
+	m_batchEffect->SetWorld(world);
+	m_batchEffect->SetView(matrixManager->GetView());
+	m_batchEffect->SetProjection(matrixManager->GetProjection());
+	switch (enemyEffectState)
+	{
+		// エフェクト一段階目の場合
+	case GameEnemyManager::ENEMYHITEFFECT::EFFECT_FIRST:
+		m_batchEffect->SetTexture(m_textureHitEffect[ENEMYHITEFFECT::EFFECT_FIRST].Get());
+		break;
+		// エフェクト二段階目の場合
+	case GameEnemyManager::ENEMYHITEFFECT::EFFECT_SECOND:
+		m_batchEffect->SetTexture(m_textureHitEffect[ENEMYHITEFFECT::EFFECT_SECOND].Get());
+		break;
+	default:
+		// 無効な値
+		throw std::range_error("Invalid Value.");
+		break;
+	}
+
 	m_batchEffect->Apply(context);
 	context->IASetInputLayout(m_inputLayout.Get());
 	// 不透明部分を描画

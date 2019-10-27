@@ -339,6 +339,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 			{
 				// HPを削る
 				mp_gameEnemyManager->SetEnemyHP(i, mp_gameEnemyManager->GetEnemyHP(i) - 1);
+				// ヒットエフェクト
+				mp_gameEnemyManager->SetHit(i, true, mp_player->GetBulletManager()->GetPos(j));
 				ADX2Le* adx2le = ADX2Le::GetInstance();
 				adx2le->Play(4);
 				// HPが0になったら

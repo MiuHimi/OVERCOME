@@ -47,7 +47,8 @@ private:
 	static const int						 SPEED_ENEMY_PROBABILITY; // スピード敵の生成確率
 
 	bool                                     m_state;                 // 生存
-	bool									 m_shock;                 // 自機の弾が当たったタイミングのみフラグが立つ
+	bool									 m_isHit;                 // 自機の弾が当たったタイミングのみフラグが立つ
+	bool									 m_shock;                 // 自弾との接触により消えるタイミングのみフラグが立つ
 	Collision::Sphere                        m_sphere;                // 衝突判定情報
 
 	DirectX::SimpleMath::Quaternion          m_rotaX;                 // X軸回転
@@ -81,6 +82,7 @@ public:
 	DirectX::SimpleMath::Matrix GetMatrix() { return m_world; }
 
 	bool GetState()						    { return m_state; }
+	bool GetHit()							{ return m_isHit; }
 	bool GetShock()						    { return m_shock; }
 	EnemyType GetType()					    { return m_type; }
 	int GetHP()								{ return m_hp; }
@@ -104,6 +106,7 @@ public:
 	void SetDir(DirectX::SimpleMath::Vector3 dir)			 { m_dir = dir; }
 
 	void SetState(bool stateFlag)							 { m_state = stateFlag; }
+	void SetHit(bool hitFlag)								 { m_isHit = hitFlag; }
 	void SetShock(bool shockFlag)							 { m_shock = shockFlag; }
 	void SetHP(int hp)										 { m_hp = hp; }
 	void SetCollide(Collision::Sphere collide)				 { m_sphere = collide; }

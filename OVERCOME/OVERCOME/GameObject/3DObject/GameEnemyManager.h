@@ -74,6 +74,13 @@ public:
 		POWER_ENEMY_DAMAGE,
 		MAX_DAMAGE,
 	};
+	enum ENEMYHITEFFECT
+	{
+		EFFECT_FIRST,
+		EFFECT_SECOND,
+
+		MAX_EFFECT
+	};
 
 private:
 	static const int			  MAX_ENEMY = 100;			  // 最大敵数
@@ -103,6 +110,11 @@ private:
 	DirectX::SimpleMath::Vector3  m_shockPos[MAX_ENEMY];	  // 煙が出る位置
 	static const float			  SMOKE_SPEED;				  // 煙の昇る速さ
 	static const int			  MAX_SMOKE_COUNT;			  // 煙の昇る速さ
+	ENEMYHITEFFECT				  m_hitEffectState[MAX_ENEMY];
+															  // ヒットエフェクトの状態
+	DirectX::SimpleMath::Vector3  m_hitPos[MAX_ENEMY];		  // ヒットエフェクトが出る位置
+	int							  m_hitAnimationCount[MAX_ENEMY];
+															  // エフェクトアニメーション用のカウント
 	int							  m_shockCount[MAX_ENEMY];	  // エフェクトが出てからのカウント
 	DirectX::SimpleMath::Vector3  m_pointPos[MAX_ENEMY];	  // 得点が出る位置
 	DirectX::SimpleMath::Vector2  m_pointSize[MAX_ENEMY];	  // 得点の大きさ
@@ -117,6 +129,8 @@ private:
 								  m_textureHP[HP_NUM];		  // テクスチャハンドル(HPバー)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 								  m_texturePoint[MAX_TYPE];	  // テクスチャハンドル(得点)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+								  m_textureHitEffect[MAX_EFFECT]; // テクスチャハンドル(ヒットエフェクト)
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 								  m_textureSmoke;			  // テクスチャハンドル(やられ演出用煙)
 
@@ -185,6 +199,8 @@ public:
 	void	SetEnemyState(int i, bool flag)		{mp_enemy[i]->SetState(flag); }
 	// 敵のHPを設定
 	void	SetEnemyHP(int i, int hp)			{ mp_enemy[i]->SetHP(hp); }
+	// 接触判定を設定
+	void	SetHit(int i, bool flag, DirectX::SimpleMath::Vector3 hitPos)			{ mp_enemy[i]->SetHit(flag); m_hitPos[i] = /*mp_enemy[i]->GetPos()*/hitPos; }
 	//----------------------------------------------------------------------------//
 
 	/// <summary>
@@ -237,6 +253,13 @@ private:
 	/// <param name="world">ワールド行列</param>
 	/// <param name="enemyID">敵のID(タイプ)</param>
 	void DrawHP(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world, int enemyID);
+	/// <summary>
+	/// ヒットエフェクト表示
+	/// </summary>
+	/// <param name="matrixManager">行列管理オブジェクト</param>
+	/// <param name="world">ワールド行列</param>
+	/// <param name="enemyEffectState">敵のヒットエフェクトの状態</param>
+	void DrawHitEffect(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world, ENEMYHITEFFECT enemyEffectState);
 	/// <summary>
 	/// 得点表示
 	/// </summary>

@@ -38,7 +38,7 @@ GameEnemy::GameEnemy(DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vect
 	  m_rotaX(SimpleMath::Quaternion::Identity),
    	  m_rotaY(SimpleMath::Quaternion::Identity),
 	  m_state(false),
-	  m_shock(false),
+	  m_isHit(false), m_shock(false),
 	  m_world(DirectX::SimpleMath::Matrix::Identity),
 	  mp_modelEnemy(nullptr)
 {
@@ -126,7 +126,7 @@ void GameEnemy::Create(int probability)
 
 	// 衝突判定用オブジェクト設定
 	m_sphere.c = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-	m_sphere.r = 0.5f;
+	m_sphere.r = 0.3f;
 	SetCollision(m_sphere);
 }
 
