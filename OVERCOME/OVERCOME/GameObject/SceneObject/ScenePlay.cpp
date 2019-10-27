@@ -124,10 +124,14 @@ void ScenePlay::Initialize()
 
 	// あらすじオブジェクトの生成
 	mp_outline = std::make_unique<Obj2D>();
-	mp_outline->Create(L"Resources\\Images\\Play\\outline_image1.png", nullptr);
+	mp_outline->Create(L"Resources\\Images\\Play\\outline_image.png", nullptr);
 	mp_outline->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 700.0f, 500.0f, 1.0f, 1.0f);
 	mp_outline->SetRect(0.0f, 0.0f, mp_outline->GetWidth(), mp_outline->GetHeight());
-	mp_outline->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (mp_outline->GetWidth() * 0.5f), (windowHeight * 0.5f) - (mp_outline->GetHeight() * 0.5f)));
+	float scale = (windowWidth - 500) / mp_outline->GetWidth();
+	mp_outline->SetScale(scale);
+	float outlineWidth = mp_outline->GetWidth() * scale;
+	float outlineHeight = mp_outline->GetHeight() * scale;
+	mp_outline->SetPos(SimpleMath::Vector2((windowWidth * 0.5f) - (outlineWidth * 0.5f), (windowHeight * 0.5f) - (outlineHeight * 0.5f)));
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
@@ -496,18 +500,18 @@ void ScenePlay::Render()
 	playerGlance.y = mp_player->GetHeight();
 	mp_gameEnemyManager->Render(mp_matrixManager, playerGlance);
 
+	// あらすじの表示
+	if (!isStartPlay)
+	{
+		mp_outline->RenderAlphaScale();
+	}
+
 	// プレイヤーの描画
 	mp_player->Render(mp_matrixManager, mp_gameEnemyManager->GetDangerDir());
 
 	// スコアの描画
 	mp_gameScore->Render();
 
-	// あらすじの表示
-	if(!isStartPlay)
-	{
-		mp_outline->Render();
-	}
-	
 	// フェード画像の表示
 	mp_fade->RenderAlpha();
 }
