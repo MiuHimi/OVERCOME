@@ -28,6 +28,7 @@ private:
 	bool									m_isShowDoor[MAX_DOOR_NUM];		// ドアを表示できる状態かどうか
 
 	std::unique_ptr<DirectX::Model>			mp_modelEnemyDoor[6];			// 敵が出てくるドアモデルオブジェクト
+	std::unique_ptr<DirectX::Model>			mp_modelSmallRoom;				// 小部屋モデルオブジェクト
 
 // メンバー関数
 public:

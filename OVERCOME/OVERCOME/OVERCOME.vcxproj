@@ -280,6 +280,9 @@
     <MeshContentTask Include="..\FBX\house.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\small_room.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
     <MeshContentTask Include="..\FBX\stage01.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>

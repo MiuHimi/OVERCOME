@@ -284,9 +284,6 @@
     </Manifest>
   </ItemGroup>
   <ItemGroup>
-    <MeshContentTask Include="..\FBX\stage01.FBX">
-      <Filter>Models</Filter>
-    </MeshContentTask>
     <MeshContentTask Include="..\FBX\ghost.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
@@ -303,6 +300,12 @@
       <Filter>Models</Filter>
     </MeshContentTask>
     <MeshContentTask Include="..\FBX\wood_door.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\stage01.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\small_room.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
   </ItemGroup>
