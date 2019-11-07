@@ -308,6 +308,12 @@
     <MeshContentTask Include="..\FBX\small_room.FBX">
       <Filter>Models</Filter>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\ghost_chest_close.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\ghost_chest_open.FBX">
+      <Filter>Models</Filter>
+    </MeshContentTask>
   </ItemGroup>
   <ItemGroup>
     <None Include="ExclusiveGameObject\Effect.hlsli">

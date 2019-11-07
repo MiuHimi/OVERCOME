@@ -233,19 +233,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	{
 		for (int i = 0; i < mp_gameRoad->GetMaxFloorBlock(); i++)
 		{
-			//if (Collision::HitCheck_Box2Box(mp_gameRoad->GetCollision(j, i)->GetCollision(), mp_player->GetCollision()) == true)
-			//{
-			//	if (i != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x || j != mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)break;
-
-			//	// ゴールに到達したら
-			//	if (i == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x &&
-			//		j == mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y)
-			//	{
-			//		m_toResultMoveOnChecker = true;
-			//		SceneManager::SetResultSceneState(true);
-			//	}
-			//}
-
 			SimpleMath::Vector3 roadpos = mp_gameRoad->GetRoadObject((int)mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).x, (int)mp_gameRoad->GetPosType(GameRoad::PosType::GOAL).y).pos;
 			SimpleMath::Vector3 playerpos = mp_player->GetPos();
 			float distX = roadpos.z - playerpos.x;
@@ -418,7 +405,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 
 	// 道中オブジェクトの更新
 	int roadID = (mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType)*10 + 
-				mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum;
+				  mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum;
 	mp_gameDecorateObject->Update(roadID);
 
 	// スコアの更新

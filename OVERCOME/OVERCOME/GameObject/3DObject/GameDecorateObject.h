@@ -27,8 +27,21 @@ private:
 	bool									m_isMoveDoor[MAX_DOOR_NUM];		// ドアが動き出したかどうか
 	bool									m_isShowDoor[MAX_DOOR_NUM];		// ドアを表示できる状態かどうか
 
-	std::unique_ptr<DirectX::Model>			mp_modelEnemyDoor[6];			// 敵が出てくるドアモデルオブジェクト
+	DirectX::SimpleMath::Matrix				m_chestRota[3];					// チェストオブジェクトの回転行列
+	DirectX::SimpleMath::Vector3			m_chestTrans[3];				// チェストオブジェクトの移動行列
+	DirectX::SimpleMath::Vector3			m_chestTempPos[3];				// チェストオブジェクトの基本位置
+	int										m_shakeCount[3];				// チェストが振動するまでのカウント
+	int										m_shakeVelCount[3];				// チェストがある方向に振動しているカウント
+	int										m_shakeNeedCount[3];			// チェストが振動するまでに必要なカウント
+	bool									m_isChestOpen[3];				// チェストが開閉しているかどうか
+	static const int						SHAKE_COUNT;					// 一方向に振動するカウント
+	static const DirectX::SimpleMath::Vector3
+											SHAKE_VEL;						// 振動する方向
+
+	std::unique_ptr<DirectX::Model>			mp_modelEnemyDoor[MAX_DOOR_NUM];// 敵が出てくるドアモデルオブジェクト
 	std::unique_ptr<DirectX::Model>			mp_modelSmallRoom;				// 小部屋モデルオブジェクト
+	std::unique_ptr<DirectX::Model>			mp_modelEnemyChestOpen[3];		// 敵が出てくるチェストモデルオブジェクト
+	std::unique_ptr<DirectX::Model>			mp_modelEnemyChestClose[3];		// 敵が出てくるチェストモデルオブジェクト
 
 // メンバー関数
 public:
@@ -67,4 +80,15 @@ private:
 	/// <param name="trans">移動行列</param>
 	DirectX::SimpleMath::Matrix SetWorldMatrix(DirectX::SimpleMath::Matrix& world, DirectX::SimpleMath::Matrix rota, DirectX::SimpleMath::Matrix trans);
 
+	/// <summary>
+	/// 敵出現ドアの更新
+	/// </summary>
+	/// <param name="roadID">道ID</param>
+	void UpdateEnemyDoor(int roadID);
+
+	/// <summary>
+	/// 敵出現チェストの更新
+	/// </summary>
+	/// <param name="roadID">道ID</param>
+	void UpdateEnemyChest(int roadID);
 };

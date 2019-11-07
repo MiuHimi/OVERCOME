@@ -185,6 +185,25 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	// エフェクトの更新
 	mp_effectManager->Update(timer);
 
+	// ライトの計算
+	auto SetLight = [&](IEffect* effect)
+	{
+		IEffectLights* lights = dynamic_cast<IEffectLights*>(effect);
+		if (lights)
+		{
+			lights->SetAmbientLightColor(SimpleMath::Vector3(0.5f, 0.5f, 0.5f)); // アンビエント色を設定する
+			lights->SetLightEnabled(0, true);                        // １番のライトON
+			lights->SetLightEnabled(1, false);                       // ２番のライトOFF
+			lights->SetLightEnabled(2, false);                       // ３番のライトOFF
+			lights->SetLightDiffuseColor(0, Colors::Red);            // ライトの色
+			SimpleMath::Vector3 light_dir(0.0f, 0.0f, -1);           // ライトの方向ベクトル
+			light_dir.Normalize();                                   // ライトの方向ベクトルを正規化する
+			lights->SetLightDirection(0, light_dir);                 // １番のライトの方向を設定する
+			lights->SetPerPixelLighting(true);                       // ピクセルシェーダで光の影響を計算する
+		}
+	};
+	//mp_modelHouse->UpdateEffects(SetLight);
+
 	// カメラの更新(タイトルシーンのカメラは定点カメラ)
 	mp_camera->Update(timer, SimpleMath::Vector3(0.0f,0.0f,0.0f), 0.0f, SimpleMath::Vector3(0.0f, 0.0f, 0.0f), true);
 	

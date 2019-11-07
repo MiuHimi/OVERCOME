@@ -271,6 +271,12 @@
     <MeshContentTask Include="..\FBX\ghost.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
+    <MeshContentTask Include="..\FBX\ghost_chest_close.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+    <MeshContentTask Include="..\FBX\ghost_chest_open.FBX">
+      <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
     <MeshContentTask Include="..\FBX\ghost_power.FBX">
       <ContentOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\\Models\\%(Filename).cmo</ContentOutput>
     </MeshContentTask>
