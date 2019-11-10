@@ -31,7 +31,7 @@ GameDecorateObject::GameDecorateObject()
 	: m_world(SimpleMath::Matrix::Identity),
 	  m_doorRota{ SimpleMath::Matrix::Identity }, m_doorTrans{ SimpleMath::Vector3::Zero }, m_isMoveDoor{ false }, m_isShowDoor{ false },
 	  m_chestRota{ SimpleMath::Matrix::Identity }, m_chestTrans{ SimpleMath::Vector3::Zero }, m_chestTempPos{ SimpleMath::Vector3::Zero }, m_chestHeight(2.5f),
-	  m_shakeCount{ 0 }, m_shakeVelCount{ 0 }, m_shakeNeedCount{ 0 }, m_isChestOpen{ false },
+	m_shakeCount{ 0 }, m_shakeVelCount{ 0 }, m_shakeNeedCount{ 0 }, m_isChestOpen{ false }, m_isChestSound{ false },
 	  mp_modelEnemyDoor {nullptr}, mp_modelSmallRoom(nullptr),
 	  mp_modelEnemyChestOpen{nullptr}, mp_modelEnemyChestClose{ nullptr }
 {
@@ -448,6 +448,13 @@ void GameDecorateObject::UpdateEnemyChest(int roadID)
 		{
 			// 扉オープン
 			m_isChestOpen[i] = true;
+			if (!m_isChestSound[i])
+			{
+				m_isChestSound[i] = true;
+				// ドアが開くSE
+				ADX2Le* adx2le = ADX2Le::GetInstance();
+				adx2le->Play(7);
+			}
 		}
 		else if (m_shakeVelCount[i] / SHAKE_COUNT >= 16)
 		{
@@ -459,6 +466,7 @@ void GameDecorateObject::UpdateEnemyChest(int roadID)
 
 			// 扉クローズ
 			m_isChestOpen[i] = false;
+			m_isChestSound[i] = false;
 		}
 	}
 }

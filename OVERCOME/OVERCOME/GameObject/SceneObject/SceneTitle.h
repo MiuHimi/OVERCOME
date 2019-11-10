@@ -23,6 +23,13 @@ class SceneTitle : public SceneBase
 //public:
 
 private:
+	enum GHOST_DIR
+	{
+		NONE,
+		RIGHT_DIR = 90,
+		LEFT_DIR = -90
+	};
+
 	bool                                               m_toStageSelectMoveOnChecker;
 																				  // ステージセレクトシーンに進めるかどうかのチェック
 
@@ -36,11 +43,24 @@ private:
 
 	std::unique_ptr<GameCamera>						   mp_camera;			      // ゲームカメラオブジェクト
 
+	static const int								   MAX_GHOST_POS_X;			  // 幽霊がいけるX軸の最大値
+	static const float								   MAX_GHOST_POS_Y;			  // 幽霊がいけるY軸の最大値
+	static const float								   MIN_GHOST_POS_Y;			  // 幽霊がいけるY軸の最小値
+	static const int								   RESPAWN_COUNT_MIN;		  // 幽霊のリスポーンカウント最小値
+	static const int								   RESPAWN_COUNT_MAX;		  // 幽霊のリスポーンカウント最大値
+	GHOST_DIR										   m_ghostDir;				  // 幽霊の向き
+	DirectX::SimpleMath::Vector3					   m_ghostPos;				  // 幽霊の位置
+	int												   m_spawnCount;			  // 次スポーンするためのカウント
+	int												   m_nextSpawnCount;		  // スポーンするまでのカウント
+
 	std::unique_ptr<DirectX::Model>					   mp_modelHouse;			  // 家モデルオブジェクト
+	std::unique_ptr<DirectX::Model>					   mp_modelEnemy;			  // 敵モデルオブジェクト
 
 	MatrixManager*                                     mp_matrixManager;          // 行列管理変数
 
 	EffectManager*									   mp_effectManager;		  // エフェクト管理変数
+
+	
 
 // メンバー関数
 public:

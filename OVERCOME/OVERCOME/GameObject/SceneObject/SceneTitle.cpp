@@ -6,6 +6,8 @@
 //////////////////////////////////////////////////////////////
 
 // インクルードディレクトリ
+#include <math.h>
+
 #include "../../pch.h"
 #include "SceneManager.h"
 #include "SceneTitle.h"
@@ -21,6 +23,11 @@ using namespace DirectX;
 
 // constディレクトリ
 const int SceneTitle::TITLE_STR_WIDTH = 60;
+const int SceneTitle::MAX_GHOST_POS_X = 20;
+const float SceneTitle::MAX_GHOST_POS_Y = 57.0f;
+const float SceneTitle::MIN_GHOST_POS_Y = 43.0f;
+const int SceneTitle::RESPAWN_COUNT_MIN = 180;
+const int SceneTitle::RESPAWN_COUNT_MAX = 240;
 
 
 /// <summary>
@@ -32,9 +39,11 @@ SceneTitle::SceneTitle(SceneManager * sceneManager, bool isFullScreen)
 	: SceneBase(sceneManager, isFullScreen),
 	  m_toStageSelectMoveOnChecker(false),
 	  m_colorAlpha(0.0f),
-	mp_title{ nullptr }, mp_startBtn(nullptr), mp_fade(nullptr),
+	  mp_title{ nullptr }, mp_startBtn(nullptr), mp_fade(nullptr),
 	  mp_camera(nullptr),
-	  mp_modelHouse(nullptr),
+	  m_ghostPos(SimpleMath::Vector3(0.0f,0.0f,0.0f)), m_ghostDir(SceneTitle::GHOST_DIR::NONE),
+	  m_spawnCount(0), m_nextSpawnCount(0),
+	  mp_modelHouse(nullptr), mp_modelEnemy(nullptr),
 	  mp_matrixManager(nullptr),
 	  mp_effectManager(nullptr)
 {
@@ -107,12 +116,19 @@ void SceneTitle::Initialize()
 	// カメラオブジェクトの作成
 	mp_camera = std::make_unique<GameCamera>(size.right, size.bottom, m_isFullScreen);
 
+	// 幽霊初期位置
+	m_ghostPos = SimpleMath::Vector3(-20.0f, 45.0f, 130.0f);
+	m_ghostDir = GHOST_DIR::RIGHT_DIR;
+	m_nextSpawnCount = 30; // デフォルト値
+
 	// エフェクトファクトリー
 	EffectFactory fx(DX::DeviceResources::SingletonGetInstance().GetD3DDevice());
 	// モデルのテクスチャの入っているフォルダを指定する
 	fx.SetDirectory(L"Resources\\Models");
 	// 家モデルを作成
 	mp_modelHouse = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\house.cmo", fx);
+	// 敵モデルを作成
+	mp_modelEnemy = Model::CreateFromCMO(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Models\\ghost.cmo", fx);
 
 	// 行列管理変数の初期化
 	mp_matrixManager = new MatrixManager();
@@ -178,6 +194,10 @@ void SceneTitle::Finalize()
 /// <param name="timer">時間情報</param>
 void SceneTitle::Update(DX::StepTimer const& timer)
 {
+	// サイン波が変動するための値
+	static float ghostWave;
+	ghostWave += 0.05f;
+
 	// サウンドの更新
 	ADX2Le* adx2le = ADX2Le::GetInstance();
 	adx2le->Update();
@@ -186,7 +206,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 	mp_effectManager->Update(timer);
 
 	// ライトの計算
-	auto SetLight = [&](IEffect* effect)
+	/*auto SetLight = [&](IEffect* effect)
 	{
 		IEffectLights* lights = dynamic_cast<IEffectLights*>(effect);
 		if (lights)
@@ -202,7 +222,49 @@ void SceneTitle::Update(DX::StepTimer const& timer)
 			lights->SetPerPixelLighting(true);                       // ピクセルシェーダで光の影響を計算する
 		}
 	};
-	//mp_modelHouse->UpdateEffects(SetLight);
+	mp_modelEnemy->UpdateEffects(SetLight);*/
+
+	// 幽霊の移動
+	if(m_ghostDir == GHOST_DIR::RIGHT_DIR)
+		m_ghostPos.x += 0.1f;
+	else if (m_ghostDir == GHOST_DIR::LEFT_DIR)
+		m_ghostPos.x -= 0.1f;
+	// ふわふわさせるためにサイン波を使用
+	float sinWave = sin(ghostWave) * 0.05f;
+	m_ghostPos.y += sinWave;
+
+	// 幽霊の方向転換
+	if (m_ghostPos.x > (int)MAX_GHOST_POS_X)
+	{
+		m_spawnCount++;
+		if (m_spawnCount > m_nextSpawnCount)
+		{
+			// 幽霊を反対向きに
+			m_ghostDir = GHOST_DIR::LEFT_DIR;
+			// 幽霊の高さ設定
+			m_ghostPos.y = (float)(MIN_GHOST_POS_Y + rand()*(MAX_GHOST_POS_Y - MIN_GHOST_POS_Y + 1) / (1 + RAND_MAX));
+			// カウントをリセット
+			m_spawnCount = 0;
+			// 次にスポーンするのに必要なカウントを設定
+			m_nextSpawnCount = RESPAWN_COUNT_MIN + rand()*(RESPAWN_COUNT_MAX - RESPAWN_COUNT_MIN + 1) / (1 + RAND_MAX);
+		}
+	}
+	else if (m_ghostPos.x < (int)-MAX_GHOST_POS_X)
+	{
+		m_spawnCount++;
+		if (m_spawnCount > m_nextSpawnCount)
+		{
+			// 幽霊を反対向きに
+			m_ghostDir = GHOST_DIR::RIGHT_DIR;
+			// 幽霊の高さ設定
+			m_ghostPos.y = (float)(MIN_GHOST_POS_Y + rand()*(MAX_GHOST_POS_Y - MIN_GHOST_POS_Y + 1) / (1 + RAND_MAX));
+			// カウントをリセット
+			m_spawnCount = 0;
+			// 次にスポーンするのに必要なカウントを設定
+			m_nextSpawnCount = RESPAWN_COUNT_MIN + rand()*(RESPAWN_COUNT_MAX - RESPAWN_COUNT_MIN + 1) / (1 + RAND_MAX);
+		}
+	}
+
 
 	// カメラの更新(タイトルシーンのカメラは定点カメラ)
 	mp_camera->Update(timer, SimpleMath::Vector3(0.0f,0.0f,0.0f), 0.0f, SimpleMath::Vector3(0.0f, 0.0f, 0.0f), true);
@@ -302,6 +364,15 @@ void SceneTitle::Render()
 	SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
 	// 家の描画
 	mp_modelHouse->Draw(DX::DeviceResources().SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(),
+						world, mp_matrixManager->GetView(), mp_matrixManager->GetProjection());
+
+	
+	SimpleMath::Matrix rota = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians((float)m_ghostDir));
+	world *= rota;
+	SimpleMath::Matrix trans = SimpleMath::Matrix::CreateTranslation(m_ghostPos);
+	world *= trans;
+
+	mp_modelEnemy->Draw(DX::DeviceResources().SingletonGetInstance().GetD3DDeviceContext(), *CommonStateManager::SingletonGetInstance().GetStates(),
 						world, mp_matrixManager->GetView(), mp_matrixManager->GetProjection());
 
 	// エフェクトの描画
