@@ -399,9 +399,12 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// 敵の更新
 	SimpleMath::Vector3 playerPassPos = mp_player->GetPassingRoad();
 	mp_gameEnemyManager->Update(timer, mp_player->GetPos(),
-		mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType,
-		mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum,
-		mp_camera->GetCameraAngle());
+								mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType,
+								mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum,
+								mp_camera->GetCameraAngle(),
+								mp_gameDecorateObject->GetChestPos(),
+								mp_gameDecorateObject->GetChestHeight(),
+								mp_gameDecorateObject->GetChestIsOpen());
 
 	// 道中オブジェクトの更新
 	int roadID = (mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType)*10 + 

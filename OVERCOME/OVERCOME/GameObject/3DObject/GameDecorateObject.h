@@ -8,6 +8,7 @@
 #pragma once
 
 // インクルードディレクトリ
+#include <array>
 #include <Model.h>
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/StepTimer.h"
@@ -17,6 +18,7 @@ class GameDecorateObject
 {
 // メンバー変数
 public:
+	static const int						MAX_CHEST_NUM = 3;				// チェストの最大数
 
 private:
 	DirectX::SimpleMath::Matrix				m_world;						// ワールド座標
@@ -30,6 +32,7 @@ private:
 	DirectX::SimpleMath::Matrix				m_chestRota[3];					// チェストオブジェクトの回転行列
 	DirectX::SimpleMath::Vector3			m_chestTrans[3];				// チェストオブジェクトの移動行列
 	DirectX::SimpleMath::Vector3			m_chestTempPos[3];				// チェストオブジェクトの基本位置
+	float									m_chestHeight;					// チェストオブジェクトの高さ
 	int										m_shakeCount[3];				// チェストが振動するまでのカウント
 	int										m_shakeVelCount[3];				// チェストがある方向に振動しているカウント
 	int										m_shakeNeedCount[3];			// チェストが振動するまでに必要なカウント
@@ -71,6 +74,19 @@ public:
 	/// 廃棄処理
 	/// </summary>
 	void Depose();
+
+	//--------------------Getter--------------------//
+
+	// チェストの位置を取得
+	DirectX::SimpleMath::Vector3*	GetChestPos()		{ return m_chestTrans; }
+
+	// チェストの高さを取得
+	float							GetChestHeight()	{ return m_chestHeight; }
+
+	// チェストの開閉状態を取得
+	std::array<bool, 3>				GetChestIsOpen()	{ return{ m_isChestOpen[0], m_isChestOpen[1], m_isChestOpen[2] }; }
+
+	//----------------------------------------------//
 
 private:
 	/// <summary>

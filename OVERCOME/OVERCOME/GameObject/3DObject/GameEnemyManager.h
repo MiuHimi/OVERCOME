@@ -9,6 +9,7 @@
 
 // インクルードディレクトリ
 #include <vector>
+#include <array>
 #include <Effects.h>
 #include <PrimitiveBatch.h>
 #include <VertexTypes.h>
@@ -81,6 +82,12 @@ public:
 
 		MAX_EFFECT
 	};
+	enum MAXCREATECOUNT
+	{
+		DONTCREATE,
+		FOUR = 4,
+		SIXTEEN = 16
+	};
 
 private:
 	static const int			  MAX_ENEMY = 100;			  // 最大敵数
@@ -88,8 +95,12 @@ private:
 
 	static const int			  MAX_SPAWN_TIME;			  // 敵が出現できる最大時間(フレーム数)
 	int							  m_spawnElapsedTime;		  // 敵が出現してからの経過時間(フレーム数)
+
+	static const int			  CREATE_PROBABILITY;		  // 生成確率(rand()と共に使用)
 	
-	bool						  m_createFlag;				  // 敵が生成されたらtrueに
+	bool						  m_createFillFlag;			  // 敵の生成で出現限度が満たされたらtrueに
+	bool						  m_openChestCreateFlag[3];	  // チェストから出現(生成)したらtrueに
+	int							  m_chestCreateCount[3];	  // 生成したチェストから再び生成させるためのカウント
 	int							  m_createCount;			  // 敵の生成数をカウント
 	DirectX::SimpleMath::Vector3  m_entryEnemyPosTmp;		  // 敵の出現仮位置
 
@@ -165,7 +176,10 @@ public:
 	/// <param name="assaultPoint">道の番号(何番目かを取得)</param>
 	/// <param name="cameraDir">プレイヤーの向き(カメラの向き)</param>
 	/// <returns>終了状態</returns>
-	bool Update(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, int roadType, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir);
+	bool Update(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos,
+				int roadType, int assaultPoint, 
+				DirectX::SimpleMath::Vector3& cameraDir, 
+				DirectX::SimpleMath::Vector3* chestEntryPos, float chestHeight, std::array<bool, 3> isChestOpen);
 	/// <summary>
 	/// 描画
 	/// </summary>
@@ -233,7 +247,7 @@ private:
 	/// </summary>
 	/// <param name="assultP">襲撃ポイント</param>
 	/// <param name="playerPos">プレイヤーの位置</param>
-	void CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos);
+	void CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos, DirectX::SimpleMath::Vector3* chestEntryPos, float chestHeight, std::array<bool, 3> isChestOpen);
 
 	/// <summary>
 	/// 敵移動管理

@@ -18,6 +18,7 @@
 #include "GameEnemyManager.h"
 #include "Player.h"
 #include "GameMap.h"
+#include "GameDecorateObject.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
@@ -30,6 +31,7 @@ using namespace DirectX;
 
 // constディレクトリ
 const int GameEnemyManager::MAX_SPAWN_TIME = 600;
+const int GameEnemyManager::CREATE_PROBABILITY = 5;
 const int GameEnemyManager::RESPAWN_NEED_TIME = 40;
 const int GameEnemyManager::BASE_LENGTH = 150;
 const float GameEnemyManager::CONTROL_NORMAL_VELOCITY = 200.0f;
@@ -44,7 +46,7 @@ const int GameEnemyManager::MAX_SMOKE_COUNT = 20;
 /// </summary>
 GameEnemyManager::GameEnemyManager()
 	: m_spawnElapsedTime(0), m_respawnTime(0), 
-	  m_createCount(0), m_entryEnemyPosTmp(0.0f,0.0f,0.0f), m_createFlag(false),
+	  m_createCount(0), m_entryEnemyPosTmp(0.0f,0.0f,0.0f), m_createFillFlag(false), m_openChestCreateFlag{ false }, m_chestCreateCount{ 0 },
 	  m_entryEnemyPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_entryEnemyDistribute{ SimpleMath::Vector3(0.0f,0.0f,0.0f) },mp_enemy{ nullptr },
 	  m_hpPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_shockPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, 
 	  m_hitEffectState{ ENEMYHITEFFECT::EFFECT_FIRST }, m_hitPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_hitAnimationCount{0}, m_shockCount{ 0 },
@@ -206,16 +208,16 @@ void GameEnemyManager::Create()
 		switch (i)
 		{
 		case (int)GameEnemyManager::HP_MAX:
-			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_max.png", nullptr, m_textureHP[GameEnemyManager::HP_MAX].GetAddressOf());
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_max_frame.png", nullptr, m_textureHP[GameEnemyManager::HP_MAX].GetAddressOf());
 			break;
 		case (int)GameEnemyManager::HP_NORMAL_DAMAGE:
-			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_normal_damage.png", nullptr, m_textureHP[GameEnemyManager::HP_NORMAL_DAMAGE].GetAddressOf());
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_normal_damage_frame.png", nullptr, m_textureHP[GameEnemyManager::HP_NORMAL_DAMAGE].GetAddressOf());
 			break;
 		case (int)GameEnemyManager::HP_POWER_DAMAGE:
-			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_power_damage.png", nullptr, m_textureHP[GameEnemyManager::HP_POWER_DAMAGE].GetAddressOf());
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_power_damage_frame.png", nullptr, m_textureHP[GameEnemyManager::HP_POWER_DAMAGE].GetAddressOf());
 			break;
 		case (int)GameEnemyManager::HP_POWER_CRITICAL:
-			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_power_critical.png", nullptr, m_textureHP[GameEnemyManager::HP_POWER_CRITICAL].GetAddressOf());
+			CreateWICTextureFromFile(DX::DeviceResources::SingletonGetInstance().GetD3DDevice(), L"Resources\\Images\\Play\\enemy_hp_power_critical_frame.png", nullptr, m_textureHP[GameEnemyManager::HP_POWER_CRITICAL].GetAddressOf());
 			break;
 		case (int)GameEnemyManager::HP_NUM:
 			break;
@@ -292,14 +294,13 @@ void GameEnemyManager::Create()
 /// <param name="assaultPoint">襲撃ポイントの番号</param>
 /// <param name="cameraDir">カメラの向き(プレイヤーの視線)</param>
 /// <returns>終了状態</returns>
-bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& playerPos, int roadType, int assaultPoint, DirectX::SimpleMath::Vector3& cameraDir)
+bool GameEnemyManager::Update(DX::StepTimer const& timer, SimpleMath::Vector3& playerPos, int roadType, int assaultPoint, SimpleMath::Vector3& cameraDir, SimpleMath::Vector3* chestPos, float chestHeight, std::array<bool, 3> isChestOpen)
 {
 	// サイン波が変動するための値
 	static float wave;
 	wave += 0.1f;
 
 	// やられ演出関連
-
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 		// 自弾に当たったら
@@ -314,10 +315,6 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::V
 			{
 				m_hitEffectState[i] = EFFECT_SECOND;
 			}
-			/*else if (m_hitAnimationCount[i] >= 10)
-			{
-				m_hitEffectState[i] = EFFECT_THIRD;
-			}*/
 
 			// カウントを進める
 			m_hitAnimationCount[i]++;
@@ -346,7 +343,7 @@ bool GameEnemyManager::Update(DX::StepTimer const& timer, DirectX::SimpleMath::V
 	m_respawnTime++;
 
 	// 敵生成管理
-	CreateEnemy(assaultPoint, playerPos);
+	CreateEnemy(assaultPoint, playerPos, chestPos, chestHeight, isChestOpen);
 
 	// 敵移動管理
 	MoveEnemy(timer, playerPos, cameraDir, wave);
@@ -528,24 +525,71 @@ bool GameEnemyManager::IsAssault(int roadType)
 /// </summary>
 /// <param name="assultP">襲撃ポイント</param>
 /// <param name="playerPos">プレイヤーの位置</param>
-void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos)
+/// <param name="chestEntryPos">チェストから出現する位置(配列)</param>
+/// <param name="isChestOpen">チェストが開いているか(配列)</param>
+void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos, SimpleMath::Vector3* chestEntryPos, float chestHeight, std::array<bool, 3> isChestOpen)
 {
 	// 生成時間になったら敵の設定をする
-	if ((assultP == 1 || assultP == 2) && m_respawnTime % RESPAWN_NEED_TIME != 0)return;
+	if (assultP == 1 && m_respawnTime % RESPAWN_NEED_TIME != 0)return;
+	if (assultP == 2)
+	{
+		for (int i = 0; i < (int)GameDecorateObject::MAX_CHEST_NUM; i++)
+		{
+			// 生成できる場所があったら
+			if (!m_openChestCreateFlag[i])
+			{
+				// チェストが開いていたら
+				if (isChestOpen[i])
+				{
+					// 生成できる
+					break;
+				}
+				else
+				{
+					if (i != ((int)GameDecorateObject::MAX_CHEST_NUM - 1))
+						continue;
+					else
+						return;
+				}
+			}
+			else
+			{
+				// 再び生成できるようにカウントを進める
+				m_chestCreateCount[i]++;
+				// 生成できるカウントになったら
+				if (m_chestCreateCount[i] > RESPAWN_NEED_TIME)
+				{
+					// 再び生成させる
+					m_openChestCreateFlag[i] = false;
+					// カウントをリセット
+					m_chestCreateCount[i] = 0;
+				}
+
+				if (i != ((int)GameDecorateObject::MAX_CHEST_NUM - 1))
+					continue;
+				else
+					// どの場所も生成できなかったらこれ以降の処理は行わない
+					return;
+			}
+		}
+	}
 	if (assultP == 3 && m_respawnTime % 120 != 0)return;
-	if (assultP == 4 && m_respawnTime % 120 != 0 || m_createFlag)return;
+	if (assultP == 4 && m_respawnTime % 120 != 0 || m_createFillFlag)return;
 
 	// 敵の襲撃時間だったら更新する
 	int posXTmp = 0;
 	int posYTmp = 0;
+	ADX2Le* adx2le = ADX2Le::GetInstance();
+
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 		// 敵生成～プレイヤーへ向ける処理
 		if (!mp_enemy[i]->GetState())
 		{
 			// 生成数が目標に達したら
-			if ((assultP == 3 && m_createCount >= 4) || (assultP == 4 && m_createCount >= 16))
+			if ((assultP == 3 && m_createCount >= (int)MAXCREATECOUNT::FOUR) || (assultP == 4 && m_createCount >= (int)MAXCREATECOUNT::SIXTEEN))
 			{
+				// カウントリセットして抜ける
 				m_createCount = 0;
 				m_respawnTime = 0;
 				break;
@@ -559,10 +603,41 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 			switch (point)
 			{
 			case 0:
-			case 1:
 				mp_enemy[i]->SetPos(SimpleMath::Vector3(m_entryEnemyPos[point].x + (rand() % (int)m_entryEnemyDistribute[point].x - (m_entryEnemyDistribute[point].x / 2)),
 														m_entryEnemyPos[point].y + (rand() % (int)m_entryEnemyDistribute[point].y),
 														m_entryEnemyPos[point].z));
+
+				// 敵生成SE
+				adx2le->Play(3);
+				break;
+			case 1:
+				for (int j = 0; j < (int)GameDecorateObject::MAX_CHEST_NUM; j++)
+				{
+					// 生成できるか判定
+					int isCreate = rand() % CREATE_PROBABILITY;
+					if (isCreate != 0)
+					{
+						if (!m_openChestCreateFlag[j] && isChestOpen[j])
+						{
+							mp_enemy[i]->SetPos(SimpleMath::Vector3(chestEntryPos[j].x,
+																	chestEntryPos[j].y + chestHeight,
+																	chestEntryPos[j].z));
+							m_openChestCreateFlag[j] = true;
+
+							// 敵生成SE
+							adx2le->Play(3);
+							break;
+						}
+					}
+					else
+					{
+						// 仮にそこから生成した判定にしておく
+						m_openChestCreateFlag[j] = true;
+						// trueにしたstateをfalseに戻す
+						mp_enemy[i]->SetState(false); 
+						return;
+					}
+				}
 				break;
 			case 2:
 				mp_enemy[i]->SetPos(SimpleMath::Vector3(m_entryEnemyPos[point].x ,
@@ -572,6 +647,10 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 				posYTmp++;
 				// 生成数をカウント
 				m_createCount++; 
+
+				// 敵生成SE
+				adx2le->Play(3);
+
 				break;
 			case 3:
 				mp_enemy[i]->SetPos(SimpleMath::Vector3(m_entryEnemyPos[point].x + posXTmp * (mp_enemy[i]->GetSize()*3.0f),
@@ -579,14 +658,18 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 														m_entryEnemyPos[point].z));
 				// 敵を並べるためのカウント
 				posXTmp++;
-				if (posXTmp == 4)
+				if (posXTmp == (int)MAXCREATECOUNT::FOUR)
 				{
 					posXTmp = 0;
 					posYTmp++;
 				}
 				// 生成数をカウント
 				m_createCount++;
-				m_createFlag = true;
+				m_createFillFlag = true;
+
+				// 敵生成SE
+				adx2le->Play(3);
+
 				break;
 			default:
 				break;
@@ -617,10 +700,6 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 			float sita = std::atan2(subVector.x, subVector.z);
 			// 算出した値で回転しプレイヤーに向ける
 			mp_enemy[i]->SetRotateY(sita);
-
-			// 敵生成SE
-			ADX2Le* adx2le = ADX2Le::GetInstance();
-			adx2le->Play(3);
 
 			if ((assultP == 1 || assultP == 2))
 			break;

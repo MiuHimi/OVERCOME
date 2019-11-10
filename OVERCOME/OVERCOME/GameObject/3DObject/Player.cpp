@@ -44,7 +44,7 @@ Player::Player()
 	  mp_bulletManager(nullptr), mp_gameRoad(nullptr),
 	  m_isFullScreen(false),
 	  m_startGudeWave(0.0f), mp_startGuide(nullptr), mp_startCount(nullptr), mp_shootPointer(nullptr), mp_dengerousSign(nullptr),
-	  mp_hp(nullptr), mp_damageEffect(nullptr)
+	  mp_hp(nullptr), mp_hpFrame(nullptr), mp_damageEffect(nullptr)
 {
 }
 /// <summary>
@@ -181,6 +181,13 @@ void Player::Create(const bool isFulleScreen)
 	mp_hp->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 100.0f, 25.0f, 1.0f, 1.0f);
 	mp_hp->SetRect(0.0f, 0.0f, mp_hp->GetWidth(), mp_hp->GetHeight());
 	mp_hp->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_hp->GetWidth()*5.0f), windowHeight - (mp_hp->GetHeight()*2.0f)));
+
+	// 体力の枠オブジェクトの生成
+	mp_hpFrame = std::make_unique<Obj2D>();
+	mp_hpFrame->Create(L"Resources\\Images\\Play\\player_hp_frame.png", nullptr);
+	mp_hpFrame->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 1010.0f, 45.0f, 1.0f, 1.0f);
+	mp_hpFrame->SetRect(0.0f, 0.0f, mp_hpFrame->GetWidth(), mp_hpFrame->GetHeight());
+	mp_hpFrame->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_hpFrame->GetWidth()*0.5f), windowHeight - (mp_hpFrame->GetHeight() + 18.0f)));
 
 	// 基準位置設定
 	m_hpBasePos = mp_hp->GetPos();
@@ -383,31 +390,10 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 				}
 			}
 
-			//if (mp_gameRoad->GetRoadObject((int)nowPos.y, (int)nowPos.x).roadType != mp_gameRoad->NONE)
-			//{
-			//	// 道のIDに設定していないところでなければ移動を開始する
-			//	m_velFlag = false;
-			//}
-
 			// 到着した道が襲撃ポイントだったら
 			if (mp_gameRoad->GetRoadObject((int)m_passingRoadPos.y, (int)m_passingRoadPos.x).roadType == 3)
 			{
-				// 移動をやめる
-				/*m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-				m_velFlag = false;*/
 				m_spawnFlag = true;
-
-				// カウント
-				/*m_spawnElapsedTime++;
-
-				// 一定数を超えたら
-				if (m_spawnElapsedTime > SPAWNTIME)
-				{
-					// カウントリセット
-					m_spawnElapsedTime = 0;
-					// 移動を開始する
-					m_velFlag = true;
-				}*/
 			}
 		}
 		if (m_spawnFlag)
@@ -598,6 +584,7 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 	// HP表示
 	if (m_playStartFlag)
 	{
+		mp_hpFrame->Render();
 		for (int i = 0; i < m_hp; i++)
 		{
 			mp_hp->SetPos(SimpleMath::Vector2(m_hpBasePos.x + float(mp_hp->GetWidth() * i), m_hpBasePos.y));

@@ -30,7 +30,7 @@ const SimpleMath::Vector3 GameDecorateObject::SHAKE_VEL = SimpleMath::Vector3(0.
 GameDecorateObject::GameDecorateObject()
 	: m_world(SimpleMath::Matrix::Identity),
 	  m_doorRota{ SimpleMath::Matrix::Identity }, m_doorTrans{ SimpleMath::Vector3::Zero }, m_isMoveDoor{ false }, m_isShowDoor{ false },
-	  m_chestRota{ SimpleMath::Matrix::Identity }, m_chestTrans{ SimpleMath::Vector3::Zero }, m_chestTempPos{ SimpleMath::Vector3::Zero }, 
+	  m_chestRota{ SimpleMath::Matrix::Identity }, m_chestTrans{ SimpleMath::Vector3::Zero }, m_chestTempPos{ SimpleMath::Vector3::Zero }, m_chestHeight(2.5f),
 	  m_shakeCount{ 0 }, m_shakeVelCount{ 0 }, m_shakeNeedCount{ 0 }, m_isChestOpen{ false },
 	  mp_modelEnemyDoor {nullptr}, mp_modelSmallRoom(nullptr),
 	  mp_modelEnemyChestOpen{nullptr}, mp_modelEnemyChestClose{ nullptr }
@@ -137,9 +137,9 @@ void GameDecorateObject::Initialize()
 
 	for (int i = 0; i < 3; i++)
 	{
-		m_chestTrans[0] = SimpleMath::Vector3(-1.5f, 2.0f, -37.5f);
-		m_chestTrans[1] = SimpleMath::Vector3(-16.0f, 2.0f, -27.5f);
-		m_chestTrans[2] = SimpleMath::Vector3(-9.0f, 2.0f, -37.5f);
+		m_chestTrans[0] = SimpleMath::Vector3(0.0f, 2.0f, -35.0f);
+		m_chestTrans[1] = SimpleMath::Vector3(-13.0f, 2.0f, -25.0f);
+		m_chestTrans[2] = SimpleMath::Vector3(-9.0f, 2.0f, -35.0f);
 		m_chestRota[0] = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(0.0f));
 		m_chestRota[1] = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(90.0f));
 		m_chestRota[2] = SimpleMath::Matrix::CreateRotationY(XMConvertToRadians(45.0f));
@@ -164,80 +164,6 @@ bool GameDecorateObject::Update(int roadID)
 
 	// 敵出現チェストの更新
 	UpdateEnemyChest(roadID);
-
-	/*if (roadID != 32) return false;*/
-
-	// チェストの更新
-	/*for (int i = 0; i < 3; i++)
-	{
-		// 振動是非カウント
-		m_shakeCount[i]++;
-
-		if (m_shakeCount[i] / m_shakeNeedCount[i] >= 1)
-		{
-			// 振動方向用カウント
-			m_shakeVelCount[i]++;
-
-			// 変数初期化
-			SimpleMath::Quaternion rotation =
-				SimpleMath::Quaternion::Identity;
-			SimpleMath::Vector3 vect = SimpleMath::Vector3::Zero;
-
-			switch (i)
-			{
-			case 0:
-				// 振動するために必要な角度の計算
-				rotation = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), 0.0f);
-				// 振動する方向を算出
-				vect = SimpleMath::Vector3::Transform(SHAKE_VEL, rotation);
-				break;
-			case 1:
-				// 振動するために必要な角度の計算
-				rotation = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), XMConvertToRadians(90.0f));
-				// 振動する方向を算出
-				vect = SimpleMath::Vector3::Transform(SHAKE_VEL, rotation);
-				break;
-			case 2:
-				// 振動するために必要な角度の計算
-				rotation = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), XMConvertToRadians(45.0f));
-				// 振動する方向を算出
-				vect = SimpleMath::Vector3::Transform(SHAKE_VEL, rotation);
-				break;
-			}
-
-			if (m_shakeVelCount[i] / SHAKE_COUNT == 0 || m_shakeVelCount[i] / SHAKE_COUNT == 2)
-			{
-				// 向かって右側に振動
-				m_chestTrans[i] = m_chestTempPos[i] + vect;
-			}
-			else if (m_shakeVelCount[i] / SHAKE_COUNT == 1 || m_shakeVelCount[i] / SHAKE_COUNT == 3)
-			{
-				// 向かって左側に振動
-				m_chestTrans[i] = m_chestTempPos[i] + -vect;
-			}
-			else if (m_shakeVelCount[i] / SHAKE_COUNT >= 4)
-			{
-				if (m_shakeVelCount[i] / SHAKE_COUNT >= 8)
-				{
-					// 扉オープン
-					m_isChestOpen[i] = true;
-				}
-				if (m_shakeVelCount[i] / SHAKE_COUNT >= 12)
-				{
-					// カウントリセット
-					m_shakeCount[i] = 0;
-					m_shakeVelCount[i] = 0;
-					// 座標を元の位置へ
-					m_chestTrans[i] = m_chestTempPos[i];
-					// 次開くまでの時間を計算
-					m_shakeNeedCount[i] = 60 + (int)(rand()*(100 - 60 + 1.0) / (1.0 + RAND_MAX));
-
-					// 扉クローズ
-					m_isChestOpen[i] = false;
-				}
-			}
-		}
-	}*/
 
 	return true;
 }
@@ -518,12 +444,12 @@ void GameDecorateObject::UpdateEnemyChest(int roadID)
 		}
 
 		// 扉開閉関係の処理
-		if (m_shakeVelCount[i] / SHAKE_COUNT >= 8 && m_shakeVelCount[i] / SHAKE_COUNT < 12)
+		if (m_shakeVelCount[i] / SHAKE_COUNT >= 8 && m_shakeVelCount[i] / SHAKE_COUNT < 16)
 		{
 			// 扉オープン
 			m_isChestOpen[i] = true;
 		}
-		else if (m_shakeVelCount[i] / SHAKE_COUNT >= 12)
+		else if (m_shakeVelCount[i] / SHAKE_COUNT >= 16)
 		{
 			// カウントリセット
 			m_shakeCount[i] = 0;

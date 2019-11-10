@@ -67,6 +67,7 @@ private:
 	std::unique_ptr<Obj2D>					 mp_shootPointer;			  // 発射ポインターオブジェクト
 	std::unique_ptr<Obj2D>					 mp_dengerousSign;			  // 危険サインオブジェクト
 	std::unique_ptr<Obj2D>					 mp_hp;						  // HPオブジェクト
+	std::unique_ptr<Obj2D>					 mp_hpFrame;				  // HPのフレームオブジェクト
 	std::unique_ptr<Obj2D>					 mp_damageEffect;			  // ダメージ効果オブジェクト
 
 // メンバー関数
