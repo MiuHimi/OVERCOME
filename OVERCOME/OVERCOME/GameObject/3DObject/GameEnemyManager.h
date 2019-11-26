@@ -287,7 +287,7 @@ private:
 	/// <param name="matrixManager">行列管理オブジェクト</param>
 	/// <param name="world">ワールド行列</param>
 	/// <param name="drawAlpha">透明度</param>
-	void DrawSmoke(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world,int &drawAlpha);
+	void DrawSmoke(MatrixManager* matrixManager, DirectX::SimpleMath::Matrix &world,float &drawAlpha);
 	//------------------------------------------------------------------------------//
 
 };

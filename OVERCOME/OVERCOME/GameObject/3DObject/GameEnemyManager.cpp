@@ -394,7 +394,8 @@ void GameEnemyManager::Render(MatrixManager* matrixManager, SimpleMath::Vector3 
 				SimpleMath::Matrix::CreateConstrainedBillboard(
 					m_pointPos[i], eyePos, SimpleMath::Vector3::Up);
 			// やられ演出を描画
-			int alpha = 255 - (10 * m_shockCount[i]);
+			float alpha = 1.0f - (float)(m_shockCount[i] * 0.03f);
+			if (alpha < 0.0f) alpha = 0.0f;
 			DrawSmoke(matrixManager, shockWorld, alpha);
 			DrawPoint(matrixManager, pointWorld, i, m_pointSize[i]);
 		}
@@ -1040,7 +1041,7 @@ void GameEnemyManager::DrawPoint(MatrixManager * matrixManager, DirectX::SimpleM
 /// </summary>
 /// <param name="matrixManager">行列管理変数</param>
 /// <param name="world">ワールド座標</param>
-void GameEnemyManager::DrawSmoke(MatrixManager* matrixManager, SimpleMath::Matrix &world, int &drawAlpha)
+void GameEnemyManager::DrawSmoke(MatrixManager* matrixManager, SimpleMath::Matrix &world, float &drawAlpha)
 {
 	auto m_states = CommonStateManager::SingletonGetInstance().GetStates();
 	auto context = DX::DeviceResources::SingletonGetInstance().GetD3DDeviceContext();
@@ -1069,6 +1070,7 @@ void GameEnemyManager::DrawSmoke(MatrixManager* matrixManager, SimpleMath::Matri
 	m_batchEffect->SetView(matrixManager->GetView());
 	m_batchEffect->SetProjection(matrixManager->GetProjection());
 	m_batchEffect->SetTexture(m_textureSmoke.Get());
+	m_batchEffect->SetAlpha(drawAlpha);
 	m_batchEffect->Apply(context);
 	context->IASetInputLayout(m_inputLayout.Get());
 	// 不透明部分を描画
@@ -1077,6 +1079,7 @@ void GameEnemyManager::DrawSmoke(MatrixManager* matrixManager, SimpleMath::Matri
 	m_batch->End();
 	// 不透明以外の半透明部分を描画する設定
 	m_batchEffect->SetAlphaFunction(D3D11_COMPARISON_NOT_EQUAL);
+	m_batchEffect->SetAlpha(drawAlpha);
 	m_batchEffect->Apply(context);
 	// 半透明で描画
 	context->OMSetBlendState(m_states->NonPremultiplied(), nullptr, 0xFFFFFFFF);
