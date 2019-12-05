@@ -869,6 +869,7 @@ void GameEnemyManager::DrawHP(MatrixManager * matrixManager, DirectX::SimpleMath
 		break;
 	}
 	
+	m_batchEffect->SetAlpha(1.0f);
 	m_batchEffect->Apply(context);
 	context->IASetInputLayout(m_inputLayout.Get());
 	// •s“§–¾•”•ª‚ð•`‰æ
@@ -942,6 +943,7 @@ void GameEnemyManager::DrawHitEffect(MatrixManager * matrixManager, DirectX::Sim
 		break;
 	}
 
+	m_batchEffect->SetAlpha(1.0f);
 	m_batchEffect->Apply(context);
 	context->IASetInputLayout(m_inputLayout.Get());
 	// •s“§–¾•”•ª‚ð•`‰æ
@@ -1017,6 +1019,7 @@ void GameEnemyManager::DrawPoint(MatrixManager * matrixManager, DirectX::SimpleM
 		break;
 	}
 
+	m_batchEffect->SetAlpha(1.0f);
 	m_batchEffect->Apply(context);
 	context->IASetInputLayout(m_inputLayout.Get());
 	// •s“§–¾•”•ª‚ð•`‰æ
