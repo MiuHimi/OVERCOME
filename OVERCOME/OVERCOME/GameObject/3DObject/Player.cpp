@@ -34,7 +34,7 @@ const int Player::COUNT_UI_SIZE = 80;
 /// </summary>
 /// <param name="game">ゲームオブジェクト</param>
 Player::Player()
-	: m_pos(0.0f, 2.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f), m_dir(0.0f, 0.0f, 0.0f),
+	: m_pos(0.0f, 0.0f, 0.0f), m_vel(0.0f, 0.0f, 0.0f), m_dir(0.0f, 0.0f, 0.0f),
 	  m_height(0.0f), m_jumpForce(0.0f), m_gravity(0.0f), m_posTmp(0.0f, 0.0f, 0.0f),
 	  m_hp(10), m_hpBasePos{0.0f}, m_damageCount(0), m_isDamaged(false),
 	  m_playStartFlag(false), m_moveStartCountDown(0),
@@ -43,7 +43,7 @@ Player::Player()
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameRoad(nullptr),
 	  m_isFullScreen(false),
-	  m_startGudeWave(0.0f), mp_startGuide(nullptr), mp_startCount(nullptr), mp_shootPointer(nullptr), mp_dengerousSign(nullptr),
+	  mp_startCount(nullptr), mp_shootPointer(nullptr), mp_dengerousSign(nullptr),
 	  mp_hp(nullptr), mp_hpFrame(nullptr), mp_damageEffect(nullptr)
 {
 }
@@ -113,24 +113,6 @@ void Player::Create(const bool isFulleScreen)
 	// タイトルバーの高さを取得
 	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);
 
-	// スタート案内オブジェクトの生成
-	m_startGudeWave = 0.1f;
-
-	mp_startGuide = std::make_unique<Obj2D>();
-	mp_startGuide->Create(L"Resources\\Images\\Play\\clicktocenter.png", nullptr);
-	mp_startGuide->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 450.0f, 50.0f, 1.0f, 1.0f);
-	if (isFulleScreen)
-	{
-		mp_startGuide->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startGuide->GetWidth()*0.5f),
-							 (activeWndRect.bottom - activeWndRect.top) - (mp_startGuide->GetHeight()*2.0f)));
-	}
-	else
-	{
-		mp_startGuide->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startGuide->GetWidth()*0.5f),
-							 (activeWndRect.bottom - (activeWndRect.top + titlebarHeight)) - (mp_startGuide->GetHeight()*5.0f)));
-	}
-	mp_startGuide->SetRect(0.0f, 0.0f, mp_startGuide->GetWidth(), mp_startGuide->GetHeight());
-
 	// スタートカウントダウンオブジェクトの生成
 	mp_startCount = std::make_unique<Obj2D>();
 	mp_startCount->Create(L"Resources\\Images\\ScoreCount\\count_length.png", nullptr);
@@ -198,13 +180,16 @@ void Player::Create(const bool isFulleScreen)
 /// </summary>
 /// <param name="timer">起動経過時間</param>
 /// <returns>終了状態</returns>
-bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir)
+bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir, SimpleMath::Vector3 correctPos)
 {
 	// カメラの更新
 	//mp_gameCamera->Update(timer, m_pos, m_height, m_dir);
 
 	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
+
+	// 外部の当たり判定等で矯正された位置に設定
+	m_pos.y = correctPos.y;
 
 	// スタートするまでは初期位置で固定
 	if(!isPlayFlag)
@@ -461,26 +446,8 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 		m_damageCount = 0;
 	}
 
-	// HPバー
-	if (0 < m_hp && m_hp <= 3)
-	{
-		mp_hp->SetRect(mp_hp->GetWidth()*2.0f, 0.0f, (mp_hp->GetWidth()*2.0f)+ mp_hp->GetWidth(), mp_hp->GetHeight());
-	}
-	else if (3 < m_hp && m_hp <= 7)
-	{
-		mp_hp->SetRect(mp_hp->GetWidth(), 0.0f, mp_hp->GetWidth()*2.0f, mp_hp->GetHeight());
-	}
-	else if(7 < m_hp && m_hp <= 10)
-	{
-		mp_hp->SetRect(0.0f, 0.0f, mp_hp->GetWidth(), mp_hp->GetHeight());
-	}
-	// HPが0以下になったら
-	if (m_hp <= 0)
-	{
-		// 移動を止める
-		m_hp = 0;
-		m_vel = SimpleMath::Vector3::Zero;
-	}
+	// HPの更新
+	UpdateHP();
 
 	// 移動前の座標を記憶
 	m_posTmp = m_pos;
@@ -495,15 +462,6 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 	box.c = SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height / 2.0f), m_pos.z);      // 境界箱の中心
 	box.r = SimpleMath::Vector3(1.0f, m_height / 2.0f, 1.0f);                        // 各半径
 	SetCollision(box);
-
-	//--------------------2D Object Update--------------------//
-
-	// スタート案内オブジェクトのフェード
-	float sinWave = m_startGudeWave;
-	m_startGudeWave += 0.1f;
-	mp_startGuide->SetAlpha((sin(sinWave) * 2) * 0.5f);
-
-	//--------------------------------------------------------//
 
 	return true;
 }
@@ -539,12 +497,6 @@ void Player::Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECT
 		mp_startCount->Render();
 	}
 	
-	// スタート案内の表示
-	if (!m_playStartFlag)
-	{
-		mp_startGuide->RenderAlpha();
-	}
-		
 	// 発射ポインターの描画
 	if (m_playStartFlag)
 	{
@@ -610,4 +562,31 @@ void Player::Depose()
 Player* Player::GetPlayer()
 {
 	return this;
+}
+
+/// <summary>
+/// HPの更新
+/// </summary>
+void Player::UpdateHP()
+{
+	// HPバー
+	if (m_hp <= PLAYER_STATE::MORIBUND)
+	{
+		mp_hp->SetRect(mp_hp->GetWidth()*2.0f, 0.0f, (mp_hp->GetWidth()*2.0f) + mp_hp->GetWidth(), mp_hp->GetHeight());
+	}
+	else if (m_hp <= PLAYER_STATE::WOUND)
+	{
+		mp_hp->SetRect(mp_hp->GetWidth(), 0.0f, mp_hp->GetWidth() + mp_hp->GetWidth(), mp_hp->GetHeight());
+	}
+	else if (m_hp <= PLAYER_STATE::NORMAL)
+	{
+		mp_hp->SetRect(0.0f, 0.0f, mp_hp->GetWidth(), mp_hp->GetHeight());
+	}
+	// HPが0以下になったら
+	if (m_hp <= 0)
+	{
+		// 移動を止める
+		m_hp = 0;
+		m_vel = SimpleMath::Vector3::Zero;
+	}
 }

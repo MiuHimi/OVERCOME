@@ -207,6 +207,8 @@
     <ClInclude Include="Utility\CommonStateManager.h" />
     <ClInclude Include="Utility\CountManager.h" />
     <ClInclude Include="Utility\DeviceResources.h" />
+    <ClInclude Include="Utility\Drawable.h" />
+    <ClInclude Include="Utility\DrawableList.h" />
     <ClInclude Include="Utility\DrawManager.h" />
     <ClInclude Include="Utility\InputManager.h" />
     <ClInclude Include="Utility\MatrixManager.h" />

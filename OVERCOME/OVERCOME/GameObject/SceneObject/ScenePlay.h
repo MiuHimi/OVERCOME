@@ -55,7 +55,11 @@ private:
 
 	std::unique_ptr<GameScore>			mp_gameScore;			   // スコアオブジェクト
 
+	float								m_startGudeWave;		   // スタート案内オブジェクトのフェード量
+	std::unique_ptr<Obj2D>				mp_startGuide;			   // スタート案内オブジェクト
 	std::unique_ptr<Obj2D>				mp_outline;				   // あらすじオブジェクト
+	static const float					CLEAR_FADE;				   // クリア時のフェード
+	static const float					FAILD_FADE;				   // 失敗時のフェード
 	std::unique_ptr<Obj2D>				mp_fade;				   // フェード画像オブジェクト
 
 	MatrixManager*						mp_matrixManager;		   // 行列管理変数

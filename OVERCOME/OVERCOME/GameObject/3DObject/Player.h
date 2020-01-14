@@ -25,7 +25,15 @@ class MatrixManager;
 class Player : public CollisionBox
 {
 // メンバー変数
-//public:
+public:
+
+	// プレイヤーの状態
+	enum PLAYER_STATE
+	{
+		MORIBUND = 3,	// 瀕死
+		WOUND = 7,		// 負傷
+		NORMAL = 10		// 通常
+	};
 
 private:
 	DirectX::SimpleMath::Vector3             m_pos;                       // 位置
@@ -60,8 +68,6 @@ private:
 	
 	bool									 m_isFullScreen;			  // フルスクリーンかどうか
 
-	float									 m_startGudeWave;			  // スタート案内オブジェクトのフェード量
-	std::unique_ptr<Obj2D>					 mp_startGuide;				  // スタート案内オブジェクト
 	static const int                         COUNT_UI_SIZE;               // カウントダウン数字のサイズ
 	std::unique_ptr<Obj2D>					 mp_startCount;				  // スタートカウントダウンオブジェクト
 	std::unique_ptr<Obj2D>					 mp_shootPointer;			  // 発射ポインターオブジェクト
@@ -82,7 +88,7 @@ public:
 	// 生成
 	void Create(const bool isFulleScreen);
 	// 更新
-	bool Update(DX::StepTimer const& timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir);
+	bool Update(DX::StepTimer const& timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir, DirectX::SimpleMath::Vector3 correctPos);
 	// 描画
 	void Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECTION dangerDir);
 	// 廃棄
@@ -120,6 +126,10 @@ public:
 
 	// 体力設定
 	void Damage(int damage) { m_hp -= damage; }
-//private:
+
+private:
+
+	// HPの更新
+	void UpdateHP();
 
 };

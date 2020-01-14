@@ -22,9 +22,11 @@ class GameMap
 public:
 
 private:
-	std::unique_ptr<DirectX::Model> mp_modelMap;	   // マップモデル
+	std::unique_ptr<DirectX::Model> mp_modelMap;		// マップモデル
 
-	std::unique_ptr<CollisionMesh>  mp_collisionStage; // コリジョンメッシュ
+	std::unique_ptr<CollisionMesh>  mp_collisionStage;	// コリジョンメッシュ
+
+	DirectX::SimpleMath::Vector3	m_correctPos;		// 衝突後の矯正位置
 
 // メンバー関数(関数、Getter、Setter)
 public:
@@ -43,6 +45,9 @@ public:
 	void Render(MatrixManager* matrixManager);
 	// 廃棄処理
 	void Depose();
+
+	// 矯正位置の取得
+	DirectX::SimpleMath::Vector3 GetCorrectPos() { return m_correctPos; }
 
 private:
 	void SetFogEffectDistance(float start, float end);

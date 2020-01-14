@@ -27,7 +27,8 @@ using namespace DirectX;
 /// </summary>
 GameMap::GameMap()
 	: mp_modelMap(nullptr),
-	  mp_collisionStage(nullptr)
+	  mp_collisionStage(nullptr),
+	  m_correctPos(SimpleMath::Vector3::Zero)
 {
 }
 /// <summary>
@@ -98,7 +99,8 @@ bool GameMap::Update(DX::StepTimer const & timer, Player *player)
 	if (mp_collisionStage->HitCheck_Segment(v[0], v[1], &id, &s) == true)
 	{
 		// プレイヤーの位置を設定する
-		player->SetHeightPos(s.y);
+		//player->SetHeightPos(s.y);
+		m_correctPos = s;
 	}
 
 	return true;

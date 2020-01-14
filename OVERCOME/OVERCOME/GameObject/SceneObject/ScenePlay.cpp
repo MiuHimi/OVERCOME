@@ -20,6 +20,10 @@
 // usingディレクトリ
 using namespace DirectX;
 
+// constディレクトリ
+const float ScenePlay::CLEAR_FADE = 0.02f;
+const float ScenePlay::FAILD_FADE = 0.01f;
+
 bool SceneManager::m_clearSceneState;
 
 
@@ -37,6 +41,7 @@ ScenePlay::ScenePlay(SceneManager* sceneManager, bool isFullScreen)
 	  mp_gameEnemy(nullptr), mp_gameEnemyManager(nullptr),
 	  mp_gameRoad(nullptr), mp_gameMap(nullptr),
 	  mp_gameScore(nullptr), mp_gameDecorateObject(nullptr),
+	  m_startGudeWave(0.0f), mp_startGuide(nullptr),
 	  mp_outline(nullptr),
 	  mp_fade(nullptr),
    	  mp_matrixManager(nullptr)
@@ -100,13 +105,7 @@ void ScenePlay::Initialize()
 	// ゲームマップのモデル読み込み
 	mp_gameMap->Create();
 
-	// ゲーム道路の生成
-	//mp_gameTarget = std::make_unique<GameTarget>();
-	//mp_gameTarget->Initialize();
-	// ゲーム道路のモデル読み込み
-	//mp_gameTarget->Create();
-
-
+	// マップ装飾品の生成
 	mp_gameDecorateObject = std::make_unique<GameDecorateObject>();
 	mp_gameDecorateObject->Create();
 	mp_gameDecorateObject->Initialize();
@@ -121,6 +120,25 @@ void ScenePlay::Initialize()
 	mp_fade->Initialize(SimpleMath::Vector2(0.0f, 0.0f), windowWidth, windowHeight, 1.0f, 1.0f);
 	mp_fade->SetRect(0.0f, 0.0f, mp_fade->GetWidth(), mp_fade->GetHeight());
 	mp_fade->SetAlpha(1.0f);
+
+	// スタート案内オブジェクトの生成
+	m_startGudeWave = 0.1f;
+
+	mp_startGuide = std::make_unique<Obj2D>();
+	mp_startGuide->Create(L"Resources\\Images\\Play\\clicktocenter.png", nullptr);
+	mp_startGuide->Initialize(SimpleMath::Vector2(0.0f, 0.0f), 450.0f, 50.0f, 1.0f, 1.0f);
+	if (GetFullScreen())
+	{
+		mp_startGuide->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startGuide->GetWidth()*0.5f),
+							 (activeWndRect.bottom - activeWndRect.top) - (mp_startGuide->GetHeight()*2.0f)));
+	}
+	else
+	{
+		mp_startGuide->SetPos(SimpleMath::Vector2((windowWidth*0.5f) - (mp_startGuide->GetWidth()*0.5f),
+							 (activeWndRect.bottom - (activeWndRect.top + titlebarHeight)) - (mp_startGuide->GetHeight()*5.0f)));
+	}
+	mp_startGuide->SetRect(0.0f, 0.0f, mp_startGuide->GetWidth(), mp_startGuide->GetHeight());
+
 
 	// あらすじオブジェクトの生成
 	mp_outline = std::make_unique<Obj2D>();
@@ -228,6 +246,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// カメラの更新
 	mp_camera->Update(timer, mp_player->GetPos(), mp_player->GetHeight(), mp_player->GetDir(), isStartPlay);
 
+	//--------------------Judge Collision--------------------//
+
 	// 道路とプレイヤーの衝突判定
 	for (int j = 0; j < mp_gameRoad->GetMaxFloorBlock(); j++)
 	{
@@ -253,35 +273,6 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		}
 	}
 
-	// 的と弾の衝突判定
-	/*for (int j = 0; j < mp_gameTarget->GetMaxFloorBlock(); j++)
-	{
-		for (int i = 0; i < mp_gameTarget->GetMaxFloorBlock(); i++)
-		{
-			// 的の状態取得
-			if (mp_gameTarget->GetState(j, i))
-			{
-				for (int k = 0; k < mp_player->GetBulletManager()->GetMaxBulletNum(); k++)
-				{
-					// 弾の状態取得
-					if (mp_player->GetBulletManager()->GetBulletState(k))
-					{
-						if (Collision::HitCheck_Sphere2Box(mp_player->GetBulletManager()->GetBulletCollide(k), mp_gameTarget->GetCollisionObject(j, i)->GetCollision()))
-						{
-							// 的と弾の状態
-							mp_gameTarget->SetState(j, i, false);
-							mp_player->GetBulletManager()->SetBulletState(k, false);
-
-							// 加点
-							mp_gameScore->FluctuationScore(100);
-						}
-					}
-				}
-			}
-		}
-	}*/
-
-	
 	// 敵とプレイヤーの衝突判定
 	for (int i = 0; i < mp_gameEnemyManager->GetMaxEnemyNum(); i++)
 	{
@@ -358,6 +349,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		}
 	}
 
+	//--------------------------------------------------------//
+
+	//--------------------Update 3D Object--------------------//
+
 	// 弾の表示限界の設定
 	SimpleMath::Vector3 pPos = mp_player->GetPos();
 	SimpleMath::Vector3 bPos[10];
@@ -390,11 +385,9 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_gameRoad->Update(timer);
 	// マップの更新
 	mp_gameMap->Update(timer, mp_player->GetPlayer());
-	// ゲーム的の更新
-	//mp_gameTarget->Update(timer);
-
+	
 	// プレイヤーの更新
-	mp_player->Update(timer, isStartPlay, mp_camera->GetCameraAngle());
+	mp_player->Update(timer, isStartPlay, mp_camera->GetCameraAngle(), mp_gameMap->GetCorrectPos());
 
 	// 敵の更新
 	SimpleMath::Vector3 playerPassPos = mp_player->GetPassingRoad();
@@ -410,6 +403,10 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	int roadID = (mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadType)*10 + 
 				  mp_gameRoad->GetRoadObject((int)playerPassPos.y, (int)playerPassPos.x).roadNum;
 	mp_gameDecorateObject->Update(roadID);
+
+	//--------------------------------------------------------//
+
+	//--------------------Update 2D Object--------------------//
 
 	// スコアの更新
 	mp_gameScore->Update(timer);
@@ -427,17 +424,27 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		m_toResultMoveOnChecker = true;
 	}
 
-	// シーン遷移操作
+
+	// スタート案内オブジェクトのフェード
+	float sinWave = m_startGudeWave;
+	m_startGudeWave += 0.1f;
+	mp_startGuide->SetAlpha((sin(sinWave) * 2) * 0.5f);	// 0～1
+
+	//--------------------------------------------------------//
+
+	//------------------Operate Scene Object------------------//
+	
+	// シーン遷移発生
 	if (m_toResultMoveOnChecker)
 	{
 		float fadeSpeed = 0.0f;
 		if (SceneManager::GetResultSceneState())
 		{
-			fadeSpeed = 0.02f;
+			fadeSpeed = CLEAR_FADE;
 		}
 		else
 		{
-			fadeSpeed = 0.01f;
+			fadeSpeed = FAILD_FADE;
 		}
 		// フェードアウト
 		mp_fade->Fade(fadeSpeed, Obj2D::FADE::FADE_OUT);
@@ -449,6 +456,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		// リザルトシーンへ
 		m_sceneManager->RequestToChangeScene(SCENE_RESULT);
 	}
+
+	//--------------------------------------------------------//
 }
 
 /// <summary>
@@ -481,8 +490,6 @@ void ScenePlay::Render()
 	mp_gameRoad->Render(mp_matrixManager);
 	// マップの描画
 	mp_gameMap->Render(mp_matrixManager);
-	// ゲーム的の描画
-	//mp_gameTarget->Render(mp_matrixManager);
 
 	// 装飾品の描画
 	mp_gameDecorateObject->Render(mp_matrixManager);
@@ -492,14 +499,17 @@ void ScenePlay::Render()
 	playerGlance.y = mp_player->GetHeight();
 	mp_gameEnemyManager->Render(mp_matrixManager, playerGlance);
 
-	// あらすじの表示
-	if (!isStartPlay)
-	{
-		mp_outline->RenderAlphaScale();
-	}
-
 	// プレイヤーの描画
 	mp_player->Render(mp_matrixManager, mp_gameEnemyManager->GetDangerDir());
+
+	// スタート前に表示
+	if (!isStartPlay)
+	{
+		// あらすじの表示
+		mp_outline->RenderAlphaScale();
+		// スタート案内の表示
+		mp_startGuide->RenderAlpha();
+	}
 
 	// スコアの描画
 	mp_gameScore->Render();

@@ -46,15 +46,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		return 1;
 
 	// 画面モード選択
-	/*if (MessageBox(NULL, L"フルスクリーンにしますか？", L"画面モード設定", MB_YESNO) == IDYES)
+	if (MessageBox(NULL, L"フルスクリーンにしますか？", L"画面モード設定", MB_YESNO) == IDYES)
 	{
 		s_fullscreen = true;
 	}
 	else
 	{
 		s_fullscreen = false;
-	}*/
-	s_fullscreen = true;
+	}
+	//s_fullscreen = true;
 
     g_game = std::make_unique<Game>(s_fullscreen);
 
