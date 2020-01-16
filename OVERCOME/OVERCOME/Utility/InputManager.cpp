@@ -60,6 +60,34 @@ void InputManager::SetMouseMode(DirectX::Mouse::Mode mode)
 }
 
 /// <summary>
+/// マウスカーソル表示/非表示
+/// </summary>
+/// <param name="cursorState">ture=表示、false=非表示</param>
+void InputManager::SetVisibleMouseCursor(bool cursorState)
+{
+	// マウスカーソル情報の取得
+	CURSORINFO ci = { sizeof(CURSORINFO) };
+	GetCursorInfo(&ci);
+
+	if (cursorState)
+	{
+		if (ci.flags != CURSOR_SHOWING)
+		{
+			// マウスカーソルの表示
+			ShowCursor(TRUE);
+		}
+	}
+	else
+	{
+		if (ci.flags != 0)
+		{
+			// マウスカーソルの表示
+			ShowCursor(FALSE);
+		}
+	}
+}
+
+/// <summary>
 /// 更新処理
 /// </summary>
 void InputManager::Update()

@@ -165,6 +165,9 @@
     <ClInclude Include="Utility\DrawableList.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\GameDebug.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -274,6 +277,9 @@
     </ClCompile>
     <ClCompile Include="GameObject\3DObject\GameDecorateObject.cpp">
       <Filter>Game\GameObject\3DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\GameDebug.cpp">
+      <Filter>Game\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

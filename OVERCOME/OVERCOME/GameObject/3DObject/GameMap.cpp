@@ -89,17 +89,15 @@ void GameMap::Create()
 /// <summary>
 /// 更新
 /// </summary>
-bool GameMap::Update(DX::StepTimer const & timer, Player *player)
+bool GameMap::Update(DX::StepTimer const & timer, const SimpleMath::Vector3 playerPos)
 {
 	int id;
 	SimpleMath::Vector3 s;
-	SimpleMath::Vector3 playerPos = player->GetPos();
 	SimpleMath::Vector3 v[2] = { SimpleMath::Vector3(playerPos.x, 100.0f, playerPos.z), SimpleMath::Vector3(playerPos.x, -100.0f, playerPos.z) };
 	// 道とプレイヤーの当たり判定を行う
 	if (mp_collisionStage->HitCheck_Segment(v[0], v[1], &id, &s) == true)
 	{
-		// プレイヤーの位置を設定する
-		//player->SetHeightPos(s.y);
+		// プレイヤーの位置を設定するために変数で所持
 		m_correctPos = s;
 	}
 

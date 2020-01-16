@@ -40,7 +40,7 @@ public:
 	// ¶¬
 	void Create();
 	// XV
-	bool Update(DX::StepTimer const& timer, Player* player);
+	bool Update(DX::StepTimer const& timer, const DirectX::SimpleMath::Vector3 playerPos);
 	// •`‰æ
 	void Render(MatrixManager* matrixManager);
 	// ”pŠüˆ—

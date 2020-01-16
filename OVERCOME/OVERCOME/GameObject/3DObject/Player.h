@@ -40,16 +40,17 @@ private:
 	DirectX::SimpleMath::Vector3             m_vel;                       // 速度(ベクトル)
 	DirectX::SimpleMath::Vector3             m_dir;                       // 移動方向(ベクトル)
 	float                                    m_height;                    // プレイヤー自身の高さ
-	float                                    m_jumpForce;                 // ジャンプ力
-	float                                    m_gravity;                   // 重力
 	DirectX::SimpleMath::Vector3             m_posTmp;                    // 前フレームの位置
 	int										 m_hp;						  // 体力
 	DirectX::SimpleMath::Vector2			 m_hpBasePos;				  // 体力バー基準位置
 	int										 m_damageCount;				  // ダメージを受けた時の計測カウント
+	static const int                         DAMAGE_EFFECT_COUNT;		  // ダメージ演出の切り替えフレーム数
+	static const int                         FINISH_DAMAGE_EFFECT_COUNT;  // 動き出すまでにかかる時間(フレーム数)
 	bool									 m_isDamaged;				  // 敵に接触したか
 
-	bool                                     m_playStartFlag;             // ゲームが開始したらフラグが立つ
-	int                                      m_moveStartCountDown;        // 動き始めるまでのカウントダウン
+	bool                                     m_playStartFlag;             // プレイヤーが進行し出したらフラグが立つ(初回)
+	int                                      m_moveStartCountDown;        // 動き出すまでの時間
+	static const int                         START_COUNT_TIME;			  // 動き出すまでにかかる時間(フレーム数)
 
 	bool                                     m_spawnFlag;                 // 敵が出てくるフラグ
 	float                                    m_spawnElapsedTime;          // 敵が出現してからの経過時間
@@ -111,8 +112,6 @@ public:
 	// 通過中の道路(ID)
 	DirectX::SimpleMath::Vector2 GetPassingRoad()   { return m_passingRoadPos; }
 	// プレイヤー情報の取得
-	Player* GetPlayer();
-	// プレイヤー情報の取得
 	GameBulletManager* GetBulletManager()           { return mp_bulletManager; }
 	//----------------------------------------------------------------------------//
 
@@ -128,6 +127,18 @@ public:
 	void Damage(int damage) { m_hp -= damage; }
 
 private:
+
+	// 進みだす前の処理
+	bool BeforeGoOnPlayer(const bool isClickCenter);
+
+	// 進み始めた後の処理
+	void AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& cameraDir);
+
+	// 次の進路先を調べる
+	void SearchNextRoad(const DirectX::SimpleMath::Vector2 nowPos);
+
+	// ダメージの更新
+	void UpdateDamage();
 
 	// HPの更新
 	void UpdateHP();

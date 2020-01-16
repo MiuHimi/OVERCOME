@@ -50,6 +50,9 @@ public:
 	// マウス軸モードの変更
 	void SetMouseMode(DirectX::Mouse::Mode mode);
 
+	// マウスカーソル表示/非表示
+	void SetVisibleMouseCursor(bool cursorState);
+
 	// マウス座標の取得
 	int GetMousePosX() { return GetMouseState().x; }
 	int GetMousePosY() { return GetMouseState().y; }

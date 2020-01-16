@@ -17,6 +17,8 @@
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
 
+#include "../../Utility/GameDebug.h"
+
 // usingディレクトリ
 using namespace DirectX;
 
@@ -384,7 +386,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	// 道オブジェクトの更新
 	mp_gameRoad->Update(timer);
 	// マップの更新
-	mp_gameMap->Update(timer, mp_player->GetPlayer());
+	mp_gameMap->Update(timer, mp_player->GetPos());
 	
 	// プレイヤーの更新
 	mp_player->Update(timer, isStartPlay, mp_camera->GetCameraAngle(), mp_gameMap->GetCorrectPos());
@@ -514,6 +516,7 @@ void ScenePlay::Render()
 	// スコアの描画
 	mp_gameScore->Render();
 
+	
 	// フェード画像の表示
 	mp_fade->RenderAlpha();
 }
