@@ -95,6 +95,7 @@ private:
 
 	static const int			  MAX_SPAWN_TIME;			  // 敵が出現できる最大時間(フレーム数)
 	int							  m_spawnElapsedTime;		  // 敵が出現してからの経過時間(フレーム数)
+	bool						  m_isAssaulted;			  // 襲撃が終了したかどうか
 
 	static const int			  CREATE_PROBABILITY;		  // 生成確率(rand()と共に使用)
 	
@@ -104,7 +105,8 @@ private:
 	int							  m_createCount;			  // 敵の生成数をカウント
 	DirectX::SimpleMath::Vector3  m_entryEnemyPosTmp;		  // 敵の出現仮位置
 
-	static const int			  RESPAWN_NEED_TIME;		  // リスポーンに必要な時間(フレーム数)
+	static const int			  RAMDOM_SPAWN_NEED_TIME;	  // ランダムにリスポーンするのに必要な時間(フレーム数)
+	static const int			  FIXED_SPAWN_NEED_TIME;	  // 固定位置にリスポーンするのに必要な時間(フレーム数)
 	int                           m_respawnTime;              // リスポーン時間(フレーム数)
 
 	DirectX::SimpleMath::Vector3  m_entryEnemyPos[MAX_ENTRY_POS];
@@ -128,6 +130,7 @@ private:
 															  // エフェクトアニメーション用のカウント
 	int							  m_shockCount[MAX_ENEMY];	  // エフェクトが出てからのカウント
 	DirectX::SimpleMath::Vector3  m_pointPos[MAX_ENEMY];	  // 得点が出る位置
+	bool						  m_isVisiblePoint[MAX_ENEMY];// 得点を表示させるかどうか
 	DirectX::SimpleMath::Vector2  m_pointSize[MAX_ENEMY];	  // 得点の大きさ
 
 	DANGERDIRECTION				  m_dengerousDirLR;			  // 危険方向
@@ -202,6 +205,8 @@ public:
 	GameEnemy::EnemyType		   GetEnemyType(int i)    { return mp_enemy[i]->GetType(); }
 	// 敵のHPを取得
 	int							   GetEnemyHP(int i)	  { return mp_enemy[i]->GetHP(); }
+	// 襲撃状態を取得
+	bool							GetAssaultedState()	  { return m_isAssaulted; }
 	// 敵の衝突判定情報を取得
 	Collision::Sphere			   GetEnemyCollide(int i) { return mp_enemy[i]->GetCollision(); }
 	// プレイヤーから見た敵の方向を取得
@@ -221,7 +226,7 @@ public:
 	/// やられ演出設定
 	/// </summary>
 	/// <param name="i">敵の配列</param>
-	void ShockEnemy(int i);
+	void ShockEnemy(int i, const bool isVisiblePoint);
 	
 private:
 	//-----------------------------------更新関数-----------------------------------//

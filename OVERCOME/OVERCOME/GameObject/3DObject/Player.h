@@ -52,10 +52,6 @@ private:
 	int                                      m_moveStartCountDown;        // 動き出すまでの時間
 	static const int                         START_COUNT_TIME;			  // 動き出すまでにかかる時間(フレーム数)
 
-	bool                                     m_spawnFlag;                 // 敵が出てくるフラグ
-	float                                    m_spawnElapsedTime;          // 敵が出現してからの経過時間
-	static const int                         SPAWNTIME;                   // 敵が出てくる時間(フレーム数)
-
 	DirectX::SimpleMath::Vector2             m_passingRoadPos;            // 通過済みの道路(ID)を記憶
 	DirectX::SimpleMath::Vector2             m_passedRoadPos;             // 通過済みの道路を記憶
 	DirectX::SimpleMath::Vector2             m_nextPos;                   // 次に向かう道路の座標を記憶
@@ -89,7 +85,7 @@ public:
 	// 生成
 	void Create(const bool isFulleScreen);
 	// 更新
-	bool Update(DX::StepTimer const& timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir, DirectX::SimpleMath::Vector3 correctPos);
+	bool Update(DX::StepTimer const& timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir, DirectX::SimpleMath::Vector3& correctPos, const bool isAssaultedState);
 	// 描画
 	void Render(MatrixManager* matrixManager, GameEnemyManager::DANGERDIRECTION dangerDir);
 	// 廃棄
@@ -107,8 +103,6 @@ public:
 	int GetHP()										{ return m_hp; }
 	// プレイヤーが動き出したかどうか
 	bool GetPlaying()								{ return m_playStartFlag; }
-	// 敵が出てくる時間かどうか
-	bool GetEnemyTime()								{return m_spawnFlag;}
 	// 通過中の道路(ID)
 	DirectX::SimpleMath::Vector2 GetPassingRoad()   { return m_passingRoadPos; }
 	// プレイヤー情報の取得
@@ -132,7 +126,13 @@ private:
 	bool BeforeGoOnPlayer(const bool isClickCenter);
 
 	// 進み始めた後の処理
-	void AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& cameraDir);
+	void AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& cameraDir, const bool isAssaultedState);
+
+	// 目指す道に到着
+	bool ArrivalNextRoad();
+
+	// フラグに応じて進行するかどうかを決定する
+	void SetPlayerMove(bool isMove, const bool isAssaultedState);
 
 	// 次の進路先を調べる
 	void SearchNextRoad(const DirectX::SimpleMath::Vector2 nowPos);

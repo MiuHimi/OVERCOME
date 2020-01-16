@@ -18,6 +18,7 @@
 #include "GameEnemyManager.h"
 #include "Player.h"
 #include "GameMap.h"
+#include "GameRoad.h"
 #include "GameDecorateObject.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
@@ -32,7 +33,8 @@ using namespace DirectX;
 // constディレクトリ
 const int GameEnemyManager::MAX_SPAWN_TIME = 600;
 const int GameEnemyManager::CREATE_PROBABILITY = 5;
-const int GameEnemyManager::RESPAWN_NEED_TIME = 40;
+const int GameEnemyManager::RAMDOM_SPAWN_NEED_TIME = 40;
+const int GameEnemyManager::FIXED_SPAWN_NEED_TIME = 120;
 const int GameEnemyManager::BASE_LENGTH = 150;
 const float GameEnemyManager::CONTROL_NORMAL_VELOCITY = 200.0f;
 const float GameEnemyManager::CONTROL_POWER_VELOCITY = 300.0f;
@@ -45,12 +47,12 @@ const int GameEnemyManager::MAX_SMOKE_COUNT = 20;
 /// コンストラクタ
 /// </summary>
 GameEnemyManager::GameEnemyManager()
-	: m_spawnElapsedTime(0), m_respawnTime(0), 
+	: m_spawnElapsedTime(0), m_respawnTime(0), m_isAssaulted(false),
 	  m_createCount(0), m_entryEnemyPosTmp(0.0f,0.0f,0.0f), m_createFillFlag(false), m_openChestCreateFlag{ false }, m_chestCreateCount{ 0 },
 	  m_entryEnemyPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_entryEnemyDistribute{ SimpleMath::Vector3(0.0f,0.0f,0.0f) },mp_enemy{ nullptr },
 	  m_hpPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_shockPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, 
 	  m_hitEffectState{ ENEMYHITEFFECT::EFFECT_FIRST }, m_hitPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_hitAnimationCount{0}, m_shockCount{ 0 },
-	  m_pointPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_pointSize{ SimpleMath::Vector2(0.0f,0.0f) }, 
+	  m_pointPos{ SimpleMath::Vector3(0.0f,0.0f,0.0f) }, m_isVisiblePoint{ false }, m_pointSize{ SimpleMath::Vector2(0.0f,0.0f) },
 	  m_dengerousDirLR(DANGERDIRECTION::DIR_NONE), m_compereLength{0.0f}, m_lengthTmp(0), 
 	  m_textureHP{ nullptr }, m_texturePoint{ nullptr }, m_textureHitEffect{ nullptr }, m_textureSmoke(nullptr),
 	  m_batchEffect(nullptr), m_batch(nullptr), m_inputLayout(nullptr)
@@ -397,7 +399,7 @@ void GameEnemyManager::Render(MatrixManager* matrixManager, SimpleMath::Vector3 
 			float alpha = 1.0f - (float)(m_shockCount[i] * 0.03f);
 			if (alpha < 0.0f) alpha = 0.0f;
 			DrawSmoke(matrixManager, shockWorld, alpha);
-			DrawPoint(matrixManager, pointWorld, i, m_pointSize[i]);
+			if (m_isVisiblePoint[i])DrawPoint(matrixManager, pointWorld, i, m_pointSize[i]);
 		}
 	}
 }
@@ -413,16 +415,19 @@ void GameEnemyManager::Depose()
 /// やられ演出設定
 /// </summary>
 /// <param name="i">敵の番号(配列)</param>
-void GameEnemyManager::ShockEnemy(int i)
+void GameEnemyManager::ShockEnemy(int i, const bool isVisiblePoint)
 {
 	// やられ演出を行っていなかったら
 	if (!mp_enemy[i]->GetShock())
 	{
 		// 演出フラグを立てる
 		mp_enemy[i]->SetShock(true);
+		// 得点表示をするかどうか
+		m_isVisiblePoint[i] = isVisiblePoint;
+
 		// 自弾が当たった時の敵の位置を設定
 		m_shockPos[i] = mp_enemy[i]->GetPos();
-		m_pointPos[i] = mp_enemy[i]->GetPos();
+		if(m_isVisiblePoint[i])m_pointPos[i] = mp_enemy[i]->GetPos();
 
 		// 敵消滅SE
 		ADX2Le* adx2le = ADX2Le::GetInstance();
@@ -490,9 +495,12 @@ bool GameEnemyManager::IsAssault(int roadType)
 	{
 		// 出現できる時間まで襲撃する
 		m_spawnElapsedTime++;
+		m_isAssaulted = false;
 		if (m_spawnElapsedTime > MAX_SPAWN_TIME)
 		{
 			m_spawnElapsedTime = 0;
+			// 襲撃終了
+			m_isAssaulted = true;
 		}
 	}
 	else
@@ -508,9 +516,9 @@ bool GameEnemyManager::IsAssault(int roadType)
 			{
 				// 演出して片付ける
 				mp_enemy[i]->SetState(false);
-				ShockEnemy(i);
+				// 煙だけ表示
+				ShockEnemy(i , false);
 			}
-
 		}
 
 		// 襲撃不可
@@ -531,8 +539,8 @@ bool GameEnemyManager::IsAssault(int roadType)
 void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& playerPos, SimpleMath::Vector3* chestEntryPos, float chestHeight, std::array<bool, 3> isChestOpen)
 {
 	// 生成時間になったら敵の設定をする
-	if (assultP == 1 && m_respawnTime % RESPAWN_NEED_TIME != 0)return;
-	if (assultP == 2)
+	if (assultP == GameRoad::AssaultPoint::DANGER_ONE && m_respawnTime % RAMDOM_SPAWN_NEED_TIME != 0)return;
+	if (assultP == GameRoad::AssaultPoint::DANGER_TWO)
 	{
 		for (int i = 0; i < (int)GameDecorateObject::MAX_CHEST_NUM; i++)
 		{
@@ -558,7 +566,7 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 				// 再び生成できるようにカウントを進める
 				m_chestCreateCount[i]++;
 				// 生成できるカウントになったら
-				if (m_chestCreateCount[i] > RESPAWN_NEED_TIME)
+				if (m_chestCreateCount[i] > RAMDOM_SPAWN_NEED_TIME)
 				{
 					// 再び生成させる
 					m_openChestCreateFlag[i] = false;
@@ -574,8 +582,8 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 			}
 		}
 	}
-	if (assultP == 3 && m_respawnTime % 120 != 0)return;
-	if (assultP == 4 && m_respawnTime % 120 != 0 || m_createFillFlag)return;
+	if (assultP == GameRoad::AssaultPoint::DANGER_THREE && m_respawnTime % FIXED_SPAWN_NEED_TIME != 0)return;
+	if (assultP == GameRoad::AssaultPoint::DANGER_FOUR && m_respawnTime % FIXED_SPAWN_NEED_TIME != 0 || m_createFillFlag)return;
 
 	// 敵の襲撃時間だったら更新する
 	int posXTmp = 0;
@@ -588,7 +596,8 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 		if (!mp_enemy[i]->GetState())
 		{
 			// 生成数が目標に達したら
-			if ((assultP == 3 && m_createCount >= (int)MAXCREATECOUNT::FOUR) || (assultP == 4 && m_createCount >= (int)MAXCREATECOUNT::SIXTEEN))
+			if ((assultP == GameRoad::AssaultPoint::DANGER_THREE && m_createCount >= (int)MAXCREATECOUNT::FOUR) || 
+				(assultP == GameRoad::AssaultPoint::DANGER_FOUR && m_createCount >= (int)MAXCREATECOUNT::SIXTEEN))
 			{
 				// カウントリセットして抜ける
 				m_createCount = 0;
@@ -702,7 +711,7 @@ void GameEnemyManager::CreateEnemy(int assultP, DirectX::SimpleMath::Vector3& pl
 			// 算出した値で回転しプレイヤーに向ける
 			mp_enemy[i]->SetRotateY(sita);
 
-			if ((assultP == 1 || assultP == 2))
+			if ((assultP == GameRoad::AssaultPoint::DANGER_ONE || assultP == GameRoad::AssaultPoint::DANGER_TWO))
 			break;
 		}
 	}

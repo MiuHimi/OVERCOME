@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "../../Utility/InputManager.h"
+#include "../../Utility/MathManager.h"
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/MatrixManager.h"
@@ -20,12 +21,10 @@
 #include "../../GameObject/3DObject/GameEnemyManager.h"
 
 
-
 // usingディレクトリ
 using namespace DirectX;
 
 // constディレクトリ
-const int Player::SPAWNTIME = 600;
 const int Player::DAMAGE_EFFECT_COUNT = 4;
 const int Player::FINISH_DAMAGE_EFFECT_COUNT = 20;
 const int Player::START_COUNT_TIME = 180;
@@ -41,7 +40,6 @@ Player::Player()
 	  m_height(0.0f), m_posTmp(SimpleMath::Vector3::Zero),
 	  m_hp(0), m_hpBasePos{0.0f}, m_damageCount(0), m_isDamaged(false),
 	  m_playStartFlag(false), m_moveStartCountDown(0),
-	  m_spawnFlag(false), m_spawnElapsedTime(0),
 	  m_passedRoadPos(SimpleMath::Vector2::Zero), m_passingRoadPos(SimpleMath::Vector2::Zero), m_nextPos(SimpleMath::Vector2::Zero), m_velFlag(false),
 	  m_world(SimpleMath::Matrix::Identity),
 	  mp_bulletManager(nullptr), mp_gameRoad(nullptr),
@@ -73,7 +71,6 @@ void Player::Initialize()
 	m_world = SimpleMath::Matrix::Identity;						// ワールド行列
 
 	// 他オブジェクトの初期化
-	//mp_gameCamera = std::make_unique<GameCamera>(DX::DeviceResources::SingletonGetInstance().GetOutputSize().right, DX::DeviceResources::SingletonGetInstance().GetOutputSize().bottom);
 	mp_bulletManager = new GameBulletManager();
 	mp_bulletManager->Initialize();
 	mp_gameRoad = std::make_unique<GameRoad>();
@@ -180,7 +177,7 @@ void Player::Create(const bool isFulleScreen)
 /// </summary>
 /// <param name="timer">起動経過時間</param>
 /// <returns>終了状態</returns>
-bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir, SimpleMath::Vector3 correctPos)
+bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX::SimpleMath::Vector3& cameraDir, SimpleMath::Vector3& correctPos, const bool isAssaultedState)
 {
 	// マウスの更新
 	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
@@ -192,94 +189,7 @@ bool Player::Update(DX::StepTimer const & timer, const bool isPlayFlag, DirectX:
 	bool isGoOn = BeforeGoOnPlayer(isPlayFlag);
 
 	// 進み始めた後の処理
-	AfterGoOnPlayer(isGoOn, timer, cameraDir);
-
-	// ゲームが開始されてからの処理
-	if (m_playStartFlag)
-	{
-		//マウスカーソルの非表示
-		InputManager::SingletonGetInstance().SetVisibleMouseCursor(false);
-
-		// 弾の更新
-		SimpleMath::Vector3 eyePos = SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height * 0.5f), m_pos.z);
-		mp_bulletManager->Update(timer, eyePos, cameraDir);
-
-		// 次の行き先に決定した位置と現在座標が限りなく近い位置にいたら
-		if (abs(m_pos.x - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x) < 0.01f &&
-			abs(m_pos.z - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z) < 0.01f)
-		{
-			// 次の位置に現在座標をずらす
-			m_pos.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x;
-			m_pos.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z;
-
-			// どの方向に進んでいたか比べる
-			if (abs(m_vel.x) > abs(m_vel.z))
-			{
-				// X軸方向に進んでいた場合
-				// 今通った道を通過済みにする
-				if (m_vel.x < 0.00f)      m_passedRoadPos.x = m_nextPos.x + 1;
-				else if (m_vel.x > 0.00f) m_passedRoadPos.x = m_nextPos.x - 1;
-				// 同時に軸違いのほうも記憶しておく
-				m_passedRoadPos.y = m_nextPos.y;
-			}
-			else if (abs(m_vel.x) < abs(m_vel.z))
-			{
-				// Z軸方向に進んでいた場合
-				// 今通った道を通過済みにする
-				if (m_vel.z < 0.00f)      m_passedRoadPos.y = m_nextPos.y + 1;
-				else if (m_vel.z > 0.00f) m_passedRoadPos.y = m_nextPos.y - 1;
-				// 同時に軸違いのほうも記憶しておく
-				m_passedRoadPos.x = m_nextPos.x;
-			}
-
-			// 次の位置に着いたためnextからnowに変えておく(わかりやすくするため)
-			SimpleMath::Vector2 nowPos = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
-			// 通過中の道路ID設定
-			m_passingRoadPos = nowPos;
-
-			// 次の行き先を決定
-			SearchNextRoad(nowPos);
-
-			// 到着した道が襲撃ポイントだったら
-			if (mp_gameRoad->GetRoadObject((int)m_passingRoadPos.y, (int)m_passingRoadPos.x).roadType == (int)GameRoad::RoadType::ASSAULT)
-			{
-				m_spawnFlag = true;
-			}
-		}
-		if (m_spawnFlag)
-		{
-			// 移動をやめる
-			m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-			m_velFlag = false;
-
-			// カウント
-			m_spawnElapsedTime++;
-
-			// 一定数を超えたら
-			if (m_spawnElapsedTime > SPAWNTIME)
-			{
-				// カウントリセット
-				m_spawnElapsedTime = 0;
-				// 移動を開始する
-				m_velFlag = true;
-				m_spawnFlag = false;
-			}
-		}
-		// 移動可能だったら
-		if(m_velFlag)
-		{
-			// 次の行き先に近づくまで差分で移動し続ける
-			m_vel.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x;
-			m_vel.z = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z;
-
-			m_vel.Normalize();
-			m_vel.x /= 10.0f;
-			m_vel.y = 0.0f;
-			m_vel.z /= 10.0f;
-
-			m_velFlag = true;
-		}
-	}
+	AfterGoOnPlayer(isGoOn, timer, cameraDir, isAssaultedState);
 
 	// ダメージの更新
 	UpdateDamage();
@@ -450,7 +360,7 @@ bool Player::BeforeGoOnPlayer(const bool isClickCenter)
 /// <param name="isGoOn">プレイヤーが初回の進行を始めたかどうか</param>
 /// <param name="timer">更新時間</param>
 /// <param name="cameraDir">カメラの向き</param>
-void Player::AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& cameraDir)
+void Player::AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, DirectX::SimpleMath::Vector3& cameraDir, const bool isAssaultedState)
 {
 	// プレイヤーが進行を開始したら以降の処理を行う
 	if (!isGoOn)return;
@@ -462,6 +372,19 @@ void Player::AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, Dire
 	SimpleMath::Vector3 eyePos = SimpleMath::Vector3(m_pos.x, m_pos.y + (m_height * 0.5f), m_pos.z);
 	mp_bulletManager->Update(timer, eyePos, cameraDir);
 
+	// 到着し、次の行動を選択
+	bool isMove = ArrivalNextRoad();
+
+	// フラグに応じて進行するかどうかを決定する
+	SetPlayerMove(isMove, isAssaultedState);
+}
+
+/// <summary>
+/// 目指す道に到着
+/// </summary>
+/// <returns>true=そのまま進行可能、false=進行停止</returns>
+bool Player::ArrivalNextRoad()
+{
 	// 次の行き先に決定した位置と現在座標が限りなく近い位置にいたら
 	if (abs(m_pos.x - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x) < 0.01f &&
 		abs(m_pos.z - mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z) < 0.01f)
@@ -475,8 +398,8 @@ void Player::AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, Dire
 		{
 			// X軸方向に進んでいた場合
 			// 今通った道を通過済みにする
-			if (m_vel.x < 0.00f)      m_passedRoadPos.x = m_nextPos.x + 1;
-			else if (m_vel.x > 0.00f) m_passedRoadPos.x = m_nextPos.x - 1;
+			if (m_vel.x < 0.0f)      m_passedRoadPos.x = m_nextPos.x + 1;
+			else if (m_vel.x > 0.0f) m_passedRoadPos.x = m_nextPos.x - 1;
 			// 同時に軸違いのほうも記憶しておく
 			m_passedRoadPos.y = m_nextPos.y;
 		}
@@ -490,41 +413,36 @@ void Player::AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, Dire
 			m_passedRoadPos.x = m_nextPos.x;
 		}
 
-		// 次の位置に着いたためnextからnowに変えておく(わかりやすくするため)
-		SimpleMath::Vector2 nowPos = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
-		// 通過中の道路ID設定
-		m_passingRoadPos = nowPos;
+		// 次の位置に着いたため通過中の道路IDを更新
+		m_passingRoadPos = SimpleMath::Vector2(m_nextPos.x, m_nextPos.y);
 
 		// 次の行き先を決定
-		SearchNextRoad(nowPos);
+		SearchNextRoad(m_passingRoadPos);
 
 		// 到着した道が襲撃ポイントだったら
 		if (mp_gameRoad->GetRoadObject((int)m_passingRoadPos.y, (int)m_passingRoadPos.x).roadType == (int)GameRoad::RoadType::ASSAULT)
 		{
-			m_spawnFlag = true;
+			m_velFlag = false;
 		}
-	}
-	if (m_spawnFlag)
-	{
-		// 移動をやめる
-		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		m_velFlag = false;
-
-		// カウント
-		m_spawnElapsedTime++;
-
-		// 一定数を超えたら
-		if (m_spawnElapsedTime > SPAWNTIME)
+		else
 		{
-			// カウントリセット
-			m_spawnElapsedTime = 0;
-			// 移動を開始する
+			// そうでなければ進行する
 			m_velFlag = true;
-			m_spawnFlag = false;
 		}
 	}
+
+	return m_velFlag;
+}
+
+/// <summary>
+/// フラグに応じて進行するかどうかを決定する
+/// </summary>
+/// <param name="isMove">進行是非フラグ</param>
+/// <param name="isAssaultedState">敵の攻撃状況フラグ</param>
+void Player::SetPlayerMove(bool isMove, const bool isAssaultedState)
+{
 	// 移動可能だったら
-	if (m_velFlag)
+	if (isMove)
 	{
 		// 次の行き先に近づくまで差分で移動し続ける
 		m_vel.x = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x;
@@ -536,6 +454,19 @@ void Player::AfterGoOnPlayer(const bool isGoOn, DX::StepTimer const& timer, Dire
 		m_vel.z /= 10.0f;
 
 		m_velFlag = true;
+	}
+	else
+	{
+		// 移動をやめる
+		m_vel = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+		m_velFlag = false;
+
+		// 敵の襲撃が止んだら
+		if (isAssaultedState)
+		{
+			// 移動を開始する
+			m_velFlag = true;
+		}
 	}
 }
 
@@ -569,18 +500,18 @@ void Player::SearchNextRoad(const SimpleMath::Vector2 nowPos)
 			m_nextPos = comparePos;
 
 			// 次の行き先(仮)と今の位置の距離を求める
-			distTmp = (mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.x - m_pos.x) +
-					  (mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos.z - m_pos.z);
+			SimpleMath::Vector3 roadPos = mp_gameRoad->GetRoadObject((int)m_nextPos.y, (int)m_nextPos.x).pos;
+			distTmp = MathManager::SingletonGetInstance().GetDistancePoints2D(m_pos.x, m_pos.z, roadPos.x, roadPos.z);
 		}
 		// 最初に調べる座標で無ければ
 		else
 		{
-			// 道が存在しているところなら
+			// 道が存在しているところなら以下の処理を行う
 			if ((mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).roadType == (int)mp_gameRoad->NONE)) continue;
 
-			// 次の行き先と今の位置の距離を求める
-			float dist = (mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos.x - m_pos.x)*(mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos.x - m_pos.x) +
-						 (mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos.z - m_pos.z)*(mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos.z - m_pos.z);
+			// 次の行き先(仮)と今の位置の距離を求める
+			SimpleMath::Vector3 roadPos = mp_gameRoad->GetRoadObject((int)comparePos.y, (int)comparePos.x).pos;
+			float dist = MathManager::SingletonGetInstance().GetDistancePoints2D(m_pos.x, m_pos.z, roadPos.x, roadPos.z);
 
 			// distのほうが小さい(ここで比べたところのほうが近い)、
 			// 既に通過したところでなければ

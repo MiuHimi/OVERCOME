@@ -13,6 +13,7 @@
 #include "../../Utility/DeviceResources.h"
 #include "../../Utility/CommonStateManager.h"
 #include "../../Utility/InputManager.h"
+#include "../../Utility/MathManager.h"
 #include "../../Utility/MatrixManager.h"
 
 #include "../../ExclusiveGameObject/ADX2Le.h"
@@ -342,7 +343,8 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 
 					// 敵を倒す
 					mp_gameEnemyManager->SetEnemyState(i, false);
-					mp_gameEnemyManager->ShockEnemy(i);
+					// 煙と得点を表示
+					mp_gameEnemyManager->ShockEnemy(i, true);
 				}
 
 				// stateをfalseに
@@ -372,9 +374,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 		bPos[i] = mp_player->GetBulletManager()->GetPos(i);
 
 		// 弾とプレイヤーの距離を計測
-		len = ((pPos.x - bPos[i].x)*(pPos.x - bPos[i].x)) +
-			((pPos.y - bPos[i].y)*(pPos.y - bPos[i].y)) +
-			((pPos.z - bPos[i].z)*(pPos.z - bPos[i].z));
+		len = MathManager::SingletonGetInstance().GetDistancePoints3D(pPos.x, pPos.y, pPos.z, bPos[i].x, bPos[i].y, bPos[i].z);
 
 		// 距離が100を超えたら弾を消す
 		if (length*length < len)
@@ -389,7 +389,7 @@ void ScenePlay::Update(DX::StepTimer const& timer)
 	mp_gameMap->Update(timer, mp_player->GetPos());
 	
 	// プレイヤーの更新
-	mp_player->Update(timer, isStartPlay, mp_camera->GetCameraAngle(), mp_gameMap->GetCorrectPos());
+	mp_player->Update(timer, isStartPlay, mp_camera->GetCameraAngle(), mp_gameMap->GetCorrectPos(), mp_gameEnemyManager->GetAssaultedState());
 
 	// 敵の更新
 	SimpleMath::Vector3 playerPassPos = mp_player->GetPassingRoad();

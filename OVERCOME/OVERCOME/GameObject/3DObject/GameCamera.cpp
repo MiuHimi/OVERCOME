@@ -271,36 +271,6 @@ void GameCamera::FadeCamera(DirectX::SimpleMath::Vector3 basePoint, float width,
 /// </summary>
 void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX::SimpleMath::Vector3 playerDirction, const bool isPlayFlag)
 {
-	/*RECT desktopWndRect;                         // デスクトップのサイズ
-	HWND desktopWnd = GetDesktopWindow();        // この関数でデスクトップのハンドルを取得
-	GetWindowRect(desktopWnd, &desktopWndRect);  // デスクトップのハンドルから画面の大きさを取得
-
-	RECT activeWndRect;                          // アクティブなウィンドウのサイズ
-	HWND activeWnd = GetActiveWindow();          // この関数でアクティブなウィンドウのハンドルを取得
-	GetWindowRect(activeWnd, &activeWndRect);    // アクティブなウィンドウのハンドルからその画面の大きさを取得
-
-	int titlebarHeight = GetSystemMetrics(SM_CYCAPTION);   // タイトルバーの高さを取得
-
-	// 相対モードなら何もしない
-	if (InputManager::SingletonGetInstance().GetMouseState().positionMode == Mouse::MODE_RELATIVE) return;
-	// マウスの更新
-	InputManager::SingletonGetInstance().GetTracker().Update(InputManager::SingletonGetInstance().GetMouseState());
-
-	// マウスポインターと円の衝突判定
-	float distX = 400.0f - float(InputManager::SingletonGetInstance().GetMouseState().x);
-	float distY = 300.0f - float(InputManager::SingletonGetInstance().GetMouseState().y);
-	float distX2 = distX * distX;
-	float distY2 = distY * distY;
-	float r = 100.0f;
-	float r2 = r * r;
-	
-	// マウスポインターが画面中央に来たら視点移動を開始する
-	if (distX2 + distY2 <= r2 &&
-		InputManager::SingletonGetInstance().GetTracker().leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
-	{
-		m_checkMousePos = true;
-	}*/
-
 	if(isPlayFlag == true)
 	{
 		// ベクトルの長さを求める
@@ -318,21 +288,6 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 		// 正の値なら右回転、負の値なら左回転
 		float s = (playerDirction.x / 2.0f) * m_cameraDir.z -
 			      (playerDirction.z / 2.0f) * m_cameraDir.x;
-
-		// 回転制限
-		// 進行方向より20度以上先を見ていたら制限範囲内に戻す
-		/*if (s > 0 && sita > 90.0f)
-		{
-			m_reformRota *= SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), 0.01f);
-		}
-		else if (s < 0 && sita > 90.0f)
-		{
-			m_reformRota *= SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -0.01f);
-		}
-		else if(sita <= 90.0f)
-		{
-			m_reformRota = SimpleMath::Quaternion::Identity;
-		}*/
 
 		// アクティブなウィンドウのハンドルからその画面の大きさを取得
 		RECT activeWndRect;
@@ -359,36 +314,6 @@ void GameCamera::MouseOperateCamera(DirectX::SimpleMath::Vector3 target, DirectX
 
 		m_rotationX *= m_toScreenOutRotaX;
 		m_rotationY *= m_toScreenOutRotaY;
-
-		/*if (sita <= 90)
-		{
-			// 矯正範囲外だったら偏差分の回転
-			m_rotationX = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.1f, 0.0f, 0.0f), -(y / ROTATE_MAG));
-			m_rotationY = SimpleMath::Quaternion::CreateFromAxisAngle(SimpleMath::Vector3(0.0f, 0.1f, 0.0f), -(x / ROTATE_MAG));
-
-			// カーソルがウィンドウ外に行ったときは元々回転していた分も回転させる
-			m_rotationX *= m_toScreenOutRotaX;
-			m_rotationY *= m_toScreenOutRotaY;
-
-			// 矯正範囲内にいったとき用に回転を保存
-			m_rotationTmpX = m_rotationX;
-			m_rotationTmpY = m_rotationY;
-		}
-		else
-		{
-			// 矯正範囲内だったら保存しておいた分の回転のみ行う
-			m_rotationX = m_rotationTmpX;
-			m_rotationY = m_rotationTmpY;
-
-			// カーソルがウィンドウ外に行ったときは元々回転していた分も回転させる
-			m_rotationX *= m_toScreenOutRotaX;
-			m_rotationY *= m_toScreenOutRotaY;
-		}*/
-
-		/*if (sita > 90.0f)
-		{
-			m_rotationY *= m_reformRota;
-		}*/
 		
 		// 画面外に出たらカーソルを画面の中心に戻す
 		if (InputManager::SingletonGetInstance().GetMouseState().x < int((activeWndRect.left - activeWndRect.left) + OUT_SIZE_OF_SCREEN) || 
