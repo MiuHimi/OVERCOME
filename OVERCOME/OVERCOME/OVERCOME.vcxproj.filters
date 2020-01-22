@@ -171,6 +171,9 @@
     <ClInclude Include="Utility\MathManager.h">
       <Filter>Game\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\FPS.h">
+      <Filter>Game\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -285,6 +288,9 @@
       <Filter>Game\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Utility\MathManager.cpp">
+      <Filter>Game\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\FPS.cpp">
       <Filter>Game\Utility</Filter>
     </ClCompile>
   </ItemGroup>

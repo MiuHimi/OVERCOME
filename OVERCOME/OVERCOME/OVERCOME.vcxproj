@@ -210,6 +210,7 @@
     <ClInclude Include="Utility\Drawable.h" />
     <ClInclude Include="Utility\DrawableList.h" />
     <ClInclude Include="Utility\DrawManager.h" />
+    <ClInclude Include="Utility\FPS.h" />
     <ClInclude Include="Utility\GameDebug.h" />
     <ClInclude Include="Utility\InputManager.h" />
     <ClInclude Include="Utility\MathManager.h" />
@@ -256,6 +257,7 @@
     <ClCompile Include="Utility\CountManager.cpp" />
     <ClCompile Include="Utility\DeviceResources.cpp" />
     <ClCompile Include="Utility\DrawManager.cpp" />
+    <ClCompile Include="Utility\FPS.cpp" />
     <ClCompile Include="Utility\GameDebug.cpp" />
     <ClCompile Include="Utility\InputManager.cpp" />
     <ClCompile Include="Utility\MathManager.cpp" />

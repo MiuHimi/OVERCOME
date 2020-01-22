@@ -4,6 +4,7 @@
 
 #include "pch.h"
 #include "Game.h"
+#include "Utility/FPS.h"
 
 //#if _DEBUG
 //#define _CRTDBG_MAP_ALLOC
@@ -125,10 +126,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
         else
         {
+			// ゲームループ
             g_game->Tick();
         }
     }
 
+	// フルスクリーンだったら
 	if (s_fullscreen)
 	{
 		// ウインドウモードへ戻す
